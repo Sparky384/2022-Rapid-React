@@ -1,61 +1,75 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
+
+/**
+ * This is a demo program showing the use of the DifferentialDrive class. Runs the motors with
+ * arcade steering.
+ */
 public class Robot extends TimedRobot {
-  XboxController pilot;
-  DriveTrain drive;
+  DriveTrain drive = new DriveTrain();
+  Intake intake = new Intake();
+  Controller controller = new Controller();
+  Shooter shooter = new Shooter();
+  
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
+  // TalonSRX frontleft = new TalonSRX(1);
+  // private final PWMSparkMax m_leftMotor = new PWMSparkMax(0);
+  // private final PWMSparkMax m_rightMotor = new PWMSparkMax(1);
+  // private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftMotor, m_rightMotor);
+  // private final Joystick m_stick = new Joystick(0);
+
   @Override
-  public void robotInit() 
-  {
-    pilot = new XboxController(0);
-    drive = new DriveTrain();
+  public void robotInit() {
+   SmartDashboard.putNumber("Shooterspeed:",controller.getRightY());
+   SmartDashboard.putNumber("Motorspeed:",controller.getLeftY());
+   //SmartDashboard.putBoolean("BottomPhotoEyeBlocked:", false);
+    // We need to invert one side of the drivetrain so that positive voltages
+    // result in both sides moving forward. Depending on how your robot's
+    // gearbox is constructed, you might have to invert the left side instead.
+    // m_rightMotor.setInverted(true);
   }
 
-  /**
-   * This autonomous (along with the chooser code above) shows how to select between different
-   * autonomous modes using the dashboard. The sendable chooser code works with the Java
-   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
-   * uncomment the getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to the switch structure
-   * below with additional strings. If using the SendableChooser make sure to add them to the
-   * chooser code above as well.
-   */
   @Override
-  public void autonomousInit() {
+  public void teleopPeriodic() {
+  
+    // Drive with arcade drive.
+    // That means that the Y axis drives forward
+    // and backward, and the X turns left and right.
+    // m_robotDrive.arcadeDrive(-m_stick.getY(), m_stick.getX());
+    SmartDashboard.putNumber("Shooterspeed:",controller.getRightY());
+    SmartDashboard.putNumber("Motorspeed:",controller.getLeftY());
+    drive.drive();
+    intake.innerIntake();
+    if (controller.getXButton())
+      intake.intakeIn();
+    if (controller.getAButton())
+      intake.intakeOut();
+    else if (!controller.getXButton() && !controller.getAButton())
+      intake.stopIntake();
+    //if (controller.getBButton() ) //|| photoEye.get())
+      //intake.stopIntake();
+    shooter.shoot();
+    //System.out.println(controller.getXButton());
+    
+  } 
+  
+  
 
-  }
-
-  /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {
-  }
-
-  /** This function is called once when teleop is enabled. */
-  @Override
-  public void teleopInit() {}
-
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() 
-  {
-    double speed = pilot.getLeftY();
-    double turn = pilot.getLeftX();
-    drive.drive(speed, turn);
-  }
-
-  /** This function is called once when the robot is disabled. */
-  @Override
-  public void disabledInit() {}
-
-  /** This function is called periodically when disabled. */
-  @Override
-  public void disabledPeriodic() {}
+  
 }
