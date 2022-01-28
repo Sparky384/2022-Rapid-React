@@ -55,18 +55,21 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Rightjoystick:",controller.getRightY());
     SmartDashboard.putNumber("Leftjoystick:",controller.getLeftY());
     drive.drive();
-    intake.innerIntake();
+    //intake.innerIntake();
     if (controller.getXButton())
       intake.intakeIn();
     if (controller.getAButton())
       intake.intakeOut();
     else if (!controller.getXButton() && !controller.getAButton())
       intake.stopIntake();
-    //if (controller.getBButton() ) //|| photoEye.get())
-      //intake.stopIntake();
-    shooter.shoot();
-    //System.out.println(controller.getXButton());
-    
+
+    if (shooter.shoot())
+    {
+      intake.indexerShoot();
+    }
+    else {
+      intake.autoIndex();
+    }
   } 
   
   

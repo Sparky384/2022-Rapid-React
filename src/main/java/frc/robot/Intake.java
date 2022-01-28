@@ -15,7 +15,7 @@ public class Intake {
     private CANSparkMax stage1Motor; //4
     private CANSparkMax stage2Motor; //5
     private CANSparkMax stage3Motor; //11
-    private boolean bottomBlocked;
+    private boolean ballPhotoEye;
     //private Controller pilot = new Controller();
 
     public Intake() {
@@ -30,7 +30,7 @@ public class Intake {
 
         bottomPhotoEye = new DigitalInput(0);
         topPhotoEye = new DigitalInput(2);
-        bottomBlocked = false;
+        ballPhotoEye = false;
         
 
     }
@@ -43,24 +43,37 @@ public class Intake {
     public void stopIntake() {
         stage1Motor.set(0);
     }
-    public void innerIntake(){
+
+    public void indexerShoot(){
+        stage2Motor.set(-0.2);
+        stage3Motor.set(0.2);
+    }
+
+    public void stopIndexer(){
+        stage2Motor.set(0);
+        stage3Motor.set(0);
+    }
+
+    public void autoIndex(){
         SmartDashboard.putBoolean("BottomPhotoEyeBlocked", bottomPhotoEye.get());
         SmartDashboard.putBoolean("TopPhotoEyeBlocked", topPhotoEye.get());
-        //if (bottomPhotoEye.get())
-            //bottomBlocked = true;
-        if (bottomPhotoEye.get() && !topPhotoEye.get()){ // dont use loop, loops are bad
+        // if (bottomPhotoEye.get() && !topPhotoEye.get()){ // dont use loop, loops are bad
+        //     stage2Motor.set(-0.2);
+        //     stage3Motor.set(0.2);
+        // } else {
+        // stage2Motor.set(0.0);
+        // stage3Motor.set(0.0);
+        // }
+        if ((ballPhotoEye || bottomPhotoEye.get()) && !topPhotoEye.get())
+        {
             stage2Motor.set(-0.2);
             stage3Motor.set(0.2);
-        } else {
-        stage2Motor.set(0.0);
-        stage3Motor.set(0.0);
+            ballPhotoEye = true;
         }
-        
-         // once fixing the loop change this to else statment
-        
-        //while (!pilot.getBButton()){}   this is the problematic code
-        //while (pilot.getBButton()){
-            //stage3Motor.set(0.2);
-        //}
+        else {
+            stage2Motor.set(0.0);
+            stage3Motor.set(0.0);
+            ballPhotoEye = false;
+        }
     }    
 }

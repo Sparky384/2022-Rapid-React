@@ -36,12 +36,19 @@ public class Shooter {
         shooterMotorRight.set(0.5);
         shooterMotorLeft.set(0.5);
     }
-    public void shoot(){
+    public boolean shoot(){
         double pilotY = pilot.getRightY();
         //double pilotX = -1 * pilot.getRightX();
         shooterMotorLeft.set(0.175*pilotY);
         shooterMotorRight.set(-0.175*pilotY);
         SmartDashboard.putNumber("ShooterEncoder", encoder.getVelocity());
-        
+        if (encoder.getVelocity() > 350)
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
     }
 }
