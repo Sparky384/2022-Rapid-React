@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.revrobotics.RelativeEncoder;
 
 public class DriveTrain {
     WPI_TalonFX frontLeft = new WPI_TalonFX(1);
@@ -18,6 +20,7 @@ public class DriveTrain {
     MotorControllerGroup rightMotors = new MotorControllerGroup(frontRight, backRight);
     Controller pilot = new Controller();
     DifferentialDrive difDrive = new DifferentialDrive(leftMotors, rightMotors);
+    //motorvariable.congifSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10)
 
     DriveTrain() {
         //frontLeft = new WPI_TalonFX(1); - Had to define the Talons above with the motor type.

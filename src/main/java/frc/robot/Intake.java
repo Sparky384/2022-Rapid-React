@@ -46,18 +46,21 @@ public class Intake {
     public void innerIntake(){
         SmartDashboard.putBoolean("BottomPhotoEyeBlocked", bottomPhotoEye.get());
         SmartDashboard.putBoolean("TopPhotoEyeBlocked", topPhotoEye.get());
-        if (bottomPhotoEye.get())
-            bottomBlocked = true;
-        while (bottomBlocked && !topPhotoEye.get()){ // dont use loop, loops are bad
+        //if (bottomPhotoEye.get())
+            //bottomBlocked = true;
+        if (bottomPhotoEye.get() && !topPhotoEye.get()){ // dont use loop, loops are bad
             stage2Motor.set(-0.2);
             stage3Motor.set(0.2);
-        }
-        bottomBlocked = false;
-        stage2Motor.set(0.0); // once fixing the loop change this to else statment
+        } else {
+        stage2Motor.set(0.0);
         stage3Motor.set(0.0);
+        }
+        
+         // once fixing the loop change this to else statment
+        
         //while (!pilot.getBButton()){}   this is the problematic code
         //while (pilot.getBButton()){
             //stage3Motor.set(0.2);
         //}
-    }
+    }    
 }

@@ -41,7 +41,7 @@ public class Shooter {
         //double pilotX = -1 * pilot.getRightX();
         shooterMotorLeft.set(0.175*pilotY);
         shooterMotorRight.set(-0.175*pilotY);
-        //SmartDashboard.putNumber("ShooterEncoder", encoder.getVelocity());
+        SmartDashboard.putNumber("ShooterEncoder", encoder.getVelocity());
         
     }
 }

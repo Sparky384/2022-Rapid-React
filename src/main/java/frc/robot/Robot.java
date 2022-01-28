@@ -36,8 +36,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-   SmartDashboard.putNumber("Shooterspeed:",controller.getRightY());
-   SmartDashboard.putNumber("Motorspeed:",controller.getLeftY());
+   //SmartDashboard.putNumber("Shooterspeed:",controller.getRightY());
+   //SmartDashboard.putNumber("Motorspeed:",controller.getLeftY());
    //SmartDashboard.putBoolean("BottomPhotoEyeBlocked:", false);
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -52,8 +52,8 @@ public class Robot extends TimedRobot {
     // That means that the Y axis drives forward
     // and backward, and the X turns left and right.
     // m_robotDrive.arcadeDrive(-m_stick.getY(), m_stick.getX());
-    SmartDashboard.putNumber("Shooterspeed:",controller.getRightY());
-    SmartDashboard.putNumber("Motorspeed:",controller.getLeftY());
+    SmartDashboard.putNumber("Rightjoystick:",controller.getRightY());
+    SmartDashboard.putNumber("Leftjoystick:",controller.getLeftY());
     drive.drive();
     intake.innerIntake();
     if (controller.getXButton())
