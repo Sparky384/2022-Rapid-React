@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID;
 
 public class Controller {
     XboxController controller = new XboxController(1);
@@ -25,7 +26,20 @@ public class Controller {
         return controller.getAButton();
     }
 
+    public boolean getYButton() {
+        return controller.getYButton();
+    }
+
     public boolean getBButton() {
         return controller.getBButton();
     }
+    
+    public boolean getLeftBumper(){
+        return controller.getLeftBumper();
+    }
+    
+    public boolean getRightBumper(){
+        return controller.getRightBumper();
+    }
+
 }

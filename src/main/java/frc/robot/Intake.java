@@ -11,12 +11,14 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class Intake {
     
     private DigitalInput bottomPhotoEye;
-    private DigitalInput topPhotoEye;
+    public DigitalInput topPhotoEye;
     private CANSparkMax stage1Motor; //4
     private CANSparkMax stage2Motor; //5
     private CANSparkMax stage3Motor; //11
-    private boolean ballPhotoEye;
+    //is true during the setup process for shooting so that the ball is in position. bug when holding shooter joystick while intake is going. 
+    private boolean ballPhotoEye; 
     //private Controller pilot = new Controller();
+    private boolean topPhotoEyeNotBlocked;
 
     public Intake() {
         stage1Motor = new CANSparkMax(4, MotorType.kBrushless);
@@ -31,6 +33,7 @@ public class Intake {
         bottomPhotoEye = new DigitalInput(0);
         topPhotoEye = new DigitalInput(2);
         ballPhotoEye = false;
+        topPhotoEyeNotBlocked = true;
         
 
     }
@@ -47,16 +50,28 @@ public class Intake {
     public void indexerShoot(){
         stage2Motor.set(-0.2);
         stage3Motor.set(0.2);
+        SmartDashboard.putBoolean("autoIndex", false);
+        SmartDashboard.putBoolean("indexerShoot", true);
     }
 
     public void stopIndexer(){
         stage2Motor.set(0);
         stage3Motor.set(0);
+        ballPhotoEye = false;
+    }
+
+    public void topPhotoEyeBlocked(){
+        topPhotoEyeNotBlocked = false;
     }
 
     public void autoIndex(){
         SmartDashboard.putBoolean("BottomPhotoEyeBlocked", bottomPhotoEye.get());
         SmartDashboard.putBoolean("TopPhotoEyeBlocked", topPhotoEye.get());
+        SmartDashboard.putBoolean("BallPhotoEye", ballPhotoEye);
+        SmartDashboard.putBoolean("autoIndex", true);
+        SmartDashboard.putBoolean("indexerShoot", false);
+        SmartDashboard.putBoolean("topPhotoEyeNotBlocked", topPhotoEyeNotBlocked);
+
         // if (bottomPhotoEye.get() && !topPhotoEye.get()){ // dont use loop, loops are bad
         //     stage2Motor.set(-0.2);
         //     stage3Motor.set(0.2);
@@ -64,16 +79,19 @@ public class Intake {
         // stage2Motor.set(0.0);
         // stage3Motor.set(0.0);
         // }
-        if ((ballPhotoEye || bottomPhotoEye.get()) && !topPhotoEye.get())
+        if ((ballPhotoEye || bottomPhotoEye.get()) && (!topPhotoEye.get() && topPhotoEyeNotBlocked)) //if bottom sensor blocked & top sensor is not blocked...
         {
+            
             stage2Motor.set(-0.2);
             stage3Motor.set(0.2);
             ballPhotoEye = true;
         }
-        else {
+        else { //else if top sensor is blocked...
             stage2Motor.set(0.0);
             stage3Motor.set(0.0);
             ballPhotoEye = false;
+            topPhotoEyeNotBlocked = true;
+            //relies on the topPhotoEyeBlocked method to make topPhotoEyeNotBlocked false
         }
     }    
 }

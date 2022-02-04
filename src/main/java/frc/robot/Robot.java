@@ -43,19 +43,38 @@ public class Robot extends TimedRobot {
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
     // m_rightMotor.setInverted(true);
+    drive.imuZeroYaw();
+    drive.imuZeroYaw();
+
   }
 
   @Override
   public void teleopPeriodic() {
-  
+
     // Drive with arcade drive.
     // That means that the Y axis drives forward
     // and backward, and the X turns left and right.
     // m_robotDrive.arcadeDrive(-m_stick.getY(), m_stick.getX());
     SmartDashboard.putNumber("Rightjoystick:",controller.getRightY());
     SmartDashboard.putNumber("Leftjoystick:",controller.getLeftY());
+    SmartDashboard.putNumber("Yaw", drive.getImuYaw());
     drive.drive();
+    
     //intake.innerIntake();
+    if (controller.getLeftBumper()){
+      shooter.shooterTurnLeft();
+    }
+    else if(controller.getRightBumper()){
+      shooter.shooterTurnRight();
+    }
+    else if(controller.getBButton()){
+      shooter.shooterTurnStraight();
+    }
+    else{
+      shooter.stopTurn();
+    }
+
+
     if (controller.getXButton())
       intake.intakeIn();
     if (controller.getAButton())
@@ -63,13 +82,24 @@ public class Robot extends TimedRobot {
     else if (!controller.getXButton() && !controller.getAButton())
       intake.stopIntake();
 
-    if (shooter.shoot())
+    if (controller.getYButton())
     {
-      intake.indexerShoot();
+      shooter.shoot();
+      /*if (shooter.shoot())  // shooter is up to speed
+      {
+        intake.indexerShoot();
+        intake.topPhotoEyeBlocked();
+      }
+      else {
+        intake.autoIndex();
+      }*/
     }
-    else {
-      intake.autoIndex();
-    }
+    else
+      shooter.shootStop();
+    //if (shooter.shoot() && !intake.topPhotoEye.get()) {
+      //intake.stopIndexer();
+    //}
+
   } 
   
   
