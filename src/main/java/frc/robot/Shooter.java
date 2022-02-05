@@ -30,10 +30,7 @@ public class Shooter {
     //straightPosition = 0;
     currentPosition = (int) encoder.getPosition();
     
-    SmartDashboard.putNumber("P", 1.0);
-    SmartDashboard.putNumber("I", 0.0);
-    SmartDashboard.putNumber("D", 0.0);
-    pid = new MiniPID(1.0, 0.0, 0.0);
+    pid = new MiniPID(0.001143, 0.00006, 0.0045);
     }
 
     public void shootOut(){
@@ -77,20 +74,18 @@ public class Shooter {
     public void shoot(){
         //double pilotY = pilot.getRightY();
         //double pilotX = -1 * pilot.getRightX();
-        pid.setP(SmartDashboard.getNumber("P", 0.0));
-        if (700.0 - encoder.getVelocity() > 350)
+        double setpoint = 2500.0;
+        if (setpoint - encoder.getVelocity() < 500)
         {
+            pid.setI(0.00006);
             pid.setMaxIOutput(400);
-            pid.setI(SmartDashboard.getNumber("I", 0.0));
         }
         else
         {
             pid.setI(0.0);
             pid.clearError();
         }
-        pid.setI(SmartDashboard.getNumber("I", 0.0));
-        pid.setD(SmartDashboard.getNumber("D", 0.0));
-        double speed = pid.getOutput(encoder.getVelocity(), 700.0);
+        double speed = pid.getOutput(encoder.getVelocity(), setpoint);
         //shooterMotorLeft.set(0.175*pilotY);
         //shooterMotorRight.set(-0.175*pilotY);
         shooterMotorLeft.set(speed);
