@@ -82,23 +82,34 @@ public class Robot extends TimedRobot {
     else if (!controller.getXButton() && !controller.getAButton())
       intake.stopIntake();
 
+
     if (controller.getYButton())
     {
-      shooter.shoot();
-      /*if (shooter.shoot())  // shooter is up to speed
+      if (shooter.shoot())
+        intake.indexerShoot();
+      else
+        intake.autoIndex();
+    }
+    else
+    {
+      shooter.shootStop();
+      intake.autoIndex();
+    }
+      /*if (controller.getYButton())
+    {
+      //shooter.shoot();
+      if (shooter.shoot())  // shooter is up to speed
       {
         intake.indexerShoot();
         intake.topPhotoEyeBlocked();
       }
       else {
         intake.autoIndex();
-      }*/
+      }
     }
     else
       shooter.shootStop();
-    //if (shooter.shoot() && !intake.topPhotoEye.get()) {
-      //intake.stopIndexer();
-    //}
+    */
 
   } 
   

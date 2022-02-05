@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID;
 
 public class Controller {
-    XboxController controller = new XboxController(1);
+    XboxController controller = new XboxController(0);
     
     public double getRightY() {
         return controller.getRightY();

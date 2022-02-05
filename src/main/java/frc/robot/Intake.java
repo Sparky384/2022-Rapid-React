@@ -5,7 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.ctre.phoenix.motorcontrol.IFollower;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.hal.util.CheckedAllocationException;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Intake {
@@ -16,9 +16,11 @@ public class Intake {
     private CANSparkMax stage2Motor; //5
     private CANSparkMax stage3Motor; //11
     //is true during the setup process for shooting so that the ball is in position. bug when holding shooter joystick while intake is going. 
-    private boolean ballPhotoEye; 
+    private boolean ballInBetween; 
     //private Controller pilot = new Controller();
-    private boolean topPhotoEyeNotBlocked;
+    private boolean prevTopEye;
+    private boolean prevBottomEye;
+    private int ballsInIndex;
 
     public Intake() {
         stage1Motor = new CANSparkMax(4, MotorType.kBrushless);
@@ -32,17 +34,20 @@ public class Intake {
 
         bottomPhotoEye = new DigitalInput(0);
         topPhotoEye = new DigitalInput(2);
-        ballPhotoEye = false;
-        topPhotoEyeNotBlocked = true;
-        
-
+        ballInBetween = false;
+        prevTopEye = false;
+        prevBottomEye = false;
+        ballsInIndex = 0;
     }
+
     public void intakeIn() {
         stage1Motor.set(0.5);
     }
+
     public void intakeOut() {
         stage1Motor.set(-0.5);
     }
+
     public void stopIntake() {
         stage1Motor.set(0);
     }
@@ -52,46 +57,56 @@ public class Intake {
         stage3Motor.set(0.2);
         SmartDashboard.putBoolean("autoIndex", false);
         SmartDashboard.putBoolean("indexerShoot", true);
+        checkEyes();
     }
 
     public void stopIndexer(){
         stage2Motor.set(0);
         stage3Motor.set(0);
-        ballPhotoEye = false;
+        ballInBetween = false;
     }
 
-    public void topPhotoEyeBlocked(){
-        topPhotoEyeNotBlocked = false;
+    public void checkEyes()
+    {
+        SmartDashboard.putBoolean("BottomPhotoEyeBlocked", bottomPhotoEye.get());
+        SmartDashboard.putBoolean("TopPhotoEyeBlocked", topPhotoEye.get());
+        SmartDashboard.putBoolean("ballBetween", ballInBetween);
+        if (ballInBetween)
+                System.out.printf("ball change 3 %b %b\n", topPhotoEye.get(), prevTopEye);
+            
+        if (topPhotoEye.get() == true && prevTopEye == false && ballInBetween == true);
+        {
+            if (ballInBetween)
+                System.out.printf("ball change 2 %b %b\n", topPhotoEye.get(), prevTopEye);
+            ballInBetween = false;
+        }
+
+        if (bottomPhotoEye.get() || ballInBetween)
+            ballInBetween = true;
+
+        prevTopEye = topPhotoEye.get();
     }
 
     public void autoIndex(){
         SmartDashboard.putBoolean("BottomPhotoEyeBlocked", bottomPhotoEye.get());
         SmartDashboard.putBoolean("TopPhotoEyeBlocked", topPhotoEye.get());
-        SmartDashboard.putBoolean("BallPhotoEye", ballPhotoEye);
-        SmartDashboard.putBoolean("autoIndex", true);
-        SmartDashboard.putBoolean("indexerShoot", false);
-        SmartDashboard.putBoolean("topPhotoEyeNotBlocked", topPhotoEyeNotBlocked);
+        SmartDashboard.putBoolean("ballBetween", ballInBetween);
 
-        // if (bottomPhotoEye.get() && !topPhotoEye.get()){ // dont use loop, loops are bad
-        //     stage2Motor.set(-0.2);
-        //     stage3Motor.set(0.2);
-        // } else {
-        // stage2Motor.set(0.0);
-        // stage3Motor.set(0.0);
-        // }
-        if ((ballPhotoEye || bottomPhotoEye.get()) && (!topPhotoEye.get() && topPhotoEyeNotBlocked)) //if bottom sensor blocked & top sensor is not blocked...
+        if (topPhotoEye.get() || (!topPhotoEye.get() && !bottomPhotoEye.get() && !ballInBetween))
         {
-            
-            stage2Motor.set(-0.2);
-            stage3Motor.set(0.2);
-            ballPhotoEye = true;
-        }
-        else { //else if top sensor is blocked...
             stage2Motor.set(0.0);
             stage3Motor.set(0.0);
-            ballPhotoEye = false;
-            topPhotoEyeNotBlocked = true;
-            //relies on the topPhotoEyeBlocked method to make topPhotoEyeNotBlocked false
+            if (ballInBetween)
+                System.out.println("ball change 1");
+            ballInBetween = false;
         }
+        else if (bottomPhotoEye.get() || (ballInBetween && !topPhotoEye.get() && !bottomPhotoEye.get()))
+        {
+            ballInBetween = true;
+            stage2Motor.set(-0.2);
+            stage3Motor.set(0.2);
+        }
+        prevTopEye = topPhotoEye.get();
+        prevBottomEye = bottomPhotoEye.get();
     }    
 }

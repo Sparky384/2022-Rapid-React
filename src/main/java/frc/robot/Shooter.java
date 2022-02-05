@@ -71,10 +71,10 @@ public class Shooter {
          
     }
 
-    public void shoot(){
+    public boolean shoot(){
         //double pilotY = pilot.getRightY();
         //double pilotX = -1 * pilot.getRightX();
-        double setpoint = 2500.0;
+        double setpoint = 1800.0;
         if (setpoint - encoder.getVelocity() < 500)
         {
             pid.setI(0.00006);
@@ -85,21 +85,21 @@ public class Shooter {
             pid.setI(0.0);
             pid.clearError();
         }
-        double speed = pid.getOutput(encoder.getVelocity(), setpoint);
+        double speed = pid.getOutput(-encoder.getVelocity(), setpoint);
         //shooterMotorLeft.set(0.175*pilotY);
         //shooterMotorRight.set(-0.175*pilotY);
-        shooterMotorLeft.set(speed);
-        shooterMotorRight.set(-speed);
+        shooterMotorLeft.set(-speed);
+        shooterMotorRight.set(speed);
         SmartDashboard.putNumber("PID Output", speed);
         SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
         SmartDashboard.putNumber("ShooterEncoder", encoder.getVelocity());
-        /*if (encoder.getVelocity() > 350)
+        if (Math.abs(setpoint - (-encoder.getVelocity())) < 400)
         {
             return true;
         }
         else 
         {
             return false;
-        }*/
+        }
     }
 }

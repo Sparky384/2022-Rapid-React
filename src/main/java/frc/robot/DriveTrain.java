@@ -105,8 +105,8 @@ public class DriveTrain {
     
 
     public void drive() {
-        double pilotY = 0.5*pilot.getLeftY();
-        double pilotX = -0.5 * pilot.getLeftX();
+        double pilotY = 0.8*pilot.getLeftY();
+        double pilotX = -0.8 * pilot.getLeftX();
         difDrive.arcadeDrive(pilotX, pilotY);
         
     }
