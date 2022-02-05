@@ -21,6 +21,7 @@ public class Intake {
     private boolean prevTopEye;
     private boolean prevBottomEye;
     private int ballsInIndex;
+    private boolean shootingOverride;
 
     public Intake() {
         stage1Motor = new CANSparkMax(4, MotorType.kBrushless);
@@ -38,6 +39,7 @@ public class Intake {
         prevTopEye = false;
         prevBottomEye = false;
         ballsInIndex = 0;
+        shootingOverride = false;
     }
 
     public void intakeIn() {
@@ -66,38 +68,62 @@ public class Intake {
         ballInBetween = false;
     }
 
+    /**
+     * VERY IMPOTANT
+     * DO NOT CHANGE CODE BENEATH HERE WITHOUT APPROVAL FROM AUSTIN
+     * THERE IS AN ISSUE OF OVER OR UNDER COUNTING BALLS IF THEY ARE NOT PICKED
+     * UP IMMEDIATLY OR TAKEN OUT BY HAND. THAT IS NEEDED FOR NOW,
+     * WHEN THE NEW ROBOT IS MADE WE WILL REVISIT THIS
+     * 
+     * THIS CODE IS THE RESULT OF A PHYSICALLY IMPOSSIBLE CONDITION THAT
+     * WAS FOUND IN TESTING, THIS IS NOT THE BEST SOLUTION IT IS THE ONLY
+     * SOLUTION THAT WOULD WORK.
+     */
+
     public void checkEyes()
     {
         SmartDashboard.putBoolean("BottomPhotoEyeBlocked", bottomPhotoEye.get());
         SmartDashboard.putBoolean("TopPhotoEyeBlocked", topPhotoEye.get());
         SmartDashboard.putBoolean("ballBetween", ballInBetween);
-        if (ballInBetween)
-                System.out.printf("ball change 3 %b %b\n", topPhotoEye.get(), prevTopEye);
-            
-        if (topPhotoEye.get() == true && prevTopEye == false && ballInBetween == true);
-        {
-            if (ballInBetween)
-                System.out.printf("ball change 2 %b %b\n", topPhotoEye.get(), prevTopEye);
-            ballInBetween = false;
-        }
+        SmartDashboard.putNumber("balls in intake", ballsInIndex);
+        SmartDashboard.putBoolean("prev bottom", prevBottomEye);
+        SmartDashboard.putBoolean("prev top", prevTopEye);
 
-        if (bottomPhotoEye.get() || ballInBetween)
-            ballInBetween = true;
-
+        if (bottomPhotoEye.get() && !prevBottomEye)
+            ballsInIndex++;
+        if (!topPhotoEye.get() && prevTopEye)
+            ballsInIndex--;
+        prevBottomEye = bottomPhotoEye.get();
         prevTopEye = topPhotoEye.get();
+        shootingOverride = true;
     }
 
     public void autoIndex(){
         SmartDashboard.putBoolean("BottomPhotoEyeBlocked", bottomPhotoEye.get());
         SmartDashboard.putBoolean("TopPhotoEyeBlocked", topPhotoEye.get());
         SmartDashboard.putBoolean("ballBetween", ballInBetween);
+        SmartDashboard.putNumber("balls in intake", ballsInIndex);
+        SmartDashboard.putBoolean("prev bottom", prevBottomEye);
+        SmartDashboard.putBoolean("prev top", prevTopEye);
+
+        if (shootingOverride == true)
+        {
+            if (ballsInIndex > 0)
+                ballInBetween = true;
+            else
+                ballInBetween = false;
+            shootingOverride = false;
+        }
+
+        if (bottomPhotoEye.get() == true && prevBottomEye == false)
+            ballsInIndex++;
+        if (topPhotoEye.get() == false && prevTopEye == true)
+            ballsInIndex--;
 
         if (topPhotoEye.get() || (!topPhotoEye.get() && !bottomPhotoEye.get() && !ballInBetween))
         {
             stage2Motor.set(0.0);
             stage3Motor.set(0.0);
-            if (ballInBetween)
-                System.out.println("ball change 1");
             ballInBetween = false;
         }
         else if (bottomPhotoEye.get() || (ballInBetween && !topPhotoEye.get() && !bottomPhotoEye.get()))
@@ -106,6 +132,7 @@ public class Intake {
             stage2Motor.set(-0.2);
             stage3Motor.set(0.2);
         }
+
         prevTopEye = topPhotoEye.get();
         prevBottomEye = bottomPhotoEye.get();
     }    
