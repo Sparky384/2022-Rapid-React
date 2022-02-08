@@ -59,7 +59,7 @@ public class Intake {
         stage3Motor.set(0.2);
         SmartDashboard.putBoolean("autoIndex", false);
         SmartDashboard.putBoolean("indexerShoot", true);
-        checkEyes();
+        //checkEyes();
     }
 
     public void stopIndexer(){
@@ -88,6 +88,8 @@ public class Intake {
         SmartDashboard.putNumber("balls in intake", ballsInIndex);
         SmartDashboard.putBoolean("prev bottom", prevBottomEye);
         SmartDashboard.putBoolean("prev top", prevTopEye);
+        
+        
 
         if (bottomPhotoEye.get() && !prevBottomEye)
             ballsInIndex++;

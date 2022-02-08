@@ -26,6 +26,7 @@ public class Robot extends TimedRobot {
   Intake intake = new Intake();
   Controller controller = new Controller();
   Shooter shooter = new Shooter();
+  int res = 0;
   
 
   // TalonSRX frontleft = new TalonSRX(1);
@@ -45,7 +46,8 @@ public class Robot extends TimedRobot {
     // m_rightMotor.setInverted(true);
     drive.imuZeroYaw();
     drive.imuZeroYaw();
-
+    shooter.resetTurnEncoder();
+    
   }
 
   @Override
@@ -55,11 +57,13 @@ public class Robot extends TimedRobot {
     // That means that the Y axis drives forward
     // and backward, and the X turns left and right.
     // m_robotDrive.arcadeDrive(-m_stick.getY(), m_stick.getX());
-    SmartDashboard.putNumber("Rightjoystick:",controller.getRightY());
-    SmartDashboard.putNumber("Leftjoystick:",controller.getLeftY());
+    //SmartDashboard.putNumber("Rightjoystick:",controller.getRightY());
+    //SmartDashboard.putNumber("Leftjoystick:",controller.getLeftY());
     SmartDashboard.putNumber("Yaw", drive.getImuYaw());
+    
     drive.drive();
     
+
     //intake.innerIntake();
     if (controller.getLeftBumper()){
       shooter.shooterTurnLeft();
@@ -82,11 +86,14 @@ public class Robot extends TimedRobot {
     else if (!controller.getXButton() && !controller.getAButton())
       intake.stopIntake();
 
-
+    
     if (controller.getYButton())
     {
       if (shooter.shoot())
+      {
+        intake.checkEyes();  
         intake.indexerShoot();
+      }
       else
         intake.autoIndex();
     }
@@ -95,25 +102,13 @@ public class Robot extends TimedRobot {
       shooter.shootStop();
       intake.autoIndex();
     }
-      /*if (controller.getYButton())
-    {
-      //shooter.shoot();
-      if (shooter.shoot())  // shooter is up to speed
-      {
-        intake.indexerShoot();
-        intake.topPhotoEyeBlocked();
-      }
-      else {
-        intake.autoIndex();
-      }
+    SmartDashboard.putNumber("Result", res);
+    if (controller.getRightTrigger() || res == 1){
+      res = drive.driveTo(100.0, 10.0);
+      
     }
-    else
-      shooter.shootStop();
-    */
+    System.out.println(res);
+  }
 
-  } 
-  
-  
-
-  
+    
 }

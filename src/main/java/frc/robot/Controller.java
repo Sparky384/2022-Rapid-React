@@ -42,4 +42,15 @@ public class Controller {
         return controller.getRightBumper();
     }
 
+    public double getRightX(){
+        return controller.getRightX();
+    }
+
+    public boolean getRightTrigger(){
+        if ((int) controller.getRightTriggerAxis() == 1)
+            return true;
+        else 
+            return false;
+    }
+
 }

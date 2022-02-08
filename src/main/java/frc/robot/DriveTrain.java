@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
-import java.util.Timer;
+import edu.wpi.first.wpilibj.Timer;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -14,6 +14,8 @@ import com.revrobotics.RelativeEncoder;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 
 public class DriveTrain {
     WPI_TalonFX frontLeft = new WPI_TalonFX(1);
@@ -41,13 +43,12 @@ public class DriveTrain {
     double driveToRate;
     double currentError;
 
-
     DriveTrain() {
         //frontLeft = new WPI_TalonFX(1); - Had to define the Talons above with the motor type.
         //frontRight = new WPI_TalonFX(14); - Had to define the Talons above with the motor type.
         //backLeft = new WPI_TalonFX(16); - Had to define the Talons above with the motor type.
         //backRight = new WPI_TalonFX(15); - Had to define the Talons above with the motor type.
-        //rightMotors.getInverted();
+        rightMotors.getInverted();
         failTimer = new Timer();
         intervalTimer = new Timer();
         SupplyCurrentLimitConfiguration currentConfig = new SupplyCurrentLimitConfiguration
@@ -103,11 +104,162 @@ public class DriveTrain {
         return yaw;
     }
     
-
     public void drive() {
         double pilotY = 0.8*pilot.getLeftY();
         double pilotX = -0.8 * pilot.getLeftX();
         difDrive.arcadeDrive(pilotX, pilotY);
-        
+    }
+
+    public double getRightEncoderPosition()
+	{
+		return (frontRight.getSelectedSensorPosition() * ((162.0 * Math.PI) / 634880.0)); 
+	}
+
+    public void initializeEncoders()	
+	{
+		frontLeft.getSensorCollection().setIntegratedSensorPosition(0, 0); 
+		frontRight.getSensorCollection().setIntegratedSensorPosition(0, 0);
+	}
+
+    public void arcadeDrive(double speedaxis,  double turnaxis)	{
+		double aSpeed = 0.0;
+		double aTurn = 0.2;
+		speedaxis = (aSpeed * (Math.pow(speedaxis, 3))) + ((1 - aSpeed) * speedaxis);
+		turnaxis = (aTurn * (Math.pow(speedaxis, 3))) + ((1 - aTurn) * turnaxis);
+		
+		if (speedaxis > 1)
+        {
+          	speedaxis = 1;
+        }
+      	if (speedaxis < -1)
+     	{
+        	speedaxis = -1;
+      	}
+      	if (turnaxis > 1)
+      	{
+        	turnaxis = 1;
+      	}
+    	if (turnaxis < -1)
+   	 	{
+     	 	turnaxis = -1;
+		}
+		
+		difDrive.arcadeDrive(speedaxis, turnaxis);
+	}
+    
+    double max = 0;
+    public int driveTo(double distance, final double timeout) 
+    {
+        double output;
+		SmartDashboard.putNumber("Current Error", currentError);
+		SmartDashboard.putNumber("PID OUT", driveToRate);
+		SmartDashboard.putNumber("RightEncoderPosition", getRightEncoderPosition());
+        if (!pidInitialized)
+        {
+            dLock = true;
+			max = 0;
+			speedController.reset();
+			speedController.setPID(0.02896, 1.55, 0); // add PID values here
+			speedController.setMaxIOutput(0.3);
+			speedController.setOutputLimits(-0.60, 0.60);
+			speedController.setSetpoint(distance);
+			driveToRate = 0;
+			failTimer.reset();
+			failTimer.start();			// the PID will fail if this timer exceeded
+			pidInitialized = true;
+			currentError = 0;
+			timing = false;
+			intervalTimer.stop();
+			intervalTimer.reset();
+			initializeEncoders();
+			while (getRightEncoderPosition() < -2 || getRightEncoderPosition() > 2)
+			{
+				System.out.println(getRightEncoderPosition()); // wait
+			}
+        }
+        // This is the final output of the PID
+
+		driveToRate = speedController.getOutput(getRightEncoderPosition(), distance);
+		System.out.println("DriveToRate" + driveToRate);
+		currentError = distance - (getRightEncoderPosition());
+		//arcadeDrive(-driveToRate, 0);
+		difDrive.arcadeDrive(0, -driveToRate);
+		if (getRightEncoderPosition() > max)
+		{
+			max = getRightEncoderPosition();
+		}
+
+		// robot drove backward on rare occasions
+		// beleive this is from the derivative being very negative in the beginning
+		// possibly caused by undefined derivitave at the first point
+		// make sure we moved some before calculating D
+		if (dLock && Math.abs(getRightEncoderPosition()) > 15)
+		{
+			dLock = false;
+			speedController.setD(1.55); //set d value
+		}
+		
+		if (Math.abs(currentError) < 40) 	
+		{
+			if (!timing) 
+			{
+				intervalTimer.start();
+				timing = true;
+			} 
+		} 
+		else 	
+		{					
+			intervalTimer.stop();
+			intervalTimer.reset();
+			timing = false;
+		}
+
+		if ((currentError < 11.0 && currentError > 0.5) ||
+			(currentError > -11.0 && currentError < -0.5))
+		{
+			if (!inIZone)
+			{
+				inIZone = true;
+				speedController.reset();
+				speedController.setI(0.000383);
+				//speedControllerRight.reset();
+				//speedControllerRight.setI(Constants.k_I);
+			}
+		}
+		else
+		{
+			inIZone = false;
+			speedController.reset();
+			speedController.setI(0);
+		}
+
+		if (intervalTimer.hasPeriodPassed(1.0))	
+		{					// Within deadband for interval time
+			failTimer.reset();
+			System.out.printf("PID FINISHED %f&&&&&&&&&&&&&&&& (%f in %f)\n", currentError, max, failTimer.get());
+			pidInitialized = false;
+			return 0;	// PID is complete (successful)
+		} 
+		else if (failTimer.hasPeriodPassed(timeout)) 	
+		{			// the PID has failed!
+			System.out.printf("PID FAILED %f&&&&&&&&&&&&&&&&\n", currentError);
+			frontLeft.set(ControlMode.PercentOutput, 0);		// stop the motors
+			frontRight.set(ControlMode.PercentOutput, 0);
+			intervalTimer.stop();
+			failTimer.stop();
+			intervalTimer.reset();
+			failTimer.reset();
+			speedController.reset();
+			pidInitialized = false;
+			//if (Math.abs(currentError) < 10000000.0)
+			//	return 0;
+			//else
+			//	return -1;	// PID has failed (timeout)
+			return -1;
+		} 
+		else	
+		{	// the PID is not complete
+			return 1;
+		}
     }
 }

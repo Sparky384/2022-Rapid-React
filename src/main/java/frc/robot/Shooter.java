@@ -57,8 +57,13 @@ public class Shooter {
         shooterMotorTurn.set(0.0);
     }
 
+
+    public void resetTurnEncoder(){
+        turnEncoder.setPosition(0.0);
+    }
     public void shooterTurnStraight(){
         currentPosition = (int) turnEncoder.getPosition();
+
         if (currentPosition > 0.5){
             shooterTurnLeft();
             currentPosition = (int) turnEncoder.getPosition();
