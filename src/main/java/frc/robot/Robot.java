@@ -26,8 +26,8 @@ public class Robot extends TimedRobot {
   Intake intake = new Intake();
   Controller controller = new Controller();
   Shooter shooter = new Shooter();
-  int res = 0;
-  
+  int t_res = 0;
+  int d_res = 0;
 
   // TalonSRX frontleft = new TalonSRX(1);
   // private final PWMSparkMax m_leftMotor = new PWMSparkMax(0);
@@ -102,12 +102,15 @@ public class Robot extends TimedRobot {
       shooter.shootStop();
       intake.autoIndex();
     }
-    SmartDashboard.putNumber("Result", res);
-    if (controller.getRightTrigger() || res == 1){
-      res = drive.driveTo(100.0, 10.0);
-      
+    SmartDashboard.putNumber("Result", d_res);
+    if (controller.getRightTrigger() || d_res == 1){
+      d_res = drive.driveTo(100.0, 10.0);
+      System.out.println("DriveTo");
     }
-    System.out.println(res);
+    System.out.println(t_res);
+    if (controller.getLeftTrigger() || t_res == 1)
+    t_res = drive.turnTo(45, 30);
+
   }
 
     

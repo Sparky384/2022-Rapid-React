@@ -98,7 +98,7 @@ public class DriveTrain {
         imu.zeroYaw();
     }
     public float getImuYaw() {
-        float yaw = imu.getYaw();
+        float yaw = imu.getYaw(); //positive values are clockwise
         iteration++;
         yaw += (iteration * 0.0000382);
         return yaw;
@@ -159,7 +159,7 @@ public class DriveTrain {
             dLock = true;
 			max = 0;
 			speedController.reset();
-			speedController.setPID(0.02896, 1.55, 0); // add PID values here
+			speedController.setPID(Constants.driveP, Constants.driveI, 0); // add PID values here
 			speedController.setMaxIOutput(0.3);
 			speedController.setOutputLimits(-0.60, 0.60);
 			speedController.setSetpoint(distance);
@@ -180,7 +180,6 @@ public class DriveTrain {
         // This is the final output of the PID
 
 		driveToRate = speedController.getOutput(getRightEncoderPosition(), distance);
-		System.out.println("DriveToRate" + driveToRate);
 		currentError = distance - (getRightEncoderPosition());
 		//arcadeDrive(-driveToRate, 0);
 		difDrive.arcadeDrive(0, -driveToRate);
@@ -199,7 +198,7 @@ public class DriveTrain {
 			speedController.setD(1.55); //set d value
 		}
 		
-		if (Math.abs(currentError) < 40) 	
+		if (Math.abs(currentError) < Constants.deadBand) 	
 		{
 			if (!timing) 
 			{
@@ -262,4 +261,98 @@ public class DriveTrain {
 			return 1;
 		}
     }
+
+	public int turnTo(double distance, final double timeout)	
+	{	
+		double output;
+		SmartDashboard.putNumber("Yaw Error", currentError);
+		if (!pidInitialized) 
+		{
+			speedController.reset();
+			speedController.setPID(Constants.turnP, 0, Constants.turnD);
+			speedController.setMaxIOutput(0.4);
+			speedController.setOutputLimits(-0.65, 0.65);
+			speedController.setSetpoint(distance);
+			driveToRate = 0;
+			failTimer.start();			// the PID will fail if this timer exceeded
+			pidInitialized = true;
+			currentError = 0;
+			timing = false;
+			intervalTimer.stop();
+			intervalTimer.reset();
+			imuZeroYaw();
+			inIZone = false;
+		}
+		// This is the final output of the PID
+		driveToRate = speedController.getOutput(getImuYaw(), distance);
+		currentError = distance - getImuYaw();
+		difDrive.arcadeDrive(-driveToRate, 0);
+		System.out.printf("t %f\n", currentError);
+		SmartDashboard.putNumber("TurnResult", getImuYaw());
+		//frontLeftMotor.set(ControlMode.PercentOutput, driveToRate);
+		//frontRightMotor.set(ControlMode.PercentOutput, -driveToRate);
+
+		if (Math.abs(currentError) < Constants.turnDeadBand) 	
+		{
+			if (!timing) 
+			{
+				intervalTimer.start();
+				timing = true;
+				System.out.println("intervalStart");
+			} 
+		} 
+		else 	
+		{					
+			intervalTimer.stop();
+			intervalTimer.reset();
+			timing = false;
+			System.out.println("intervalStop");
+		}
+
+		if ((currentError < 11.5 && currentError > 0.2) ||
+			(currentError > -11.5 && currentError < -0.2))
+		{
+			if (!inIZone)
+			{
+				inIZone = true;
+				speedController.reset();
+				speedController.setI(Constants.turnI);
+			}
+		}
+		else
+		{
+			inIZone = false;
+			speedController.reset();
+			speedController.setI(0);
+		}
+
+		if (intervalTimer.hasPeriodPassed(1.0))	
+		{					// Within deadband for interval time
+			failTimer.reset();
+			System.out.printf("PID FINISHED %f\n", currentError);
+			pidInitialized = false;
+			return 0;	// PID is complete (successful)
+		} 
+		else if (failTimer.hasPeriodPassed(timeout)) 	
+		{			// the PID has failed!
+			System.out.printf("PID FAILED %f\n", currentError);
+			frontLeft.set(ControlMode.PercentOutput, 0);		// stop the motors
+			frontRight.set(ControlMode.PercentOutput, 0);
+			intervalTimer.stop();
+			failTimer.stop();
+			intervalTimer.reset();
+			failTimer.reset();
+			speedController.reset();
+			pidInitialized = false;
+			/*if (Math.abs(currentError) < Constants.turnDeadBand)
+				return 0;
+			else
+				return -1;*/	// PID has failed (timeout)
+			return -1;
+		} 
+		else	
+		{	// the PID is not complete
+			return 1;
+		}
+	}
 }

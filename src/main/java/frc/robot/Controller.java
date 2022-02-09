@@ -53,4 +53,11 @@ public class Controller {
             return false;
     }
 
+    public boolean getLeftTrigger(){
+        if ((int) controller.getLeftTriggerAxis() == 1)
+            return true;
+        else 
+            return false;
+    }
+
 }
