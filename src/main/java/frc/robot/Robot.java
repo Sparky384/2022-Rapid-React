@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
-
 /**
  * This is a demo program showing the use of the DifferentialDrive class. Runs the motors with
  * arcade steering.
@@ -28,6 +27,8 @@ public class Robot extends TimedRobot {
   Shooter shooter = new Shooter();
   int t_res = 0;
   int d_res = 0;
+  private int state;
+  public SendableChooser<Integer> chooser;
 
   // TalonSRX frontleft = new TalonSRX(1);
   // private final PWMSparkMax m_leftMotor = new PWMSparkMax(0);
@@ -44,10 +45,14 @@ public class Robot extends TimedRobot {
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
     // m_rightMotor.setInverted(true);
-    drive.imuZeroYaw();
+    chooser = new SendableChooser<Integer>();
+
+    chooser.addDefault("Turn and Drive", Constants.TURN_AND_DRIVE);
+    chooser.addDefault("Drive and Turn", Constants.DRIVE_AND_TURN);
     drive.imuZeroYaw();
     shooter.resetTurnEncoder();
     
+    SmartDashboard.putData("Autonomous Chooser", chooser);
   }
 
   @Override
@@ -109,9 +114,52 @@ public class Robot extends TimedRobot {
     }
     System.out.println(t_res);
     if (controller.getLeftTrigger() || t_res == 1)
-    t_res = drive.turnTo(45, 30);
+    t_res = drive.turnTo(20, 30);
 
   }
 
+  @Override
+  public void autonomousInit() {
+    state = 0;
+  }
+
+   public void autonomousPeriodic() {
+   
+    switch(chooser.getSelected()) {
+      case Constants.TURN_AND_DRIVE:
+      turnAndDrive();
+      break;
+    case Constants.DRIVE_AND_TURN:
+      driveAndTurn();
+      break;
+    }
     
+    
+  } 
+
+  public void turnAndDrive() {
+    switch (state) {
+      case 0:  t_res = drive.turnTo(45, 5);
+        if (t_res == 0 || t_res == -1)
+          state++;
+        break;
+      case 1:  d_res = drive.driveTo(60, 5);
+        if (d_res == 0 || d_res == -1)
+          state++;
+        break;
+    }
+  }
+  
+  public void driveAndTurn () {
+    switch (state) {
+      case 0:  d_res = drive.driveTo(60, 5);
+        if (d_res == 0 || d_res == -1)
+          state++;
+        break;
+        case 1:  t_res = drive.turnTo(45, 5);
+        if (t_res == 0 || t_res == -1)
+          state++;
+        break;
+    }
+  }
 }
