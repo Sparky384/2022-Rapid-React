@@ -4,51 +4,30 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
-/**
- * This is a demo program showing the use of the DifferentialDrive class. Runs the motors with
- * arcade steering.
- */
-public class Robot extends TimedRobot {
-  DriveTrain drive = new DriveTrain();
-  Intake intake = new Intake();
-  Controller controller = new Controller();
-  Shooter shooter = new Shooter();
-  int t_res = 0;
-  int d_res = 0;
+public class Robot extends TimedRobot 
+{
+  private DriveTrain drive;
+  private Intake intake;
+  private Controller controller;
+  private Shooter shooter;
   private int state;
-  public SendableChooser<Integer> chooser;
-
-  // TalonSRX frontleft = new TalonSRX(1);
-  // private final PWMSparkMax m_leftMotor = new PWMSparkMax(0);
-  // private final PWMSparkMax m_rightMotor = new PWMSparkMax(1);
-  // private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftMotor, m_rightMotor);
-  // private final Joystick m_stick = new Joystick(0);
+  private SendableChooser<Integer> chooser;
 
   @Override
   public void robotInit() {
-   //SmartDashboard.putNumber("Shooterspeed:",controller.getRightY());
-   //SmartDashboard.putNumber("Motorspeed:",controller.getLeftY());
-   //SmartDashboard.putBoolean("BottomPhotoEyeBlocked:", false);
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-    // m_rightMotor.setInverted(true);
+    drive = new DriveTrain();
+    intake = new Intake();
+    controller = new Controller();
+    shooter = new Shooter();
     chooser = new SendableChooser<Integer>();
 
-    chooser.addDefault("Turn and Drive", Constants.TURN_AND_DRIVE);
-    chooser.addDefault("Drive and Turn", Constants.DRIVE_AND_TURN);
+    chooser.setDefaultOption("Turn and Drive", Constants.TURN_AND_DRIVE);
+    chooser.addOption("Drive and Turn", Constants.DRIVE_AND_TURN);
+    
     drive.imuZeroYaw();
     shooter.resetTurnEncoder();
     
@@ -56,33 +35,19 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-
-    // Drive with arcade drive.
-    // That means that the Y axis drives forward
-    // and backward, and the X turns left and right.
-    // m_robotDrive.arcadeDrive(-m_stick.getY(), m_stick.getX());
-    //SmartDashboard.putNumber("Rightjoystick:",controller.getRightY());
-    //SmartDashboard.putNumber("Leftjoystick:",controller.getLeftY());
+  public void teleopPeriodic() 
+  {
     SmartDashboard.putNumber("Yaw", drive.getImuYaw());
-    
     drive.drive();
     
-
-    //intake.innerIntake();
-    if (controller.getLeftBumper()){
+    if (controller.getLeftBumper())
       shooter.shooterTurnLeft();
-    }
-    else if(controller.getRightBumper()){
+    else if(controller.getRightBumper())
       shooter.shooterTurnRight();
-    }
-    else if(controller.getBButton()){
+    else if(controller.getBButton())
       shooter.shooterTurnStraight();
-    }
-    else{
+    else
       shooter.stopTurn();
-    }
-
 
     if (controller.getXButton())
       intake.intakeIn();
@@ -91,7 +56,6 @@ public class Robot extends TimedRobot {
     else if (!controller.getXButton() && !controller.getAButton())
       intake.stopIntake();
 
-    
     if (controller.getYButton())
     {
       if (shooter.shoot())
@@ -107,57 +71,60 @@ public class Robot extends TimedRobot {
       shooter.shootStop();
       intake.autoIndex();
     }
-    SmartDashboard.putNumber("Result", d_res);
-    if (controller.getRightTrigger() || d_res == 1){
-      d_res = drive.driveTo(100.0, 10.0);
-      System.out.println("DriveTo");
-    }
-    System.out.println(t_res);
-    if (controller.getLeftTrigger() || t_res == 1)
-    t_res = drive.turnTo(20, 30);
-
   }
 
   @Override
-  public void autonomousInit() {
+  public void autonomousInit() 
+  {
     state = 0;
+    drive.imuZeroYaw();
+    shooter.resetTurnEncoder();
   }
 
-   public void autonomousPeriodic() {
-   
-    switch(chooser.getSelected()) {
+   public void autonomousPeriodic() 
+   {
+    switch(chooser.getSelected()) 
+    {
       case Constants.TURN_AND_DRIVE:
-      turnAndDrive();
-      break;
-    case Constants.DRIVE_AND_TURN:
-      driveAndTurn();
-      break;
+        turnAndDrive();
+        break;
+      case Constants.DRIVE_AND_TURN:
+        driveAndTurn();
+        break;
     }
-    
-    
   } 
 
-  public void turnAndDrive() {
-    switch (state) {
-      case 0:  t_res = drive.turnTo(45, 5);
-        if (t_res == 0 || t_res == -1)
+  public void turnAndDrive() 
+  {
+    int ret;
+    switch (state) 
+    {
+      case 0:  
+        ret = drive.turnTo(45, 5);
+        if (ret == 0 || ret == -1)
           state++;
         break;
-      case 1:  d_res = drive.driveTo(60, 5);
-        if (d_res == 0 || d_res == -1)
+      case 1:  
+        ret = drive.driveTo(60, 5);
+        if (ret == 0 || ret == -1)
           state++;
         break;
     }
   }
   
-  public void driveAndTurn () {
-    switch (state) {
-      case 0:  d_res = drive.driveTo(60, 5);
-        if (d_res == 0 || d_res == -1)
+  public void driveAndTurn () 
+  {
+    int ret;
+    switch (state) 
+    {
+      case 0:  
+        ret = drive.driveTo(60, 5);
+        if (ret == 0 || ret == -1)
           state++;
         break;
-        case 1:  t_res = drive.turnTo(45, 5);
-        if (t_res == 0 || t_res == -1)
+      case 1:
+        ret = drive.turnTo(45, 5);
+        if (ret == 0 || ret == -1)
           state++;
         break;
     }
