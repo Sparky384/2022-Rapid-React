@@ -32,31 +32,34 @@ public class Robot extends TimedRobot
     shooter.resetTurnEncoder();
     
     SmartDashboard.putData("Autonomous Chooser", chooser);
+    System.out.println("look at me im robot inited, i inited");
   }
 
   @Override
   public void teleopPeriodic() 
   {
-    SmartDashboard.putNumber("Yaw", drive.getImuYaw());
-    drive.drive();
+    double pilotY = 0.8*controller.getLeftY(Constants.PILOT);
+    double pilotX = -0.8 * controller.getLeftX(Constants.PILOT);
+    drive.drive(pilotX, pilotY);
+    SmartDashboard.putNumber("rightY", controller.getRightY(Constants.PILOT));
     
-    if (controller.getLeftBumper())
+    if (controller.getLeftBumper(Constants.PILOT))
       shooter.shooterTurnLeft();
-    else if(controller.getRightBumper())
+    else if(controller.getRightBumper(Constants.PILOT))
       shooter.shooterTurnRight();
-    else if(controller.getBButton())
+    else if(controller.getBButton(Constants.PILOT))
       shooter.shooterTurnStraight();
     else
       shooter.stopTurn();
-
-    if (controller.getXButton())
+    
+    if (controller.getXButton(Constants.PILOT))
       intake.intakeIn();
-    if (controller.getAButton())
+    if (controller.getAButton(Constants.PILOT))
       intake.intakeOut();
-    else if (!controller.getXButton() && !controller.getAButton())
+    else if (!controller.getXButton(Constants.PILOT) && !controller.getAButton(Constants.PILOT))
       intake.stopIntake();
-
-    if (controller.getYButton())
+    
+    if (controller.getYButton(Constants.PILOT))
     {
       if (shooter.shoot())
       {
@@ -68,7 +71,8 @@ public class Robot extends TimedRobot
     }
     else
     {
-      shooter.shootStop();
+      shooter.stickShoot(controller.getRightY(Constants.PILOT));
+      //shooter.shootStop();
       intake.autoIndex();
     }
   }

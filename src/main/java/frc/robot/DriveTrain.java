@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
@@ -10,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.revrobotics.RelativeEncoder;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -18,19 +16,13 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 
 public class DriveTrain {
-    WPI_TalonFX frontLeft = new WPI_TalonFX(1);
-    WPI_TalonFX frontRight = new WPI_TalonFX(14);
-    WPI_TalonFX backLeft = new WPI_TalonFX(16);
-    WPI_TalonFX backRight = new WPI_TalonFX(15);
-    //WPI_TalonFX frontLeft;
-    //WPI_TalonFX frontRight;
-    //WPI_TalonFX backLeft;
-    //WPI_TalonFX backRight;
-    MotorControllerGroup leftMotors = new MotorControllerGroup(frontLeft, backLeft);
-    MotorControllerGroup rightMotors = new MotorControllerGroup(frontRight, backRight);
-    Controller pilot = new Controller();
-    DifferentialDrive difDrive = new DifferentialDrive(leftMotors, rightMotors);
-    //motorvariable.congifSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10)
+    WPI_TalonFX frontLeft;
+    WPI_TalonFX frontRight;
+    WPI_TalonFX backLeft;
+    WPI_TalonFX backRight;
+    MotorControllerGroup leftMotors;
+    MotorControllerGroup rightMotors;
+    DifferentialDrive difDrive;
     AHRS imu;
     int iteration;
     MiniPID speedController;
@@ -42,17 +34,21 @@ public class DriveTrain {
     Timer intervalTimer;
     double driveToRate;
     double currentError;
+    double max;
 
     DriveTrain() {
-        //frontLeft = new WPI_TalonFX(1); - Had to define the Talons above with the motor type.
-        //frontRight = new WPI_TalonFX(14); - Had to define the Talons above with the motor type.
-        //backLeft = new WPI_TalonFX(16); - Had to define the Talons above with the motor type.
-        //backRight = new WPI_TalonFX(15); - Had to define the Talons above with the motor type.
+		frontLeft = new WPI_TalonFX(1);
+		frontRight = new WPI_TalonFX(14);
+		backLeft = new WPI_TalonFX(16);
+		backRight = new WPI_TalonFX(15);
+		leftMotors = new MotorControllerGroup(frontLeft, backLeft);
+		rightMotors = new MotorControllerGroup(frontRight, backRight);
+		difDrive = new DifferentialDrive(leftMotors, rightMotors);
+
         rightMotors.getInverted();
         failTimer = new Timer();
         intervalTimer = new Timer();
-        SupplyCurrentLimitConfiguration currentConfig = new SupplyCurrentLimitConfiguration
-        (true, 40, 35, 100);
+        SupplyCurrentLimitConfiguration currentConfig = new SupplyCurrentLimitConfiguration(true, 40, 35, 100);
         iteration = 0;
 
         frontRight.configSupplyCurrentLimit(currentConfig);
@@ -75,9 +71,7 @@ public class DriveTrain {
         frontLeft.setInverted(false);
         backLeft.setInverted(false);
 
-        frontLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
-                                     0,
-                                     10);    
+        frontLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);    
         frontLeft.setSensorPhase(true);  
 
         backLeft.follow(frontLeft);
@@ -88,26 +82,27 @@ public class DriveTrain {
         frontLeft.configOpenloopRamp(0.75,0);
         backLeft.configOpenloopRamp(0.75,0);
 
-
         imu = new AHRS(SPI.Port.kMXP);
         speedController = new MiniPID(0, 0, 0);
+		max = 0;
     }
 
-    public void imuZeroYaw() {
+    public void imuZeroYaw() 
+	{
         iteration = 0;
         imu.zeroYaw();
     }
-    public float getImuYaw() {
+
+    public float getImuYaw() 
+	{
         float yaw = imu.getYaw(); //positive values are clockwise
         iteration++;
         yaw += (iteration * 0.0000382);
         return yaw;
     }
     
-    public void drive() {
-        double pilotY = 0.8*pilot.getLeftY();
-        double pilotX = -0.8 * pilot.getLeftX();
-        difDrive.arcadeDrive(pilotX, pilotY);
+    public void drive(double speed, double turn) {
+        difDrive.arcadeDrive(speed, turn);
     }
 
     public double getRightEncoderPosition()
@@ -120,37 +115,9 @@ public class DriveTrain {
 		frontLeft.getSensorCollection().setIntegratedSensorPosition(0, 0); 
 		frontRight.getSensorCollection().setIntegratedSensorPosition(0, 0);
 	}
-
-    public void arcadeDrive(double speedaxis,  double turnaxis)	{
-		double aSpeed = 0.0;
-		double aTurn = 0.2;
-		speedaxis = (aSpeed * (Math.pow(speedaxis, 3))) + ((1 - aSpeed) * speedaxis);
-		turnaxis = (aTurn * (Math.pow(speedaxis, 3))) + ((1 - aTurn) * turnaxis);
-		
-		if (speedaxis > 1)
-        {
-          	speedaxis = 1;
-        }
-      	if (speedaxis < -1)
-     	{
-        	speedaxis = -1;
-      	}
-      	if (turnaxis > 1)
-      	{
-        	turnaxis = 1;
-      	}
-    	if (turnaxis < -1)
-   	 	{
-     	 	turnaxis = -1;
-		}
-		
-		difDrive.arcadeDrive(speedaxis, turnaxis);
-	}
     
-    double max = 0;
     public int driveTo(double distance, final double timeout) 
     {
-        double output;
 		SmartDashboard.putNumber("Current Error", currentError);
 		SmartDashboard.putNumber("PID OUT", driveToRate);
 		SmartDashboard.putNumber("RightEncoderPosition", getRightEncoderPosition());
@@ -181,12 +148,9 @@ public class DriveTrain {
 
 		driveToRate = speedController.getOutput(getRightEncoderPosition(), distance);
 		currentError = distance - (getRightEncoderPosition());
-		//arcadeDrive(-driveToRate, 0);
 		difDrive.arcadeDrive(0, -driveToRate);
 		if (getRightEncoderPosition() > max)
-		{
 			max = getRightEncoderPosition();
-		}
 
 		// robot drove backward on rare occasions
 		// beleive this is from the derivative being very negative in the beginning
@@ -221,8 +185,6 @@ public class DriveTrain {
 				inIZone = true;
 				speedController.reset();
 				speedController.setI(0.000383);
-				//speedControllerRight.reset();
-				//speedControllerRight.setI(Constants.k_I);
 			}
 		}
 		else
@@ -250,10 +212,6 @@ public class DriveTrain {
 			failTimer.reset();
 			speedController.reset();
 			pidInitialized = false;
-			//if (Math.abs(currentError) < 10000000.0)
-			//	return 0;
-			//else
-			//	return -1;	// PID has failed (timeout)
 			return -1;
 		} 
 		else	
@@ -264,7 +222,6 @@ public class DriveTrain {
 
 	public int turnTo(double distance, final double timeout)	
 	{	
-		double output;
 		SmartDashboard.putNumber("Yaw Error", currentError);
 		if (!pidInitialized) 
 		{
@@ -289,8 +246,6 @@ public class DriveTrain {
 		difDrive.arcadeDrive(-driveToRate, 0);
 		System.out.printf("t %f\n", currentError);
 		SmartDashboard.putNumber("TurnResult", getImuYaw());
-		//frontLeftMotor.set(ControlMode.PercentOutput, driveToRate);
-		//frontRightMotor.set(ControlMode.PercentOutput, -driveToRate);
 
 		if (Math.abs(currentError) < Constants.turnDeadBand) 	
 		{
@@ -344,10 +299,6 @@ public class DriveTrain {
 			failTimer.reset();
 			speedController.reset();
 			pidInitialized = false;
-			/*if (Math.abs(currentError) < Constants.turnDeadBand)
-				return 0;
-			else
-				return -1;*/	// PID has failed (timeout)
 			return -1;
 		} 
 		else	

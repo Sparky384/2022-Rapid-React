@@ -22,10 +22,10 @@ public class Shooter {
     shooterMotorRight = new CANSparkMax(13, MotorType.kBrushless);
     shooterMotorLeft = new CANSparkMax(2, MotorType.kBrushless);
     shooterMotorTurn = new CANSparkMax(10, MotorType.kBrushless);
-    shooterMotorRight.setSmartCurrentLimit(60, 60);
-    shooterMotorLeft.setSmartCurrentLimit(60, 60);
+    //shooterMotorRight.setSmartCurrentLimit(60, 60);
+    //shooterMotorLeft.setSmartCurrentLimit(60, 60);
     shooterMotorTurn.setSmartCurrentLimit(60, 60);
-    encoder = shooterMotorLeft.getEncoder();
+    encoder = shooterMotorRight.getEncoder();
     turnEncoder = shooterMotorTurn.getEncoder();
     //straightPosition = 0;
     currentPosition = (int) encoder.getPosition();
@@ -76,9 +76,8 @@ public class Shooter {
          
     }
 
-    public boolean shoot(){
-        //double pilotY = pilot.getRightY();
-        //double pilotX = -1 * pilot.getRightX();
+    public boolean shoot()
+    {
         double setpoint = 1800.0;
         if (setpoint - encoder.getVelocity() < 500)
         {
@@ -90,15 +89,13 @@ public class Shooter {
             pid.setI(0.0);
             pid.clearError();
         }
-        double speed = pid.getOutput(-encoder.getVelocity(), setpoint);
-        //shooterMotorLeft.set(0.175*pilotY);
-        //shooterMotorRight.set(-0.175*pilotY);
+        double speed = pid.getOutput(encoder.getVelocity(), setpoint);
         shooterMotorLeft.set(-speed);
         shooterMotorRight.set(speed);
         SmartDashboard.putNumber("PID Output", speed);
         SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
         SmartDashboard.putNumber("ShooterEncoder", encoder.getVelocity());
-        if (Math.abs(setpoint - (-encoder.getVelocity())) < 400)
+        if (Math.abs(setpoint - encoder.getVelocity()) < 400)
         {
             return true;
         }
@@ -106,5 +103,11 @@ public class Shooter {
         {
             return false;
         }
+        
+    }
+    public void stickShoot(double stick)
+    {
+        shooterMotorLeft.set(-0.5 * stick);
+        shooterMotorRight.set(0.5 * stick);
     }
 }

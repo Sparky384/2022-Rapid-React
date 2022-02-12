@@ -105,6 +105,18 @@ public class Controller {
         }
     }
 
+    public double getRightTriggerAxis(int stick)
+    {
+        if (stick == Constants.PILOT)
+        {
+            return pilot.getRightTriggerAxis();
+        }
+        else
+        {
+            return pilot.getRightTriggerAxis();
+        }
+    }
+
     public boolean getLeftTrigger(int stick)
     {
         if (stick == Constants.PILOT)
