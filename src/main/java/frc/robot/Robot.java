@@ -75,6 +75,7 @@ public class Robot extends TimedRobot
       //shooter.shootStop();
       intake.autoIndex();
     }
+    dashboardOutput();
   }
 
   @Override
@@ -133,4 +134,12 @@ public class Robot extends TimedRobot
         break;
     }
   }
+
+  private void dashboardOutput() 
+  {
+    SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets());
+    SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset());
+    SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset());
+  }
+
 }
