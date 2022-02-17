@@ -59,26 +59,8 @@ public class Intake {
         stage3Motor.set(0.2);
         SmartDashboard.putBoolean("autoIndex", false);
         SmartDashboard.putBoolean("indexerShoot", true);
-        //checkEyes();
+        checkEyes();
     }
-
-    public void stopIndexer(){
-        stage2Motor.set(0);
-        stage3Motor.set(0);
-        ballInBetween = false;
-    }
-
-    /**
-     * VERY IMPOTANT
-     * DO NOT CHANGE CODE BENEATH HERE WITHOUT APPROVAL FROM AUSTIN
-     * THERE IS AN ISSUE OF OVER OR UNDER COUNTING BALLS IF THEY ARE NOT PICKED
-     * UP IMMEDIATLY OR TAKEN OUT BY HAND. THAT IS NEEDED FOR NOW,
-     * WHEN THE NEW ROBOT IS MADE WE WILL REVISIT THIS
-     * 
-     * THIS CODE IS THE RESULT OF A PHYSICALLY IMPOSSIBLE CONDITION THAT
-     * WAS FOUND IN TESTING, THIS IS NOT THE BEST SOLUTION IT IS THE ONLY
-     * SOLUTION THAT WOULD WORK.
-     */
 
     public void checkEyes()
     {
@@ -89,15 +71,13 @@ public class Intake {
         SmartDashboard.putBoolean("prev bottom", prevBottomEye);
         SmartDashboard.putBoolean("prev top", prevTopEye);
         
-        
-
-        if (bottomPhotoEye.get() && !prevBottomEye)
-            ballsInIndex++;
-        if (!topPhotoEye.get() && prevTopEye)
-            ballsInIndex--;
-        prevBottomEye = bottomPhotoEye.get();
-        prevTopEye = topPhotoEye.get();
-        shootingOverride = true;
+        boolean top = topPhotoEye.get();
+        boolean bottom = bottomPhotoEye.get();
+        if (top || (!bottom && !top && !ballInBetween))
+            ballInBetween = false;
+        else if ((bottom && !top) || (ballInBetween && !top))
+            ballInBetween = true;
+        prevTopEye = top;
     }
 
     public void autoIndex(){
@@ -108,34 +88,20 @@ public class Intake {
         SmartDashboard.putBoolean("prev bottom", prevBottomEye);
         SmartDashboard.putBoolean("prev top", prevTopEye);
 
-        if (shootingOverride == true)
-        {
-            if (ballsInIndex > 0)
-                ballInBetween = true;
-            else
-                ballInBetween = false;
-            shootingOverride = false;
-        }
-
-        if (bottomPhotoEye.get() == true && prevBottomEye == false)
-            ballsInIndex++;
-        if (topPhotoEye.get() == false && prevTopEye == true)
-            ballsInIndex--;
-
-        if (topPhotoEye.get() || (!topPhotoEye.get() && !bottomPhotoEye.get() && !ballInBetween))
+        boolean top = topPhotoEye.get();
+        boolean bottom = bottomPhotoEye.get();
+        if (top || (!bottom && !top && !ballInBetween))
         {
             stage2Motor.set(0.0);
             stage3Motor.set(0.0);
             ballInBetween = false;
         }
-        else if (bottomPhotoEye.get() || (ballInBetween && !topPhotoEye.get() && !bottomPhotoEye.get()))
+        else if ((bottom && !top) || (ballInBetween && !top))
         {
             ballInBetween = true;
             stage2Motor.set(-0.2);
             stage3Motor.set(0.2);
         }
-
-        prevTopEye = topPhotoEye.get();
-        prevBottomEye = bottomPhotoEye.get();
+        prevTopEye = top;
     }    
 }

@@ -17,6 +17,7 @@ public class Robot extends TimedRobot
   private int state;
   private SendableChooser<Integer> chooser;
   private int ret1;
+  private int ret2;
 
   @Override
   public void robotInit() {
@@ -35,7 +36,7 @@ public class Robot extends TimedRobot
     SmartDashboard.putData("Autonomous Chooser", chooser);
     System.out.println("look at me im robot inited, i inited");
     ret1 = 0;
-    
+    ret2 = 0;
   }
 
   @Override
@@ -55,20 +56,19 @@ public class Robot extends TimedRobot
     else
       shooter.stopTurn();
     
-    //if (controller.getXButton(Constants.PILOT))
-      //intake.intakeIn();
+    if (controller.getXButton(Constants.PILOT))
+      intake.intakeIn();
     if (controller.getAButton(Constants.PILOT))
       intake.intakeOut();
     else if (!controller.getXButton(Constants.PILOT) && !controller.getAButton(Constants.PILOT))
       intake.stopIntake();
-    if(controller.getXButton(Constants.PILOT) || ret1 == 1)
-     ret1 = drive.driveTo(60, 5);
+    if(controller.getLeftTrigger(Constants.PILOT) || ret2 == 1)
+     ret2 = drive.driveTo(60, 5);
     
-    /*if (controller.getYButton(Constants.PILOT))
+    if (controller.getYButton(Constants.PILOT))
     {
       if (shooter.shoot())
       {
-        intake.checkEyes();  
         intake.indexerShoot();
       }
       else
@@ -79,14 +79,15 @@ public class Robot extends TimedRobot
       shooter.stickShoot(controller.getRightY(Constants.PILOT));
       //shooter.shootStop();
       intake.autoIndex();
-    }*/
+    }
     dashboardOutput();
     
     SmartDashboard.putNumber("ret1", ret1);
-    if (controller.getYButton(Constants.PILOT) || ret1 == 1)
+    /*if (controller.getYButton(Constants.PILOT) || ret1 == 1)
     {
       ret1 = drive.centerToTarget(10.0);
     }
+    */
   }
 
   @Override
@@ -107,6 +108,11 @@ public class Robot extends TimedRobot
       case Constants.DRIVE_AND_TURN:
         driveAndTurn();
         break;
+      case Constants.DO_NOTHING:
+      //Does Nothing
+        break;
+      case Constants.TEST:  
+
     }
   } 
 

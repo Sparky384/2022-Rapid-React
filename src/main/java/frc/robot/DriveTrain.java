@@ -350,7 +350,6 @@ public class DriveTrain {
 			System.out.println("Interval Done");
 			difDrive.arcadeDrive(0.0, 0.0);
 			centerInitialized = false;
-			System.out.println(0);
 			return 0;
 		}
 		else if (centerFailTimer.hasPeriodPassed(timeout))
@@ -358,7 +357,6 @@ public class DriveTrain {
 			System.out.println("Timeout");
 			difDrive.arcadeDrive(0.0, 0.0);
 			centerInitialized = false;
-			System.out.println(-1);
 			return -1;
 		}
 		return 1;
