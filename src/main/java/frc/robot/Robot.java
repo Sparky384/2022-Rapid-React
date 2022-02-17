@@ -16,6 +16,7 @@ public class Robot extends TimedRobot
   private Shooter shooter;
   private int state;
   private SendableChooser<Integer> chooser;
+  private int ret1;
 
   @Override
   public void robotInit() {
@@ -33,6 +34,8 @@ public class Robot extends TimedRobot
     
     SmartDashboard.putData("Autonomous Chooser", chooser);
     System.out.println("look at me im robot inited, i inited");
+    ret1 = 0;
+    
   }
 
   @Override
@@ -52,14 +55,16 @@ public class Robot extends TimedRobot
     else
       shooter.stopTurn();
     
-    if (controller.getXButton(Constants.PILOT))
-      intake.intakeIn();
+    //if (controller.getXButton(Constants.PILOT))
+      //intake.intakeIn();
     if (controller.getAButton(Constants.PILOT))
       intake.intakeOut();
     else if (!controller.getXButton(Constants.PILOT) && !controller.getAButton(Constants.PILOT))
       intake.stopIntake();
+    if(controller.getXButton(Constants.PILOT) || ret1 == 1)
+     ret1 = drive.driveTo(60, 5);
     
-    if (controller.getYButton(Constants.PILOT))
+    /*if (controller.getYButton(Constants.PILOT))
     {
       if (shooter.shoot())
       {
@@ -74,8 +79,14 @@ public class Robot extends TimedRobot
       shooter.stickShoot(controller.getRightY(Constants.PILOT));
       //shooter.shootStop();
       intake.autoIndex();
-    }
+    }*/
     dashboardOutput();
+    
+    SmartDashboard.putNumber("ret1", ret1);
+    if (controller.getYButton(Constants.PILOT) || ret1 == 1)
+    {
+      ret1 = drive.centerToTarget(10.0);
+    }
   }
 
   @Override

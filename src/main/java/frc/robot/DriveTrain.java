@@ -35,6 +35,10 @@ public class DriveTrain {
     double driveToRate;
     double currentError;
     double max;
+	Timer centerFailTimer;
+	Timer centerIntervalTimer;
+	boolean centerTiming;
+	boolean centerInitialized;
 
     DriveTrain() {
 		frontLeft = new WPI_TalonFX(1);
@@ -44,6 +48,8 @@ public class DriveTrain {
 		leftMotors = new MotorControllerGroup(frontLeft, backLeft);
 		rightMotors = new MotorControllerGroup(frontRight, backRight);
 		difDrive = new DifferentialDrive(leftMotors, rightMotors);
+		centerIntervalTimer = new Timer();
+		centerFailTimer = new Timer();
 
         rightMotors.getInverted();
         failTimer = new Timer();
@@ -305,5 +311,56 @@ public class DriveTrain {
 		{	// the PID is not complete
 			return 1;
 		}
+	}
+	
+	public int centerToTarget(double timeout)
+	{
+		double error = Limelight.getTargetAngleXOffset();
+		if(!centerInitialized)
+		{
+			centerTiming = false;
+			centerIntervalTimer.stop();
+			centerIntervalTimer.reset();
+			centerFailTimer.reset();
+			centerFailTimer.start();
+			centerInitialized = true;
+			//System.out.println("is not initialized");
+		}
+		if(error > 0.0 + Constants.centerDeadBand)
+		{
+			System.out.println("Positive error");
+			difDrive.arcadeDrive(-0.4, 0.0);
+		}
+		if(error < 0.0 - Constants.centerDeadBand)
+		{
+			System.out.println("Negative error");
+			difDrive.arcadeDrive(0.4, 0.0);
+		}
+		
+		if(Math.abs(error) < Constants.centerDeadBand && !centerTiming)
+		{
+			System.out.println("In window");
+			difDrive.arcadeDrive(0.0, 0.0);
+			centerIntervalTimer.start();
+			centerTiming = true;
+		}
+		
+		if(centerIntervalTimer.hasPeriodPassed(Constants.centerIntervalTime))
+		{
+			System.out.println("Interval Done");
+			difDrive.arcadeDrive(0.0, 0.0);
+			centerInitialized = false;
+			System.out.println(0);
+			return 0;
+		}
+		else if (centerFailTimer.hasPeriodPassed(timeout))
+		{
+			System.out.println("Timeout");
+			difDrive.arcadeDrive(0.0, 0.0);
+			centerInitialized = false;
+			System.out.println(-1);
+			return -1;
+		}
+		return 1;
 	}
 }
