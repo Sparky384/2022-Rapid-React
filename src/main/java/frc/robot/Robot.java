@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
@@ -18,6 +20,8 @@ public class Robot extends TimedRobot
   private SendableChooser<Integer> chooser;
   private int ret1;
   private int ret2;
+  private Timer autoTimer;
+  private boolean hasStartedAutoTimer;
 
   @Override
   public void robotInit() {
@@ -37,6 +41,9 @@ public class Robot extends TimedRobot
     System.out.println("look at me im robot inited, i inited");
     ret1 = 0;
     ret2 = 0;
+
+    autoTimer = new Timer();
+    hasStartedAutoTimer = false;
   }
 
   @Override
@@ -77,7 +84,6 @@ public class Robot extends TimedRobot
     else
     {
       shooter.stickShoot(controller.getRightY(Constants.PILOT));
-      //shooter.shootStop();
       intake.autoIndex();
     }
     dashboardOutput();
@@ -157,6 +163,99 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets());
     SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset());
     SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset());
+  }
+
+  private void twoBallAuto()
+  {
+    int ret;
+    switch (state)
+    {
+    case 0:
+      ret = drive.driveTo(63.0, 5.0);
+      intake.intakeIn();
+      if (ret == 0) {
+        drive.stop();
+        intake.stopIntake();
+        state++;
+      }
+      else if (ret == -1)
+        state = -1;
+      break;
+    case 1:
+      ret = drive.turnTo(180.0, 5.0);
+      if (ret == 0)
+      {
+        drive.stop();
+        state++;
+      }
+      else if (ret == -1)
+        state = -1;
+      break;
+    case 2:
+      if (!hasStartedAutoTimer)
+        autoTimer.start();
+      shooter.shoot();
+      if (autoTimer.advanceIfElapsed(6.0))
+      {
+        autoTimer.stop();
+        shooter.shootStop();
+        state++;
+      }
+      break;
+    default:
+      drive.stop();
+      intake.stopIntake();
+      shooter.shootStop();
+      break;
+    }
+  }
+
+  private void oneBallAuto()
+  {
+    int ret;
+    switch (state)
+    {
+    case 0:
+      if (!hasStartedAutoTimer)
+        autoTimer.start();
+      shooter.shoot();
+      if (autoTimer.advanceIfElapsed(6.0))
+      {
+        autoTimer.stop();
+        shooter.shootStop();
+        state++;
+      }
+      break;
+    case 1:
+      ret = drive.driveTo(-45.0, 5.0);
+      if (ret == 0)
+        state++;
+      else if (ret == -1)
+        state = -1;
+      break;
+    default:
+      drive.stop();
+      shooter.shootStop();
+      break;
+    }
+  }
+
+  private void zeroBallAuto()
+  {
+    int ret;
+    switch (state)
+    {
+    case 0:
+      ret = drive.driveTo(45.0, 5.0);
+      if (ret == 0)
+        state++;
+      else if (ret == -1)
+        state = -1;
+      break;
+    default:
+      drive.stop();
+      break;
+    }
   }
 
 }

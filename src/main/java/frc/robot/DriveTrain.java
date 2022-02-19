@@ -93,6 +93,11 @@ public class DriveTrain {
 		max = 0;
     }
 
+	public void stop()
+	{
+		difDrive.arcadeDrive(0, 0);
+	}
+
     public void imuZeroYaw() 
 	{
         iteration = 0;
