@@ -135,4 +135,20 @@ public class Controller {
         }
     }
 
+    public boolean getL3(int stick)
+    {
+        if (stick == Constants.PILOT)
+            return pilot.getLeftStickButton();
+        else
+            return copilot.getLeftStickButton();
+    }
+
+    public boolean getR3(int stick)
+    {
+        if (stick == Constants.PILOT)
+            return pilot.getRightStickButton();
+        else
+            return copilot.getRightStickButton();
+    }
+
 }

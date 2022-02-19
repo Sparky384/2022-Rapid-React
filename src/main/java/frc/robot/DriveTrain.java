@@ -39,8 +39,15 @@ public class DriveTrain {
 	Timer centerIntervalTimer;
 	boolean centerTiming;
 	boolean centerInitialized;
+	double tempP;
+	double tempI;
+	double tempD;
 
     DriveTrain() {
+		tempP = 0.0;
+		tempI = 0.0;
+		tempD = 0.0;
+		
 		frontLeft = new WPI_TalonFX(1);
 		frontRight = new WPI_TalonFX(14);
 		backLeft = new WPI_TalonFX(16);
@@ -104,10 +111,12 @@ public class DriveTrain {
         imu.zeroYaw();
     }
 
-    public float getImuYaw() 
+    public float getImuYaw(boolean isUTurn) 
 	{
         float yaw = imu.getYaw(); //positive values are clockwise
-        iteration++;
+        if (yaw < 0 && isUTurn)
+			yaw = 180 + (180 - Math.abs(yaw));
+		iteration++;
         yaw += (iteration * 0.0000382);
         return yaw;
     }
@@ -233,11 +242,14 @@ public class DriveTrain {
 
 	public int turnTo(double distance, final double timeout)	
 	{	
+		
+		boolean isUTurn = false;
+
 		SmartDashboard.putNumber("Yaw Error", currentError);
 		if (!pidInitialized) 
 		{
 			speedController.reset();
-			speedController.setPID(Constants.turnP, 0, Constants.turnD);
+			speedController.setPID(Constants.turnP, Constants.turnI, Constants.turnD); //i was orignally 0
 			speedController.setMaxIOutput(0.4);
 			speedController.setOutputLimits(-0.65, 0.65);
 			speedController.setSetpoint(distance);
@@ -252,11 +264,14 @@ public class DriveTrain {
 			inIZone = false;
 		}
 		// This is the final output of the PID
-		driveToRate = speedController.getOutput(getImuYaw(), distance);
-		currentError = distance - getImuYaw();
+		if(distance > 165)
+			isUTurn = true;
+
+		driveToRate = speedController.getOutput(getImuYaw(isUTurn), distance);
+		currentError = distance - getImuYaw(isUTurn);
 		difDrive.arcadeDrive(-driveToRate, 0);
 		System.out.printf("t %f\n", currentError);
-		SmartDashboard.putNumber("TurnResult", getImuYaw());
+		SmartDashboard.putNumber("TurnResult", getImuYaw(isUTurn));
 
 		if (Math.abs(currentError) < Constants.turnDeadBand) 	
 		{
@@ -275,8 +290,8 @@ public class DriveTrain {
 			System.out.println("intervalStop");
 		}
 
-		if ((currentError < 11.5 && currentError > 0.2) ||
-			(currentError > -11.5 && currentError < -0.2))
+		if ((currentError < 20.5 && currentError > 0.6) ||
+			(currentError > -20.5 && currentError < -0.6))
 		{
 			if (!inIZone)
 			{

@@ -39,6 +39,8 @@ public class Robot extends TimedRobot
     chooser.addOption("Zero Ball Auto", Constants.ZERO_BALL_AUTO);
     chooser.addOption("Do Nothing", Constants.DO_NOTHING);
     chooser.addOption("Turn", Constants.TURN);
+
+    
     
     drive.imuZeroYaw();
     shooter.resetTurnEncoder();
@@ -64,7 +66,7 @@ public class Robot extends TimedRobot
     double pilotX = -0.8 * controller.getLeftX(Constants.PILOT);
     drive.drive(pilotX, pilotY);
     SmartDashboard.putNumber("rightY", controller.getRightY(Constants.PILOT));
-    
+
     if (controller.getLeftBumper(Constants.PILOT))
       shooter.shooterTurnLeft();
     else if(controller.getRightBumper(Constants.PILOT))
@@ -83,7 +85,7 @@ public class Robot extends TimedRobot
     if(controller.getLeftTrigger(Constants.PILOT) || ret2 == 1)
      ret2 = drive.driveTo(60, 5);
     
-    if (controller.getYButton(Constants.PILOT))
+    /*if (controller.getYButton(Constants.PILOT))
     {
       if (shooter.shoot())
       {
@@ -97,14 +99,15 @@ public class Robot extends TimedRobot
       shooter.stickShoot(controller.getRightY(Constants.PILOT));
       intake.autoIndex();
     }
+    */
     dashboardOutput();
     
     SmartDashboard.putNumber("ret1", ret1);
-    /*if (controller.getYButton(Constants.PILOT) || ret1 == 1)
+    if (controller.getYButton(Constants.PILOT) || ret1 == 1)
     {
       ret1 = drive.centerToTarget(10.0);
     }
-    */
+    
   }
 
   @Override
@@ -138,7 +141,8 @@ public class Robot extends TimedRobot
         zeroBallAuto();
         break;
       case Constants.TURN:
-       turn();
+        SmartDashboard.putNumber("Gyro", drive.getImuYaw(true)); 
+        turn();
        break;
 
     }
@@ -168,14 +172,14 @@ public class Robot extends TimedRobot
     switch (state) 
     {
       case 0:  
-        ret = drive.turnTo(170, 5);
+        ret = drive.turnTo(180, 10);
         if (ret == 0 || ret == -1)
           state++;
         break;
     }
   }
 
-  public void driveAndTurn () 
+  public void driveAndTurn ()   
   {
     int ret;
     switch (state) 
@@ -198,7 +202,7 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets());
     SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset());
     SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset());
-    SmartDashboard.putNumber("Gyro", drive.getImuYaw());
+    SmartDashboard.putNumber("Gyro", drive.getImuYaw(true));
     SmartDashboard.putNumber("Encoder", drive.getRightEncoderPosition());
   }
 
