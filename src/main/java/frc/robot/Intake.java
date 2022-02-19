@@ -49,6 +49,11 @@ public class Intake {
         stage1Motor.set(0);
     }
 
+    public void stopIndex() {
+        stage2Motor.set(0);
+        stage3Motor.set(0);
+    }
+
     public void indexerShoot(){
         stage2Motor.set(-0.2);
         stage3Motor.set(0.2);

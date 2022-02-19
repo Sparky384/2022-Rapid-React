@@ -33,6 +33,12 @@ public class Robot extends TimedRobot
 
     chooser.setDefaultOption("Turn and Drive", Constants.TURN_AND_DRIVE);
     chooser.addOption("Drive and Turn", Constants.DRIVE_AND_TURN);
+    chooser.addOption("Three Ball Auto", Constants.THREE_BALL_AUTO);
+    chooser.addOption("Two Ball Auto", Constants.TWO_BALL_AUTO);
+    chooser.addOption("One Ball Auto", Constants.ONE_BALL_AUTO);
+    chooser.addOption("Zero Ball Auto", Constants.ZERO_BALL_AUTO);
+    chooser.addOption("Do Nothing", Constants.DO_NOTHING);
+    chooser.addOption("Turn", Constants.TURN);
     
     drive.imuZeroYaw();
     shooter.resetTurnEncoder();
@@ -44,6 +50,11 @@ public class Robot extends TimedRobot
 
     autoTimer = new Timer();
     hasStartedAutoTimer = false;
+  }
+  
+  public void teleopInit()
+  {
+    drive.initializeEncoders();
   }
 
   @Override
@@ -113,11 +124,22 @@ public class Robot extends TimedRobot
         break;
       case Constants.DRIVE_AND_TURN:
         driveAndTurn();
+        break;  
+      case Constants.THREE_BALL_AUTO:
+        threeBallAuto();
         break;
-      case Constants.DO_NOTHING:
-      //Does Nothing
+      case Constants.TWO_BALL_AUTO:
+        twoBallAuto();
         break;
-      case Constants.TEST:  
+      case Constants.ONE_BALL_AUTO:
+        oneBallAuto();
+        break;
+      case Constants.ZERO_BALL_AUTO:
+        zeroBallAuto();
+        break;
+      case Constants.TURN:
+       turn();
+       break;
 
     }
   } 
@@ -140,6 +162,19 @@ public class Robot extends TimedRobot
     }
   }
   
+  public void turn() 
+  {
+    int ret;
+    switch (state) 
+    {
+      case 0:  
+        ret = drive.turnTo(170, 5);
+        if (ret == 0 || ret == -1)
+          state++;
+        break;
+    }
+  }
+
   public void driveAndTurn () 
   {
     int ret;
@@ -163,6 +198,101 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets());
     SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset());
     SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset());
+    SmartDashboard.putNumber("Gyro", drive.getImuYaw());
+    SmartDashboard.putNumber("Encoder", drive.getRightEncoderPosition());
+  }
+
+  private void threeBallAuto()
+  {
+    int ret;
+    switch (state)
+    {
+    case 0:
+      ret = drive.driveTo(63.0, 5.0);
+      intake.intakeIn();
+      if (ret == 0) {
+        drive.stop();
+        intake.stopIntake();
+        state++;
+      }
+      else if (ret == -1)
+        state = -1;
+      break;
+    case 1:
+      ret = drive.turnTo(-90.0, 8.0); //TODO SHOULD BE NEAR 180 RETUNE PID WITH ONE FINAL
+      if (ret == 0)
+      {
+        drive.stop();
+        state++;
+      }
+      else if (ret == -1)
+        state = -1;
+      break;
+    case 2:
+      if (!hasStartedAutoTimer)
+        autoTimer.start();
+      if (shooter.shoot())
+        intake.indexerShoot();
+      if (autoTimer.advanceIfElapsed(6.0))
+      {
+        intake.stopIndex();
+        autoTimer.stop();
+        shooter.shootStop();
+        //state++;
+        state = 4;
+      }
+      break;
+   /*  case 3:
+      ret = drive.turnTo(0.0, 5.0); //TODO MAKE 95 DEGREES AFTER FIXING 180 ISSUE
+      if (ret == 0)
+      {
+        drive.stop();
+        state++;
+      }
+      else if (ret == -1)
+        state = -1;
+      break; */
+    case 4: 
+      ret = drive.driveTo(93.0, 5.0);
+      intake.intakeIn();
+      if (ret == 0) {
+        drive.stop();
+        intake.stopIntake();
+        state++;
+      }
+      else if (ret == -1)
+        state = -1;
+      break;
+    case 5:
+      ret = drive.turnTo(-90.0, 5.0);
+      if (ret == 0)
+      {
+        drive.stop();
+        state++;
+      }
+      else if (ret == -1)
+        state = -1;
+      break;
+    case 6:
+      if (!hasStartedAutoTimer)
+      autoTimer.start();
+      if (shooter.shoot())
+        intake.indexerShoot();
+      if (autoTimer.advanceIfElapsed(6.0))
+      {
+        intake.stopIndex();
+        autoTimer.stop();
+        shooter.shootStop();
+        state++;
+      }
+      break;
+    default:
+      drive.stop();
+      intake.stopIntake();
+      shooter.shootStop();
+      intake.stopIndex();
+      break;
+    }
   }
 
   private void twoBallAuto()
@@ -182,7 +312,7 @@ public class Robot extends TimedRobot
         state = -1;
       break;
     case 1:
-      ret = drive.turnTo(180.0, 5.0);
+      ret = drive.turnTo(90.0, 5.0); //TODO SHOULD BE NEAR 180 RETUNE PID WITH ONE FINAL
       if (ret == 0)
       {
         drive.stop();
@@ -194,9 +324,11 @@ public class Robot extends TimedRobot
     case 2:
       if (!hasStartedAutoTimer)
         autoTimer.start();
-      shooter.shoot();
+      if (shooter.shoot()) 
+        intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(6.0))
       {
+        intake.stopIndex();
         autoTimer.stop();
         shooter.shootStop();
         state++;
@@ -205,6 +337,7 @@ public class Robot extends TimedRobot
     default:
       drive.stop();
       intake.stopIntake();
+      intake.stopIndex();
       shooter.shootStop();
       break;
     }
@@ -218,16 +351,18 @@ public class Robot extends TimedRobot
     case 0:
       if (!hasStartedAutoTimer)
         autoTimer.start();
-      shooter.shoot();
+      if (shooter.shoot()) 
+        intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(6.0))
       {
+        intake.stopIndex();
         autoTimer.stop();
         shooter.shootStop();
         state++;
       }
       break;
     case 1:
-      ret = drive.driveTo(-45.0, 5.0);
+      ret = drive.driveTo(-97.0, 5.0);
       if (ret == 0)
         state++;
       else if (ret == -1)
@@ -236,6 +371,7 @@ public class Robot extends TimedRobot
     default:
       drive.stop();
       shooter.shootStop();
+      intake.stopIndex();
       break;
     }
   }
@@ -246,7 +382,7 @@ public class Robot extends TimedRobot
     switch (state)
     {
     case 0:
-      ret = drive.driveTo(45.0, 5.0);
+      ret = drive.driveTo(50.0, 5.0);
       if (ret == 0)
         state++;
       else if (ret == -1)
