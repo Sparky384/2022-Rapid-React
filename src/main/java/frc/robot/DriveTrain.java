@@ -48,10 +48,10 @@ public class DriveTrain {
 		tempI = 0.0;
 		tempD = 0.0;
 		
-		frontLeft = new WPI_TalonFX(1);
-		frontRight = new WPI_TalonFX(14);
-		backLeft = new WPI_TalonFX(16);
-		backRight = new WPI_TalonFX(15);
+		frontLeft = new WPI_TalonFX(Constants.frontLeftPort);
+		frontRight = new WPI_TalonFX(Constants.frontRightPort);
+		backLeft = new WPI_TalonFX(Constants.backLeftPort);
+		backRight = new WPI_TalonFX(Constants.backRightPort);
 		leftMotors = new MotorControllerGroup(frontLeft, backLeft);
 		rightMotors = new MotorControllerGroup(frontRight, backRight);
 		difDrive = new DifferentialDrive(leftMotors, rightMotors);
@@ -279,7 +279,7 @@ public class DriveTrain {
 			{
 				intervalTimer.start();
 				timing = true;
-				System.out.println("intervalStart");
+				//System.out.println("intervalStart");
 			} 
 		} 
 		else 	
@@ -287,7 +287,7 @@ public class DriveTrain {
 			intervalTimer.stop();
 			intervalTimer.reset();
 			timing = false;
-			System.out.println("intervalStop");
+			//System.out.println("intervalStop");
 		}
 
 		if ((currentError < 20.5 && currentError > 0.6) ||

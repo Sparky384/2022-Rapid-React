@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -17,11 +20,14 @@ public class Shooter {
     private int currentPosition;
     RelativeEncoder turnEncoder;
     MiniPID pid;
+    private DoubleSolenoid solenoidLeft;
+    private DoubleSolenoid solenoidRight;
+    private boolean shooterDown;
 
     public Shooter() {
-    shooterMotorRight = new CANSparkMax(13, MotorType.kBrushless);
-    shooterMotorLeft = new CANSparkMax(2, MotorType.kBrushless);
-    shooterMotorTurn = new CANSparkMax(10, MotorType.kBrushless);
+    shooterMotorRight = new CANSparkMax(Constants.shooterMotorRightPort, MotorType.kBrushless);
+    shooterMotorLeft = new CANSparkMax(Constants.shooterMotorLeftPort, MotorType.kBrushless);
+    shooterMotorTurn = new CANSparkMax(Constants.shooterMotorTurnPort, MotorType.kBrushless);
     //shooterMotorRight.setSmartCurrentLimit(60, 60);
     //shooterMotorLeft.setSmartCurrentLimit(60, 60);
     shooterMotorTurn.setSmartCurrentLimit(60, 60);
@@ -29,6 +35,12 @@ public class Shooter {
     turnEncoder = shooterMotorTurn.getEncoder();
     //straightPosition = 0;
     currentPosition = (int) encoder.getPosition();
+    
+    solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 4, 5);
+    solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
+        
+    shooterDown = true;
+    shooterDown();
     
     pid = new MiniPID(0.001143, 0.00006, 0.0045);
     }
@@ -109,5 +121,22 @@ public class Shooter {
     {
         shooterMotorLeft.set(-0.5 * stick);
         shooterMotorRight.set(0.5 * stick);
+    }
+
+    public void shooterUp() {
+        solenoidLeft.set(DoubleSolenoid.Value.kForward);
+        solenoidRight.set(DoubleSolenoid.Value.kForward);
+        shooterDown = false;
+    }
+    public void shooterDown() {
+        solenoidLeft.set(DoubleSolenoid.Value.kReverse);
+        solenoidRight.set(DoubleSolenoid.Value.kReverse);
+        shooterDown = true;
+    }
+    public void toggle() {
+        if (shooterDown)
+            shooterUp();
+        else
+            shooterDown();
     }
 }

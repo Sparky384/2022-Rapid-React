@@ -5,6 +5,8 @@
 package frc.robot;
 
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,6 +24,7 @@ public class Robot extends TimedRobot
   private int ret2;
   private Timer autoTimer;
   private boolean hasStartedAutoTimer;
+  private Compressor compressor;
 
   @Override
   public void robotInit() {
@@ -52,6 +55,10 @@ public class Robot extends TimedRobot
 
     autoTimer = new Timer();
     hasStartedAutoTimer = false;
+
+    compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+    compressor.enableDigital();
+    compressor.disable();
   }
   
   public void teleopInit()
@@ -68,14 +75,9 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("rightY", controller.getRightY(Constants.PILOT));
 
     if (controller.getLeftBumper(Constants.PILOT))
-      shooter.shooterTurnLeft();
-    else if(controller.getRightBumper(Constants.PILOT))
-      shooter.shooterTurnRight();
-    else if(controller.getBButton(Constants.PILOT))
-      shooter.shooterTurnStraight();
-    else
-      shooter.stopTurn();
-    
+      shooter.toggle();
+    if (controller.getBButton(Constants.PILOT))
+      intake.toggle();
     if (controller.getXButton(Constants.PILOT))
       intake.intakeIn();
     if (controller.getAButton(Constants.PILOT))
