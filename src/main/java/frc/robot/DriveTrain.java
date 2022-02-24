@@ -270,7 +270,6 @@ public class DriveTrain {
 		driveToRate = speedController.getOutput(getImuYaw(isUTurn), distance);
 		currentError = distance - getImuYaw(isUTurn);
 		difDrive.arcadeDrive(-driveToRate, 0);
-		System.out.printf("t %f\n", currentError);
 		SmartDashboard.putNumber("TurnResult", getImuYaw(isUTurn));
 
 		if (Math.abs(currentError) < Constants.turnDeadBand) 	
@@ -279,7 +278,6 @@ public class DriveTrain {
 			{
 				intervalTimer.start();
 				timing = true;
-				//System.out.println("intervalStart");
 			} 
 		} 
 		else 	
@@ -287,7 +285,6 @@ public class DriveTrain {
 			intervalTimer.stop();
 			intervalTimer.reset();
 			timing = false;
-			//System.out.println("intervalStop");
 		}
 
 		if ((currentError < 20.5 && currentError > 0.6) ||
@@ -344,22 +341,14 @@ public class DriveTrain {
 			centerFailTimer.reset();
 			centerFailTimer.start();
 			centerInitialized = true;
-			//System.out.println("is not initialized");
 		}
 		if(error > 0.0 + Constants.centerDeadBand)
-		{
-			System.out.println("Positive error");
 			difDrive.arcadeDrive(-0.4, 0.0);
-		}
 		if(error < 0.0 - Constants.centerDeadBand)
-		{
-			System.out.println("Negative error");
 			difDrive.arcadeDrive(0.4, 0.0);
-		}
 		
 		if(Math.abs(error) < Constants.centerDeadBand && !centerTiming)
 		{
-			System.out.println("In window");
 			difDrive.arcadeDrive(0.0, 0.0);
 			centerIntervalTimer.start();
 			centerTiming = true;
@@ -367,14 +356,12 @@ public class DriveTrain {
 		
 		if(centerIntervalTimer.hasPeriodPassed(Constants.centerIntervalTime))
 		{
-			System.out.println("Interval Done");
 			difDrive.arcadeDrive(0.0, 0.0);
 			centerInitialized = false;
 			return 0;
 		}
 		else if (centerFailTimer.hasPeriodPassed(timeout))
 		{
-			System.out.println("Timeout");
 			difDrive.arcadeDrive(0.0, 0.0);
 			centerInitialized = false;
 			return -1;

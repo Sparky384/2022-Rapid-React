@@ -2,24 +2,19 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.XboxController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.ctre.phoenix.motorcontrol.IFollower;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter {
     private CANSparkMax shooterMotorRight;
     private CANSparkMax shooterMotorLeft;
     private CANSparkMax shooterMotorTurn;
-    Controller pilot = new Controller();
-    RelativeEncoder encoder;
-    private double straightPosition;
+    private RelativeEncoder encoder;
     private int currentPosition;
-    RelativeEncoder turnEncoder;
-    MiniPID pid;
+    private RelativeEncoder turnEncoder;
+    private MiniPID pid;
     private DoubleSolenoid solenoidLeft;
     private DoubleSolenoid solenoidRight;
     private boolean shooterDown;
@@ -33,7 +28,6 @@ public class Shooter {
     shooterMotorTurn.setSmartCurrentLimit(60, 60);
     encoder = shooterMotorRight.getEncoder();
     turnEncoder = shooterMotorTurn.getEncoder();
-    //straightPosition = 0;
     currentPosition = (int) encoder.getPosition();
     
     solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 4, 5);

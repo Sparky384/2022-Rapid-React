@@ -2,19 +2,13 @@ package frc.robot;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
 
 import java.util.TimerTask;
 
-import com.ctre.phoenix.motorcontrol.IFollower;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.hal.util.CheckedAllocationException;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
 
 public class Intake {
     
@@ -29,10 +23,6 @@ public class Intake {
     private boolean prevBottomEye;
     private int ballsInIndex;
     
-    Timer valveTimer;
-    private boolean sValve1;
-    private boolean sValve2;
-    private boolean timingValve;
     private DoubleSolenoid solenoidLeft;
     private DoubleSolenoid solenoidRight;
     private java.util.Timer intakeTimer; 
@@ -58,13 +48,6 @@ public class Intake {
 
         stage3Motor = new CANSparkMax(Constants.stage3MotorPort, MotorType.kBrushless);
         stage3Motor.setSmartCurrentLimit(60, 60);
-
-        TestSolenoid solenoid = new TestSolenoid();
-        //Compressor pcmCompressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-        //pcmCompressor.enableDigital();
-        //pcmCompressor.disable();
-        sValve1 = solenoid.set(false);
-        sValve2 = solenoid.set(true);
 
         bottomPhotoEye = new DigitalInput(Constants.bottomPhotoEyePort);
         topPhotoEye = new DigitalInput(Constants.topPhotoEyePort);
@@ -143,52 +126,5 @@ public class Intake {
             stage2Motor.set(-0.2);
             stage3Motor.set(0.2);
         }
-    }  
-    
-    public void solenoidStartingState(){ 
-        sValve1 = false;
-        sValve2 = true;
     }
-
-    public int extendedMotion(){       
-        
-        if (!timingValve){
-            valveTimer.reset();
-            valveTimer.start();
-            timingValve = true;
-        }
-        sValve1 = true;
-        if (valveTimer.hasPeriodPassed(0.5)){
-            sValve2 = false;
-        }
-        if (valveTimer.hasPeriodPassed(1.0)){
-            sValve1 = false;
-            timingValve = false;
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-    public void collectingState(){
-        sValve1 = false;
-        sValve2 = false;
-    }
-    public int retractMotion(){
-        if (!timingValve){
-            valveTimer.reset();
-            valveTimer.start();
-            timingValve = true;
-        }        
-        sValve1 = true;
-        sValve2 = true;
-        if (valveTimer.hasPeriodPassed(0.5)) {
-            sValve1 = false;
-            timingValve = false;
-            return 0;
-        } else {
-            return 1;
-        }
-            
-    }
-
 }

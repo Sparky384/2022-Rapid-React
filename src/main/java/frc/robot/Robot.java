@@ -28,6 +28,7 @@ public class Robot extends TimedRobot
 
   @Override
   public void robotInit() {
+    new Constants(Constants.proto); // sets the port numbers
     drive = new DriveTrain();
     intake = new Intake();
     controller = new Controller();
@@ -42,14 +43,11 @@ public class Robot extends TimedRobot
     chooser.addOption("Zero Ball Auto", Constants.ZERO_BALL_AUTO);
     chooser.addOption("Do Nothing", Constants.DO_NOTHING);
     chooser.addOption("Turn", Constants.TURN);
-
-    
     
     drive.imuZeroYaw();
     shooter.resetTurnEncoder();
     
     SmartDashboard.putData("Autonomous Chooser", chooser);
-    System.out.println("look at me im robot inited, i inited");
     ret1 = 0;
     ret2 = 0;
 
@@ -104,7 +102,6 @@ public class Robot extends TimedRobot
     */
     dashboardOutput();
     
-    SmartDashboard.putNumber("ret1", ret1);
     if (controller.getYButton(Constants.PILOT) || ret1 == 1)
     {
       ret1 = drive.centerToTarget(10.0);
