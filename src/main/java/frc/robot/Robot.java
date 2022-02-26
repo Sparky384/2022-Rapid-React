@@ -5,6 +5,8 @@
 package frc.robot;
 
 
+import java.io.File;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -28,11 +30,21 @@ public class Robot extends TimedRobot
 
   @Override
   public void robotInit() {
-    new Constants(Constants.proto); // sets the port numbers
+    File f = new File("/home/admin/proto");
+    if (f.exists())
+    {
+      SmartDashboard.putString("profile", "proto");
+      new Constants(Constants.proto); // sets the port numbers
+    }
+    else
+    {
+      SmartDashboard.putString("profile", "sparky");
+      new Constants(Constants.sparky); // sets the port numbers
+    }
     drive = new DriveTrain();
     intake = new Intake();
     controller = new Controller();
-    shooter = new Shooter();
+    shooter = new Shooter();  
     chooser = new SendableChooser<Integer>();
 
     chooser.setDefaultOption("Turn and Drive", Constants.TURN_AND_DRIVE);

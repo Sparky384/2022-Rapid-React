@@ -343,9 +343,9 @@ public class DriveTrain {
 			centerInitialized = true;
 		}
 		if(error > 0.0 + Constants.centerDeadBand)
-			difDrive.arcadeDrive(-0.4, 0.0);
+			difDrive.arcadeDrive(-0.325, 0.0);
 		if(error < 0.0 - Constants.centerDeadBand)
-			difDrive.arcadeDrive(0.4, 0.0);
+			difDrive.arcadeDrive(0.325, 0.0);
 		
 		if(Math.abs(error) < Constants.centerDeadBand && !centerTiming)
 		{

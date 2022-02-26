@@ -15,7 +15,7 @@ public class Constants {
     public static double shooterMaxI = 400.0;
     public static double shooterIzone = 500.0;
     public static double shooterThreshold = 400.0;
-    public static double centerDeadBand = 2.5;
+    public static double centerDeadBand = 1.2;
     public static double centerIntervalTime = 1.0;
 
     //ports for 2020 robot
@@ -58,7 +58,7 @@ public class Constants {
 
     Constants(int bot)
     {
-        if (bot == proto) // proto
+        if (bot == proto) // prototype
         {
             stage1MotorPort = 4;  //intake motor
             stage2MotorPort = 5;  //intake motor
@@ -86,10 +86,10 @@ public class Constants {
             shooterMaxI = 400.0;
             shooterIzone = 500.0;
             shooterThreshold = 400.0;
-            centerDeadBand = 2.5;
-            centerIntervalTime = 1.0;
+            centerDeadBand = 0.85;
+            centerIntervalTime = 1.0; //don't change for proto and sparky
         }
-        else // final
+        else // final robot
         {
             stage1MotorPort = 4;  //intake motor
             stage2MotorPort = 5;  //intake motor
