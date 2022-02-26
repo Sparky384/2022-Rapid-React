@@ -15,8 +15,8 @@ public class Shooter {
     private int currentPosition;
     private RelativeEncoder turnEncoder;
     private MiniPID pid;
-    private DoubleSolenoid solenoidLeft;
-    private DoubleSolenoid solenoidRight;
+    //private DoubleSolenoid solenoidLeft;
+    //private DoubleSolenoid solenoidRight;
     private boolean shooterDown;
 
     public Shooter() {
@@ -30,11 +30,11 @@ public class Shooter {
     turnEncoder = shooterMotorTurn.getEncoder();
     currentPosition = (int) encoder.getPosition();
     
-    solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 4, 5);
-    solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
+    //solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 4, 5);
+    //solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
         
     shooterDown = true;
-    shooterDown();
+    //shooterDown();
     
     pid = new MiniPID(0.001143, 0.00006, 0.0045);
     }
@@ -113,11 +113,15 @@ public class Shooter {
     }
     public void stickShoot(double stick)
     {
-        shooterMotorLeft.set(-0.5 * stick);
-        shooterMotorRight.set(0.5 * stick);
+        double speed = SmartDashboard.getNumber("speed", 0.0);
+        System.out.printf("%f\n", speed);
+        shooterMotorLeft.set(-speed);
+        shooterMotorRight.set(speed);
+        //shooterMotorLeft.set(-0.5 * stick);
+        //shooterMotorRight.set(0.5 * stick);
     }
 
-    public void shooterUp() {
+    /*public void shooterUp() {
         solenoidLeft.set(DoubleSolenoid.Value.kForward);
         solenoidRight.set(DoubleSolenoid.Value.kForward);
         shooterDown = false;
@@ -132,5 +136,5 @@ public class Shooter {
             shooterUp();
         else
             shooterDown();
-    }
+    }*/
 }

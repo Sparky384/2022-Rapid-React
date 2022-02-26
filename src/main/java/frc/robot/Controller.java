@@ -151,4 +151,41 @@ public class Controller {
             return copilot.getRightStickButton();
     }
 
+    public boolean getButton(int stick, Buttons button)
+    {
+        switch (button)
+        {
+        case Y:
+            return getYButton(stick);
+        case A:
+            return getAButton(stick);
+        case B:
+            return getBButton(stick);
+        case DDOWN:
+            return false;
+        case DLEFT:
+            return false;
+        case DRIGHT:
+            return false;
+        case DUP:
+            return false;
+        case L3:
+            return getL3(stick);
+        case LB:
+            return getLeftBumper(stick);
+        case LT:
+            return getLeftTrigger(stick);
+        case R3:
+            return getR3(stick);
+        case RB:
+            return getRightBumper(stick);
+        case RT:
+            return getRightTrigger(stick);
+        case X:
+            return getXButton(stick);
+        default:
+            return false;
+        }
+    }
 }
+

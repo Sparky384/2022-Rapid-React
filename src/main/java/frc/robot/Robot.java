@@ -26,10 +26,12 @@ public class Robot extends TimedRobot
   private int ret2;
   private Timer autoTimer;
   private boolean hasStartedAutoTimer;
-  private Compressor compressor;
+  //private Compressor compressor;
 
   @Override
   public void robotInit() {
+    SmartDashboard.putNumber("speed", 0.0);
+
     File f = new File("/home/admin/proto");
     if (f.exists())
     {
@@ -66,9 +68,9 @@ public class Robot extends TimedRobot
     autoTimer = new Timer();
     hasStartedAutoTimer = false;
 
-    compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+    /*compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     compressor.enableDigital();
-    compressor.disable();
+    compressor.disable();*/
   }
   
   public void teleopInit()
@@ -84,20 +86,23 @@ public class Robot extends TimedRobot
     drive.drive(pilotX, pilotY);
     SmartDashboard.putNumber("rightY", controller.getRightY(Constants.PILOT));
 
-    if (controller.getLeftBumper(Constants.PILOT))
-      shooter.toggle();
-    if (controller.getBButton(Constants.PILOT))
-      intake.toggle();
-    if (controller.getXButton(Constants.PILOT))
+    //if (controller.getButton(Constants.PILOT, ButtonMap.toggleShoot))
+    //  shooter.toggle();
+    /*if (controller.getButton(Constants.PILOT, ButtonMap.intakeDown))
+      intake.intakeDown();
+    else
+      intake.intakeUp();*/
+    if (controller.getButton(Constants.PILOT, ButtonMap.intakeIn))
       intake.intakeIn();
-    if (controller.getAButton(Constants.PILOT))
+    if (controller.getButton(Constants.PILOT, ButtonMap.intakeOut))
       intake.intakeOut();
     else if (!controller.getXButton(Constants.PILOT) && !controller.getAButton(Constants.PILOT))
       intake.stopIntake();
-    if(controller.getLeftTrigger(Constants.PILOT) || ret2 == 1)
-     ret2 = drive.driveTo(60, 5);
+    /*if(controller.getButton(Constants.PILOT, ButtonMap.driveTo) || ret2 == 1)
+     ret2 = drive.driveTo(60, 5)*/
     
-    /*if (controller.getYButton(Constants.PILOT))
+    
+    if (controller.getButton(Constants.PILOT, ButtonMap.shoot))
     {
       if (shooter.shoot())
       {
@@ -109,12 +114,15 @@ public class Robot extends TimedRobot
     else
     {
       shooter.stickShoot(controller.getRightY(Constants.PILOT));
-      intake.autoIndex();
+      if (controller.getButton(Constants.PILOT, ButtonMap.test))
+        intake.indexerShoot();
+      else
+        intake.autoIndex();
     }
-    */
+    
     dashboardOutput();
     
-    if (controller.getYButton(Constants.PILOT) || ret1 == 1)
+    if (controller.getButton(Constants.PILOT, ButtonMap.centerTo) || ret1 == 1)
     {
       ret1 = drive.centerToTarget(10.0);
     }

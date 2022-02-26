@@ -19,18 +19,18 @@ public class Constants {
     public static double centerIntervalTime = 1.0;
 
     //ports for 2020 robot
-    public static int stage1MotorPort = 4;  //intake motor
-    public static int stage2MotorPort = 5;  //intake motor
-    public static int stage3MotorPort = 11;  //intake motor
+    public static int stage1MotorPort;  //intake motor
+    public static int stage2MotorPort;  //intake motor
+    public static int stage3MotorPort;  //intake motor
     public static int bottomPhotoEyePort = 0;
-    public static int topPhotoEyePort = 2;
-    public static int frontLeftPort = 1;  //drivetrain motors
-    public static int frontRightPort = 14;  //drivetrain motors
-    public static int backLeftPort = 16;  //drivetrain motors
-    public static int backRightPort = 15;  //drivetrain motors
-    public static int shooterMotorRightPort = 13;
-    public static int shooterMotorLeftPort = 2;
-    public static int shooterMotorTurnPort = 10; //not going to be used on the actual robot
+    public static int topPhotoEyePort;
+    public static int frontLeftPort;  //drivetrain motors
+    public static int frontRightPort;  //drivetrain motors
+    public static int backLeftPort;  //drivetrain motors
+    public static int backRightPort;  //drivetrain motors
+    public static int shooterMotorRightPort;
+    public static int shooterMotorLeftPort;
+    public static int shooterMotorTurnPort; //not going to be used on the actual robot
    
     //camera
     public static final double targetHeight = 93.0;
@@ -91,15 +91,15 @@ public class Constants {
         }
         else // final robot
         {
-            stage1MotorPort = 4;  //intake motor
+            stage1MotorPort = 12;  //intake motor
             stage2MotorPort = 5;  //intake motor
-            stage3MotorPort = 11;  //intake motor
+            stage3MotorPort = 4;  //intake motor
             bottomPhotoEyePort = 0;
-            topPhotoEyePort = 2;
-            frontLeftPort = 1;  //drivetrain motors
-            frontRightPort = 14;  //drivetrain motors
-            backLeftPort = 16;  //drivetrain motors
-            backRightPort = 15;  //drivetrain motors
+            topPhotoEyePort = 1;
+            frontLeftPort = 14;  //drivetrain motors
+            frontRightPort = 0;  //drivetrain motors. we flipped the forts for frontright and backright and they worked, so don't change it for now
+            backLeftPort = 15;  //drivetrain motors
+            backRightPort = 1;  //drivetrain motors
             shooterMotorRightPort = 13;
             shooterMotorLeftPort = 2;
 
