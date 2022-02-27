@@ -2,13 +2,18 @@ package frc.robot;
 
 public class ButtonMap 
 {
+    // pilot
     public static Buttons intakeOut = Buttons.A;
-    public static Buttons intakeDown = Buttons.B;
-    public static Buttons intakeIn = Buttons.X;
-    public static Buttons centerTo = Buttons.Y;
-    public static Buttons driveTo = Buttons.LT;
-    public static Buttons RT = Buttons.RT;
-    public static Buttons toggleShoot = Buttons.LB;
-    public static Buttons shoot = Buttons.RB;
-    public static Buttons test = Buttons.R3;
+    public static Buttons autoShoot = Buttons.B;
+    public static Buttons climberSafety = Buttons.RT;
+    // drive = left stick
+    // climber = right stick
+
+    // copilot
+    public static Buttons indexerIn = Buttons.Y;
+    public static Buttons indexerOut = Buttons.A;
+    public static Buttons shooterUp = Buttons.DUP;
+    public static Buttons shooterDown = Buttons.DDOWN;
+    public static Buttons shooterSpeed1 = Buttons.LB;
+    public static Buttons shooterSpeed2 = Buttons.RB;
 }

@@ -4,10 +4,15 @@ public class Constants {
     //driveTo method constants
     public static double driveP = 0.02896;
     public static double driveI = 1.55;
+    public static double driveD = 0.0;
+    public static double driveIZoneUpper = 0.0;
+    public static double driveIZoneLower = 0.0;
     public static double deadBand = 10;
     public static double turnP = 0.009300; //0.0245  
     public static double turnI = 0.000001; //0.00375
     public static double turnD = 0.089000; //0.0
+    public static double turnIZoneUpper = 0.0;
+    public static double turnIZoneLower = 0.0;
     public static double turnDeadBand = 3; //10
     public static double shooterP = 0.001143;
     public static double shooterI = 0.00006;
@@ -75,10 +80,15 @@ public class Constants {
 
             driveP = 0.02896;
             driveI = 1.55;
+            driveD = 0.0;
+            driveIZoneUpper = 11.0;
+            driveIZoneLower = 0.5;
             deadBand = 10;
             turnP = 0.009300; //0.0245  
             turnI = 0.000001; //0.00375
             turnD = 0.089000; //0.0
+            turnIZoneUpper = 20.5;
+            turnIZoneLower = 0.6;
             turnDeadBand = 3; //10
             shooterP = 0.001143;
             shooterI = 0.00006;
@@ -105,10 +115,15 @@ public class Constants {
 
             driveP = 0.02896;
             driveI = 1.55;
-            deadBand = 10;
+            driveD = 0.0;
+            driveIZoneUpper = 11.0;
+            driveIZoneLower = 0.5;
+            deadBand = 5;
             turnP = 0.009300; //0.0245  
             turnI = 0.000001; //0.00375
             turnD = 0.089000; //0.0
+            turnIZoneUpper = 20.5;
+            turnIZoneLower = 0.6;
             turnDeadBand = 3; //10
             shooterP = 0.001143;
             shooterI = 0.00006;

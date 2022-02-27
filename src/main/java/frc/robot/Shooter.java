@@ -2,6 +2,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
+import javax.lang.model.util.ElementScanner6;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -15,9 +18,10 @@ public class Shooter {
     private int currentPosition;
     private RelativeEncoder turnEncoder;
     private MiniPID pid;
-    //private DoubleSolenoid solenoidLeft;
-    //private DoubleSolenoid solenoidRight;
+    private DoubleSolenoid solenoidLeft;
+    private DoubleSolenoid solenoidRight;
     private boolean shooterDown;
+    public boolean noMore = false;
 
     public Shooter() {
     shooterMotorRight = new CANSparkMax(Constants.shooterMotorRightPort, MotorType.kBrushless);
@@ -30,11 +34,11 @@ public class Shooter {
     turnEncoder = shooterMotorTurn.getEncoder();
     currentPosition = (int) encoder.getPosition();
     
-    //solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 4, 5);
-    //solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
+    solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 4, 5);
+    solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
         
     shooterDown = true;
-    //shooterDown();
+    shooterDown();
     
     pid = new MiniPID(0.001143, 0.00006, 0.0045);
     }
@@ -48,6 +52,7 @@ public class Shooter {
         shooterMotorLeft.set(0.5);
     }
     public void shootStop(){
+        System.out.println("STAP");
         shooterMotorRight.set(0.0);
         shooterMotorLeft.set(0.0);
     }
@@ -82,26 +87,53 @@ public class Shooter {
          
     }
 
-    public boolean shoot()
+    public boolean getDown()
     {
-        double setpoint = 1800.0;
-        if (setpoint - encoder.getVelocity() < 500)
+        return shooterDown;
+    }
+
+    public boolean testShoot(double speed)
+    {
+        shooterMotorLeft.set(speed);
+        shooterMotorRight.set(-speed);
+        SmartDashboard.putNumber("ShooterEncoder", -encoder.getVelocity());
+        return true;
+    }
+
+    public boolean shoot(double set)
+    {
+        double P = SmartDashboard.getNumber("Shoot P", Constants.shooterP);
+        double I = SmartDashboard.getNumber("Shoot I", Constants.shooterI);
+        double D = SmartDashboard.getNumber("Shoot D", Constants.shooterD);
+        double Pin = SmartDashboard.getNumber("Shoot Pin", 0.0);
+
+        double setpoint = set;
+        double curSpeed = -encoder.getVelocity();
+        pid.setI(I);
+        pid.setD(D);
+
+        if (setpoint - curSpeed < 1000 && setpoint - curSpeed > 30 ||
+            setpoint - curSpeed > -1000 && setpoint - curSpeed < -30)
         {
-            pid.setI(0.00006);
+            pid.setI(I);
+            pid.setP(Pin);
             pid.setMaxIOutput(400);
+            noMore = true;
         }
         else
         {
+                pid.setP(P);
             pid.setI(0.0);
             pid.clearError();
         }
-        double speed = pid.getOutput(encoder.getVelocity(), setpoint);
-        shooterMotorLeft.set(-speed);
-        shooterMotorRight.set(speed);
+        double speed = pid.getOutput(curSpeed, setpoint);
+        shooterMotorLeft.set(speed);
+        shooterMotorRight.set(-speed);
         SmartDashboard.putNumber("PID Output", speed);
         SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
-        SmartDashboard.putNumber("ShooterEncoder", encoder.getVelocity());
-        if (Math.abs(setpoint - encoder.getVelocity()) < 400)
+        SmartDashboard.putNumber("ShooterEncoder", curSpeed);
+        SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
+        if (Math.abs(setpoint - curSpeed) < 200)
         {
             return true;
         }
@@ -121,20 +153,15 @@ public class Shooter {
         //shooterMotorRight.set(0.5 * stick);
     }
 
-    /*public void shooterUp() {
+    public void shooterUp() {
         solenoidLeft.set(DoubleSolenoid.Value.kForward);
         solenoidRight.set(DoubleSolenoid.Value.kForward);
         shooterDown = false;
     }
+
     public void shooterDown() {
         solenoidLeft.set(DoubleSolenoid.Value.kReverse);
         solenoidRight.set(DoubleSolenoid.Value.kReverse);
         shooterDown = true;
     }
-    public void toggle() {
-        if (shooterDown)
-            shooterUp();
-        else
-            shooterDown();
-    }*/
 }

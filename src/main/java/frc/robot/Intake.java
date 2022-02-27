@@ -1,17 +1,20 @@
 package frc.robot;
 
+import java.util.TimerTask;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Intake {
     
     private DigitalInput bottomPhotoEye;
     public DigitalInput topPhotoEye;
     private CANSparkMax stage1Motor; //4
-    //private CANSparkMax stage2Motor; //5
     private CANSparkMax stage3Motor; //11
     
     //is true during the setup process for shooting so that the ball is in position. bug when holding shooter joystick while intake is going. 
@@ -19,7 +22,7 @@ public class Intake {
     private boolean prevBottomEye;
     private int ballsInIndex;
     
-    /*private DoubleSolenoid rearSolenoid;
+    private DoubleSolenoid rearSolenoid;
     private DoubleSolenoid frontSolenoid;
     private java.util.Timer intakeTimer; 
     private final int UP = 0;
@@ -53,15 +56,12 @@ public class Intake {
             intakeTimer.cancel();
             intakeTimer.schedule(new TimerCallbackEnd(), waitTime);
         }
-    }*/
+    }
 
     public Intake() {
         stage1Motor = new CANSparkMax(Constants.stage1MotorPort, MotorType.kBrushless);
         stage1Motor.setSmartCurrentLimit(60, 60);
 
-        /*stage2Motor = new CANSparkMax(Constants.stage2MotorPort, MotorType.kBrushless);
-        stage2Motor.setSmartCurrentLimit(60, 60);
-        */
         stage3Motor = new CANSparkMax(Constants.stage3MotorPort, MotorType.kBrushless);
         stage3Motor.setSmartCurrentLimit(60, 60);
 
@@ -71,15 +71,15 @@ public class Intake {
         prevBottomEye = false;
         ballsInIndex = 0;
 
-        //rearSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-        //frontSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
+        rearSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+        frontSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
         
-        //intakeTimer = new java.util.Timer();
-        //intakeState = UP;
-        //intakeUp();
+        intakeTimer = new java.util.Timer();
+        intakeState = UP;
+        intakeUp();
     }
 
-    /*public void intakeUp() {
+    public void intakeUp() {
         if (intakeState == DOWN || intakeState == COLLECT)
         {
             rearSolenoid.set(off);
@@ -97,7 +97,7 @@ public class Intake {
             intakeTimer.schedule(new TimerCallbackMid(), waitTime);
             intakeState = DOWN;
         }
-    }*/
+    }
 
     public void intakeIn() {
         stage1Motor.set(0.5);
@@ -112,15 +112,15 @@ public class Intake {
     }
 
     public void stopIndex() {
-        //stage2Motor.set(0);
         stage3Motor.set(0);
     }
 
     public void indexerShoot(){
-        //stage2Motor.set(-0.2);
         stage3Motor.set(0.5);
-        SmartDashboard.putBoolean("autoIndex", false);
-        SmartDashboard.putBoolean("indexerShoot", true);
+    }
+
+    public void indexerOut(){
+        stage3Motor.set(-0.5);
     }
 
     public void autoIndex(){

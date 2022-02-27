@@ -123,11 +123,12 @@ public class DriveTrain {
     
     public void drive(double speed, double turn) {
         difDrive.arcadeDrive(speed, turn);
-    }
+		pidInitialized = false;
+	}
 
     public double getRightEncoderPosition()
 	{
-		return (frontRight.getSelectedSensorPosition() * ((162.0 * Math.PI) / 634880.0)); 
+		return (frontRight.getSelectedSensorPosition() * ((150.58 * Math.PI) / 634880.0)); 
 	}
 
     public void initializeEncoders()	
@@ -141,14 +142,19 @@ public class DriveTrain {
 		SmartDashboard.putNumber("Current Error", currentError);
 		SmartDashboard.putNumber("PID OUT", driveToRate);
 		SmartDashboard.putNumber("RightEncoderPosition", getRightEncoderPosition());
+		double P = SmartDashboard.getNumber("Drive P", Constants.driveP);
+		double I = SmartDashboard.getNumber("Drive I", Constants.driveI);
+		double D = SmartDashboard.getNumber("Drive D", Constants.driveD);
+		double IL = SmartDashboard.getNumber("Drive I Lo", Constants.driveIZoneLower);
+		double IU = SmartDashboard.getNumber("Drive I Up", Constants.driveIZoneUpper);
         if (!pidInitialized)
         {
             dLock = true;
 			max = 0;
 			speedController.reset();
-			speedController.setPID(Constants.driveP, Constants.driveI, 0); // add PID values here
+			speedController.setPID(P, I, D); // add PID values here
 			speedController.setMaxIOutput(0.3);
-			speedController.setOutputLimits(-0.60, 0.60);
+			speedController.setOutputLimits(-0.70, 0.70);
 			speedController.setSetpoint(distance);
 			driveToRate = 0;
 			failTimer.reset();
@@ -168,6 +174,7 @@ public class DriveTrain {
 
 		driveToRate = speedController.getOutput(getRightEncoderPosition(), distance);
 		currentError = distance - (getRightEncoderPosition());
+		SmartDashboard.putNumber("drive error", currentError);
 		difDrive.arcadeDrive(0, -driveToRate);
 		if (getRightEncoderPosition() > max)
 			max = getRightEncoderPosition();
@@ -197,14 +204,14 @@ public class DriveTrain {
 			timing = false;
 		}
 
-		if ((currentError < 11.0 && currentError > 0.5) ||
-			(currentError > -11.0 && currentError < -0.5))
+		if ((currentError < IU && currentError > IL) ||
+			(currentError > -IU && currentError < -IL))
 		{
 			if (!inIZone)
 			{
 				inIZone = true;
 				speedController.reset();
-				speedController.setI(0.000383);
+				speedController.setI(I);
 			}
 		}
 		else
@@ -242,14 +249,18 @@ public class DriveTrain {
 
 	public int turnTo(double distance, final double timeout)	
 	{	
-		
+		double P = SmartDashboard.getNumber("Turn P", Constants.turnP);
+		double I = SmartDashboard.getNumber("Turn I", Constants.turnI);
+		double D = SmartDashboard.getNumber("Turn D", Constants.turnD);
+		double IL = SmartDashboard.getNumber("Turn I Lo", Constants.turnIZoneLower);
+		double IU = SmartDashboard.getNumber("Turn I Up", Constants.turnIZoneUpper);
 		boolean isUTurn = false;
 
 		SmartDashboard.putNumber("Yaw Error", currentError);
 		if (!pidInitialized) 
 		{
 			speedController.reset();
-			speedController.setPID(Constants.turnP, Constants.turnI, Constants.turnD); //i was orignally 0
+			speedController.setPID(P, I, D); //i was orignally 0
 			speedController.setMaxIOutput(0.4);
 			speedController.setOutputLimits(-0.65, 0.65);
 			speedController.setSetpoint(distance);
@@ -287,14 +298,14 @@ public class DriveTrain {
 			timing = false;
 		}
 
-		if ((currentError < 20.5 && currentError > 0.6) ||
-			(currentError > -20.5 && currentError < -0.6))
+		if ((currentError < IU && currentError > IL) ||
+			(currentError > -IU && currentError < -IL))
 		{
 			if (!inIZone)
 			{
 				inIZone = true;
 				speedController.reset();
-				speedController.setI(Constants.turnI);
+				speedController.setI(I);
 			}
 		}
 		else

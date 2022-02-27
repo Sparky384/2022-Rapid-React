@@ -7,6 +7,8 @@ package frc.robot;
 
 import java.io.File;
 
+import javax.lang.model.util.ElementScanner6;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -22,6 +24,8 @@ public class Robot extends TimedRobot
   private Shooter shooter;
   private int state;
   private SendableChooser<Integer> chooser;
+  private SendableChooser<Double> downSpeedChooser;
+  private SendableChooser<Double> upSpeedChooser;
   private int ret1;
   private int ret2;
   private Timer autoTimer;
@@ -31,7 +35,6 @@ public class Robot extends TimedRobot
   @Override
   public void robotInit() {
     SmartDashboard.putNumber("speed", 0.0);
-
     File f = new File("/home/admin/proto");
     if (f.exists())
     {
@@ -43,11 +46,57 @@ public class Robot extends TimedRobot
       SmartDashboard.putString("profile", "sparky");
       new Constants(Constants.sparky); // sets the port numbers
     }
+    SmartDashboard.putNumber("Drive P", Constants.driveP);
+    SmartDashboard.putNumber("Drive I", Constants.driveI);
+    SmartDashboard.putNumber("Drive D", Constants.driveD);
+    SmartDashboard.putNumber("Drive I Up", Constants.driveIZoneUpper);
+    SmartDashboard.putNumber("Drive I Lo", Constants.driveIZoneLower);
+
+    SmartDashboard.putNumber("Turn P", Constants.turnP);
+    SmartDashboard.putNumber("Turn I", Constants.turnI);
+    SmartDashboard.putNumber("Turn D", Constants.turnD);
+    SmartDashboard.putNumber("Turn I Up", Constants.turnIZoneUpper);
+    SmartDashboard.putNumber("Turn I Lo", Constants.turnIZoneLower);
+
+    SmartDashboard.putNumber("Shoot P", Constants.shooterP);
+    SmartDashboard.putNumber("Shoot I", Constants.shooterI);
+    SmartDashboard.putNumber("Shoot D", Constants.shooterD);
+    SmartDashboard.putNumber("Shoot Pin", 0.0);
+    SmartDashboard.putNumber("Shooter Percent", 0.0);
+
     drive = new DriveTrain();
     intake = new Intake();
     controller = new Controller();
     shooter = new Shooter();  
     chooser = new SendableChooser<Integer>();
+    downSpeedChooser = new SendableChooser<Double>();
+    upSpeedChooser = new SendableChooser<Double>();
+
+    downSpeedChooser.addOption("Down Speed", 1000.0);
+    downSpeedChooser.setDefaultOption("1000", 1000.0);
+    downSpeedChooser.addOption("1300", 1300.0);
+    downSpeedChooser.addOption("1600", 1600.0);
+    downSpeedChooser.addOption("1900", 1900.0);
+    downSpeedChooser.addOption("2200", 2200.0);
+    downSpeedChooser.addOption("2500", 2500.0);
+    downSpeedChooser.addOption("2800", 2800.0);
+    downSpeedChooser.addOption("3100", 3100.0);
+    downSpeedChooser.addOption("3400", 3400.0);
+    downSpeedChooser.addOption("3700", 3700.0);
+    downSpeedChooser.addOption("4000", 4000.0);
+
+    upSpeedChooser.addOption("Up Speed", 1000.0);
+    upSpeedChooser.setDefaultOption("1000", 1000.0);
+    upSpeedChooser.addOption("1300", 1300.0);
+    upSpeedChooser.addOption("1600", 1600.0);
+    upSpeedChooser.addOption("1900", 1900.0);
+    upSpeedChooser.addOption("2200", 2200.0);
+    upSpeedChooser.addOption("2500", 2500.0);
+    upSpeedChooser.addOption("2800", 2800.0);
+    upSpeedChooser.addOption("3100", 3100.0);
+    upSpeedChooser.addOption("3400", 3400.0);
+    upSpeedChooser.addOption("3700", 3700.0);
+    upSpeedChooser.addOption("4000", 4000.0);
 
     chooser.setDefaultOption("Turn and Drive", Constants.TURN_AND_DRIVE);
     chooser.addOption("Drive and Turn", Constants.DRIVE_AND_TURN);
@@ -62,6 +111,8 @@ public class Robot extends TimedRobot
     shooter.resetTurnEncoder();
     
     SmartDashboard.putData("Autonomous Chooser", chooser);
+    SmartDashboard.putData("Down Shooter Speed", downSpeedChooser);
+    SmartDashboard.putData("Up Shooter Speed", upSpeedChooser);
     ret1 = 0;
     ret2 = 0;
 
@@ -81,52 +132,66 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic() 
   {
-    double pilotY = 0.8*controller.getLeftY(Constants.PILOT);
-    double pilotX = -0.8 * controller.getLeftX(Constants.PILOT);
+    // pilot commands
+    double pilotY = controller.getLeftY(Constants.PILOT);
+    double pilotX = -controller.getLeftX(Constants.PILOT);
     drive.drive(pilotX, pilotY);
-    SmartDashboard.putNumber("rightY", controller.getRightY(Constants.PILOT));
+    if (controller.getButton(Constants.PILOT, ButtonMap.climberSafety))
+    {
+      // climber control goes on right stick
+    }
 
-    //if (controller.getButton(Constants.PILOT, ButtonMap.toggleShoot))
-    //  shooter.toggle();
-    /*if (controller.getButton(Constants.PILOT, ButtonMap.intakeDown))
-      intake.intakeDown();
-    else
-      intake.intakeUp();*/
-    if (controller.getButton(Constants.PILOT, ButtonMap.intakeIn))
-      intake.intakeIn();
     if (controller.getButton(Constants.PILOT, ButtonMap.intakeOut))
-      intake.intakeOut();
-    else if (!controller.getXButton(Constants.PILOT) && !controller.getAButton(Constants.PILOT))
-      intake.stopIntake();
-    /*if(controller.getButton(Constants.PILOT, ButtonMap.driveTo) || ret2 == 1)
-     ret2 = drive.driveTo(60, 5)*/
-    
-    
-    if (controller.getButton(Constants.PILOT, ButtonMap.shoot))
     {
-      if (shooter.shoot())
-      {
-        intake.indexerShoot();
-      }
-      else
-        intake.autoIndex();
+      //intake.intakeDown();
+      intake.intakeIn();
     }
     else
     {
-      shooter.stickShoot(controller.getRightY(Constants.PILOT));
-      if (controller.getButton(Constants.PILOT, ButtonMap.test))
+      //intake.intakeUp();
+      intake.stopIntake();
+    }
+
+    if (controller.getButton(Constants.PILOT, ButtonMap.autoShoot))
+    {
+      double speed = 0.0;
+      if (shooter.getDown())
+        speed = downSpeedChooser.getSelected();
+      else
+        speed = upSpeedChooser.getSelected();
+
+      //shooter.testShoot(0.5);
+      if (shooter.testShoot(SmartDashboard.getNumber("Shooter Percent", 0.5)))// && drive.centerToTarget(15.0) == 1)
         intake.indexerShoot();
       else
-        intake.autoIndex();
+        intake.stopIndex();
+        //intake.autoIndex();
     }
-    
-    dashboardOutput();
-    
-    if (controller.getButton(Constants.PILOT, ButtonMap.centerTo) || ret1 == 1)
+    else
     {
-      ret1 = drive.centerToTarget(10.0);
+      // give control of shooter/indexer to copilot if not auto shooting
+      if (controller.getButton(Constants.COPILOT, ButtonMap.indexerOut))
+        intake.indexerOut();
+      else if (controller.getButton(Constants.COPILOT, ButtonMap.indexerIn))
+        intake.indexerShoot();
+      else 
+        intake.autoIndex();
+
+      if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeed1))
+        shooter.testShoot(0.4);
+      else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeed2))
+        shooter.testShoot(0.5);
+      else
+        shooter.shootStop();
     }
-    
+
+    // copilot commands
+    if (controller.getButton(Constants.COPILOT, ButtonMap.shooterUp))
+      shooter.shooterUp();
+    if (controller.getButton(Constants.COPILOT, ButtonMap.shooterDown))
+      shooter.shooterDown();
+
+    dashboardOutput();
   }
 
   @Override
@@ -254,7 +319,7 @@ public class Robot extends TimedRobot
     case 2:
       if (!hasStartedAutoTimer)
         autoTimer.start();
-      if (shooter.shoot())
+      if (shooter.shoot(1000.0))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(6.0))
       {
@@ -299,7 +364,7 @@ public class Robot extends TimedRobot
     case 6:
       if (!hasStartedAutoTimer)
       autoTimer.start();
-      if (shooter.shoot())
+      if (shooter.shoot(1000.0))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(6.0))
       {
@@ -347,7 +412,7 @@ public class Robot extends TimedRobot
     case 2:
       if (!hasStartedAutoTimer)
         autoTimer.start();
-      if (shooter.shoot()) 
+      if (shooter.shoot(1000.0)) 
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(6.0))
       {
@@ -374,7 +439,7 @@ public class Robot extends TimedRobot
     case 0:
       if (!hasStartedAutoTimer)
         autoTimer.start();
-      if (shooter.shoot()) 
+      if (shooter.shoot(1000.0)) 
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(6.0))
       {
