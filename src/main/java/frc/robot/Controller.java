@@ -151,6 +151,39 @@ public class Controller {
             return copilot.getRightStickButton();
     }
 
+    public boolean getDpadUP(int stick)
+    {
+        if (stick == Constants.PILOT)
+            return pilot.getPOV() == 0;
+        else
+            return copilot.getPOV() == 0;
+    }
+
+    public boolean getDpadRIGHT(int stick)
+    {
+        if (stick == Constants.PILOT)
+            return pilot.getPOV() == 90;
+        else
+            return copilot.getPOV() == 90;
+    }
+
+    public boolean getDpadDOWN(int stick)
+    {
+        if (stick == Constants.PILOT)
+            return pilot.getPOV() == 180;
+        else
+            return copilot.getPOV() == 180;
+    }
+
+    public boolean getDpadLEFT(int stick)
+    {
+        if (stick == Constants.PILOT)
+            return pilot.getPOV() == 270;
+        else
+            return copilot.getPOV() == 270;
+    }
+
+
     public boolean getButton(int stick, Buttons button)
     {
         switch (button)
@@ -162,13 +195,13 @@ public class Controller {
         case B:
             return getBButton(stick);
         case DDOWN:
-            return false;
+            return getDpadDOWN(stick);
         case DLEFT:
-            return false;
+            return getDpadLEFT(stick);
         case DRIGHT:
-            return false;
+            return getDpadRIGHT(stick);
         case DUP:
-            return false;
+            return getDpadUP(stick);
         case L3:
             return getL3(stick);
         case LB:

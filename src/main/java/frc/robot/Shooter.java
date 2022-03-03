@@ -3,8 +3,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
-import javax.lang.model.util.ElementScanner6;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -19,7 +17,7 @@ public class Shooter {
     private RelativeEncoder turnEncoder;
     private MiniPID pid;
     private DoubleSolenoid solenoidLeft;
-    private DoubleSolenoid solenoidRight;
+    //private DoubleSolenoid solenoidRight;
     private boolean shooterDown;
     public boolean noMore = false;
 
@@ -34,8 +32,8 @@ public class Shooter {
     turnEncoder = shooterMotorTurn.getEncoder();
     currentPosition = (int) encoder.getPosition();
     
-    solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 4, 5);
-    solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
+    solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+    //solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
         
     shooterDown = true;
     shooterDown();
@@ -52,7 +50,7 @@ public class Shooter {
         shooterMotorLeft.set(0.5);
     }
     public void shootStop(){
-        System.out.println("STAP");
+        //System.out.println("STAP");
         shooterMotorRight.set(0.0);
         shooterMotorLeft.set(0.0);
     }
@@ -94,6 +92,8 @@ public class Shooter {
 
     public boolean testShoot(double speed)
     {
+        //if (speed > 1.0 || speed < -1.0)
+        //    speed /= 100;
         shooterMotorLeft.set(speed);
         shooterMotorRight.set(-speed);
         SmartDashboard.putNumber("ShooterEncoder", -encoder.getVelocity());
@@ -155,13 +155,13 @@ public class Shooter {
 
     public void shooterUp() {
         solenoidLeft.set(DoubleSolenoid.Value.kForward);
-        solenoidRight.set(DoubleSolenoid.Value.kForward);
+        //solenoidRight.set(DoubleSolenoid.Value.kForward);
         shooterDown = false;
     }
 
     public void shooterDown() {
         solenoidLeft.set(DoubleSolenoid.Value.kReverse);
-        solenoidRight.set(DoubleSolenoid.Value.kReverse);
+        //solenoidRight.set(DoubleSolenoid.Value.kReverse);
         shooterDown = true;
     }
 }

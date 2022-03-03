@@ -1,6 +1,5 @@
 package frc.robot;
 
-import java.util.TimerTask;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -9,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Intake {
     
@@ -24,39 +24,16 @@ public class Intake {
     
     private DoubleSolenoid rearSolenoid;
     private DoubleSolenoid frontSolenoid;
-    private java.util.Timer intakeTimer; 
+    private Timer intakeTimer; 
     private final int UP = 0;
     private final int DOWN = 1;
     private final int COLLECT = 2;
     private int intakeState;
-    private int waitTime = 3000; // in ms
+    private double waitTime = 1.0;
 
-    private final DoubleSolenoid.Value on = DoubleSolenoid.Value.kForward;
-    private final DoubleSolenoid.Value off = DoubleSolenoid.Value.kReverse;
+    private final DoubleSolenoid.Value on = DoubleSolenoid.Value.kReverse;
+    private final DoubleSolenoid.Value off = DoubleSolenoid.Value.kForward;
     private final DoubleSolenoid.Value open = DoubleSolenoid.Value.kOff;
-
-    private class TimerCallbackEnd extends TimerTask
-    {
-        // runs at after the intake is put down
-        @Override
-        public void run() 
-        {
-            rearSolenoid.set(off);
-            intakeState = COLLECT;
-        }
-    }
-
-    private class TimerCallbackMid extends TimerTask
-    {
-        // runs at after the intake is put down
-        @Override
-        public void run() 
-        {
-            frontSolenoid.set(off);
-            intakeTimer.cancel();
-            intakeTimer.schedule(new TimerCallbackEnd(), waitTime);
-        }
-    }
 
     public Intake() {
         stage1Motor = new CANSparkMax(Constants.stage1MotorPort, MotorType.kBrushless);
@@ -71,11 +48,11 @@ public class Intake {
         prevBottomEye = false;
         ballsInIndex = 0;
 
-        rearSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-        frontSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
+        rearSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 5, 4);
+        frontSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 2);
         
-        intakeTimer = new java.util.Timer();
-        intakeState = UP;
+        intakeTimer = new Timer();
+        intakeState = DOWN;
         intakeUp();
     }
 
@@ -84,19 +61,26 @@ public class Intake {
         {
             rearSolenoid.set(off);
             frontSolenoid.set(on);
-            intakeTimer.cancel();
+            intakeTimer.stop();
             intakeState = UP;
         }
     }
 
     public void intakeDown() {
-        if (intakeState == UP)
-        {
             rearSolenoid.set(on);
-            frontSolenoid.set(on);
-            intakeTimer.schedule(new TimerCallbackMid(), waitTime);
+            frontSolenoid.set(off);
+            if (intakeState == UP)
+            {
+                intakeTimer.reset();
+                intakeTimer.start();
+            }
+            else if (intakeTimer.hasElapsed(waitTime))
+            {
+                rearSolenoid.set(off);
+                frontSolenoid.set(off);
+                intakeState = COLLECT;
+            }
             intakeState = DOWN;
-        }
     }
 
     public void intakeIn() {

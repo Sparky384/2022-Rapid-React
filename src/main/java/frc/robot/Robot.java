@@ -30,7 +30,7 @@ public class Robot extends TimedRobot
   private int ret2;
   private Timer autoTimer;
   private boolean hasStartedAutoTimer;
-  //private Compressor compressor;
+  private Compressor compressor;
 
   @Override
   public void robotInit() {
@@ -119,9 +119,9 @@ public class Robot extends TimedRobot
     autoTimer = new Timer();
     hasStartedAutoTimer = false;
 
-    /*compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+    compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     compressor.enableDigital();
-    compressor.disable();*/
+    //compressor.disable();
   }
   
   public void teleopInit()
@@ -136,6 +136,7 @@ public class Robot extends TimedRobot
     double pilotY = controller.getLeftY(Constants.PILOT);
     double pilotX = -controller.getLeftX(Constants.PILOT);
     drive.drive(pilotX, pilotY);
+
     if (controller.getButton(Constants.PILOT, ButtonMap.climberSafety))
     {
       // climber control goes on right stick
@@ -143,12 +144,12 @@ public class Robot extends TimedRobot
 
     if (controller.getButton(Constants.PILOT, ButtonMap.intakeOut))
     {
-      //intake.intakeDown();
+      intake.intakeDown();
       intake.intakeIn();
     }
     else
     {
-      //intake.intakeUp();
+      intake.intakeUp();
       intake.stopIntake();
     }
 

@@ -68,8 +68,8 @@ public class Constants {
             stage1MotorPort = 4;  //intake motor
             stage2MotorPort = 5;  //intake motor
             stage3MotorPort = 11;  //intake motor
-            bottomPhotoEyePort = 0;
-            topPhotoEyePort = 2;
+            bottomPhotoEyePort = 2;
+            topPhotoEyePort = 1;
             frontLeftPort = 1;  //drivetrain motors
             frontRightPort = 14;  //drivetrain motors
             backLeftPort = 16;  //drivetrain motors
@@ -107,7 +107,7 @@ public class Constants {
             bottomPhotoEyePort = 0;
             topPhotoEyePort = 1;
             frontLeftPort = 14;  //drivetrain motors
-            frontRightPort = 0;  //drivetrain motors. we flipped the forts for frontright and backright and they worked, so don't change it for now
+            frontRightPort = 23;  //drivetrain motors. we flipped the forts for frontright and backright and they worked, so don't change it for now
             backLeftPort = 15;  //drivetrain motors
             backRightPort = 1;  //drivetrain motors
             shooterMotorRightPort = 13;
