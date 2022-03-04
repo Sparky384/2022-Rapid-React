@@ -6,6 +6,10 @@ public class ButtonMap
     public static Buttons intakeOut = Buttons.A;
     public static Buttons autoShoot = Buttons.B;
     public static Buttons climberSafety = Buttons.RT;
+    public static Buttons UP = Buttons.DUP;
+    public static Buttons DOWN = Buttons.DDOWN;
+    public static Buttons LEFT = Buttons.DLEFT;
+    public static Buttons R = Buttons.DRIGHT;
     // drive = left stick
     // climber = right stick
 

@@ -23,7 +23,7 @@ public class Constants {
     public static double centerDeadBand = 1.2;
     public static double centerIntervalTime = 1.0;
 
-    //ports for 2020 robot
+   
     public static int stage1MotorPort;  //intake motor
     public static int stage2MotorPort;  //intake motor
     public static int stage3MotorPort;  //intake motor
@@ -36,6 +36,8 @@ public class Constants {
     public static int shooterMotorRightPort;
     public static int shooterMotorLeftPort;
     public static int shooterMotorTurnPort; //not going to be used on the actual robot
+    public static int climberMotorPort; 
+    public static int climberMinimumPosition;
    
     //camera
     public static final double targetHeight = 93.0;
@@ -133,6 +135,8 @@ public class Constants {
             shooterThreshold = 400.0;
             centerDeadBand = 2.5;
             centerIntervalTime = 1.0;
+            climberMotorPort = 3;
+            climberMinimumPosition = 5;
         }
     }
 }

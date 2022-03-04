@@ -31,6 +31,7 @@ public class Robot extends TimedRobot
   private Timer autoTimer;
   private boolean hasStartedAutoTimer;
   private Compressor compressor;
+  private Climber climb;
 
   @Override
   public void robotInit() {
@@ -71,6 +72,7 @@ public class Robot extends TimedRobot
     chooser = new SendableChooser<Integer>();
     downSpeedChooser = new SendableChooser<Double>();
     upSpeedChooser = new SendableChooser<Double>();
+    climb = new Climber();
 
     downSpeedChooser.addOption("Down Speed", 1000.0);
     downSpeedChooser.setDefaultOption("1000", 1000.0);
@@ -133,14 +135,18 @@ public class Robot extends TimedRobot
   public void teleopPeriodic() 
   {
     // pilot commands
-    double pilotY = controller.getLeftY(Constants.PILOT);
-    double pilotX = -controller.getLeftX(Constants.PILOT);
-    drive.drive(pilotX, pilotY);
+    double leftPilotY = controller.getLeftY(Constants.PILOT);
+    double leftPilotX = -controller.getLeftX(Constants.PILOT);
+    double rightPilotY = controller.getRightY(Constants.PILOT);
+    drive.drive(leftPilotX, leftPilotY);
 
     if (controller.getButton(Constants.PILOT, ButtonMap.climberSafety))
     {
       // climber control goes on right stick
+      climb.move(rightPilotY);
     }
+    else
+      climb.move(0);
 
     if (controller.getButton(Constants.PILOT, ButtonMap.intakeOut))
     {
