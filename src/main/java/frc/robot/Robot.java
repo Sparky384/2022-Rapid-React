@@ -404,7 +404,7 @@ public class Robot extends TimedRobot
       }
       break;
     case 1:
-      ret = drive.driveTo(-79.0, 5.0);
+      ret = drive.driveTo(-79.0, 3.0);
       if (ret == 0)
         state++;
       else if (ret == -1)
