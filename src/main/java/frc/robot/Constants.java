@@ -13,7 +13,7 @@ public class Constants {
     public static double turnD = 0.089000; //0.0
     public static double turnIZoneUpper = 0.0;
     public static double turnIZoneLower = 0.0;
-    public static double turnDeadBand = 3; //10
+    public static double turnDeadBand = 2; //10
     public static double shooterP = 0.001143;
     public static double shooterI = 0.00006;
     public static double shooterD = 0.0045;
@@ -119,12 +119,12 @@ public class Constants {
             driveIZoneUpper = 11.0;
             driveIZoneLower = 0.5;
             deadBand = 5;
-            turnP = 0.009300; //0.0245  
-            turnI = 0.000001; //0.00375
-            turnD = 0.089000; //0.0
+            turnP = 0.01009; //0.0245  
+            turnI = 0.00076; //0.00375
+            turnD = 0.0901; //0.0
             turnIZoneUpper = 20.5;
-            turnIZoneLower = 0.6;
-            turnDeadBand = 3; //10
+            turnIZoneLower = 0.7;
+            turnDeadBand = 2; //10
             shooterP = 0.001143;
             shooterI = 0.00006;
             shooterD = 0.0045;

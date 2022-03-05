@@ -105,6 +105,7 @@ public class Shooter {
         double P = SmartDashboard.getNumber("Shoot P", Constants.shooterP);
         double I = SmartDashboard.getNumber("Shoot I", Constants.shooterI);
         double D = SmartDashboard.getNumber("Shoot D", Constants.shooterD);
+        double F = SmartDashboard.getNumber("Shoot F", 0.0);
         double Pin = SmartDashboard.getNumber("Shoot Pin", 0.0);
 
         double setpoint = set;
@@ -122,7 +123,7 @@ public class Shooter {
         }
         else
         {
-                pid.setP(P);
+            pid.setP(P);
             pid.setI(0.0);
             pid.clearError();
         }

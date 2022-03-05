@@ -60,7 +60,8 @@ public class Robot extends TimedRobot
 
     SmartDashboard.putNumber("Shoot P", Constants.shooterP);
     SmartDashboard.putNumber("Shoot I", Constants.shooterI);
-    SmartDashboard.putNumber("Shoot D", Constants.shooterD);
+    SmartDashboard.putNumber("Shoot F", Constants.shooterD);
+    SmartDashboard.putNumber("Shoot D", 0.0);
     SmartDashboard.putNumber("Shoot Pin", 0.0);
     SmartDashboard.putNumber("Shooter Percent", 0.0);
 
@@ -137,6 +138,13 @@ public class Robot extends TimedRobot
     double pilotX = -controller.getLeftX(Constants.PILOT);
     drive.drive(pilotX, pilotY);
 
+    if (controller.getButton(Constants.PILOT, Buttons.Y))
+    {
+      drive.turnTo(90.0, 7.0);
+    }
+    else
+      drive.resetPid();
+
     if (controller.getButton(Constants.PILOT, ButtonMap.climberSafety))
     {
       // climber control goes on right stick
@@ -162,7 +170,8 @@ public class Robot extends TimedRobot
         speed = upSpeedChooser.getSelected();
 
       //shooter.testShoot(0.5);
-      if (shooter.testShoot(SmartDashboard.getNumber("Shooter Percent", 0.5)))// && drive.centerToTarget(15.0) == 1)
+      //if (shooter.testShoot(SmartDashboard.getNumber("Shooter Percent", 0.5)))// && drive.centerToTarget(15.0) == 1)
+      if (shooter.shoot(2500.0))
         intake.indexerShoot();
       else
         intake.stopIndex();
@@ -179,7 +188,7 @@ public class Robot extends TimedRobot
         intake.autoIndex();
 
       if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeed1))
-        shooter.testShoot(0.4);
+        shooter.testShoot(0.25);
       else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeed2))
         shooter.testShoot(0.5);
       else
@@ -287,7 +296,7 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets());
     SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset());
     SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset());
-    SmartDashboard.putNumber("Gyro", drive.getImuYaw(true));
+    SmartDashboard.putNumber("Gyro", drive.getImuYaw(false));
     SmartDashboard.putNumber("Encoder", drive.getRightEncoderPosition());
   }
 
@@ -297,82 +306,117 @@ public class Robot extends TimedRobot
     switch (state)
     {
     case 0:
-      ret = drive.driveTo(63.0, 5.0);
+      autoTimer.start();
+      intake.intakeDown();
       intake.intakeIn();
+      if (autoTimer.hasElapsed(1.0));
+        state++;
+    case 1:
+      ret = drive.driveTo(40.0, 5.0);
+      intake.intakeIn();
+      intake.intakeDown();
       if (ret == 0) {
         drive.stop();
         intake.stopIntake();
         state++;
-      }
-      else if (ret == -1)
-        state = -1;
-      break;
-    case 1:
-      ret = drive.turnTo(-90.0, 8.0); //TODO SHOULD BE NEAR 180 RETUNE PID WITH ONE FINAL
-      if (ret == 0)
-      {
-        drive.stop();
-        state++;
+        autoTimer.stop();
+        autoTimer.reset();
       }
       else if (ret == -1)
         state = -1;
       break;
     case 2:
+      intake.intakeUp();
+      intake.stopIntake();
+      ret = drive.turnTo(180.0, 5.0); //TODO SHOULD BE NEAR 180 RETUNE PID WITH ONE FINAL
+      if (ret == 0)
+      {
+        drive.stop();
+        autoTimer.stop();
+        autoTimer.reset();
+        state++;
+        autoTimer.stop();
+        autoTimer.reset();
+      }
+      else if (ret == -1)
+        state = -1;
+      break;
+    case 3:
       if (!hasStartedAutoTimer)
         autoTimer.start();
-      if (shooter.shoot(1000.0))
+      //if (shooter.shoot(1000.0))
+      if (shooter.testShoot(0.25)) 
         intake.indexerShoot();
-      if (autoTimer.advanceIfElapsed(6.0))
+      if (autoTimer.advanceIfElapsed(4.0))
       {
         intake.stopIndex();
         autoTimer.stop();
         shooter.shootStop();
-        //state++;
-        state = 4;
+        state++;
+        autoTimer.stop();
+        autoTimer.reset();
       }
       break;
-   /*  case 3:
-      ret = drive.turnTo(0.0, 5.0); //TODO MAKE 95 DEGREES AFTER FIXING 180 ISSUE
+    case 4:
+      intake.intakeUp();
+      intake.stopIntake();
+      ret = drive.turnTo(-85.0, 5.0);
       if (ret == 0)
       {
         drive.stop();
+        autoTimer.stop();
+        autoTimer.reset();
         state++;
-      }
-      else if (ret == -1)
-        state = -1;
-      break; */
-    case 4: 
-      ret = drive.driveTo(93.0, 5.0);
-      intake.intakeIn();
-      if (ret == 0) {
-        drive.stop();
-        intake.stopIntake();
-        state++;
+        autoTimer.stop();
+        autoTimer.reset();
       }
       else if (ret == -1)
         state = -1;
       break;
     case 5:
-      ret = drive.turnTo(-90.0, 5.0);
-      if (ret == 0)
-      {
+      ret = drive.driveTo(90.0, 5.0);
+      intake.intakeIn();
+      intake.intakeDown();
+      if (ret == 0) {
         drive.stop();
+        intake.stopIntake();
         state++;
+        autoTimer.stop();
+        autoTimer.reset();
       }
       else if (ret == -1)
         state = -1;
       break;
     case 6:
+      intake.intakeUp();
+      intake.stopIntake();
+      ret = drive.turnTo(-95.0, 5.0); //TODO SHOULD BE NEAR 180 RETUNE PID WITH ONE FINAL
+      if (ret == 0)
+      {
+        drive.stop();
+        autoTimer.stop();
+        autoTimer.reset();
+        state++;
+        autoTimer.stop();
+        autoTimer.reset();
+      }
+      else if (ret == -1)
+        state = -1;
+      break;
+    case 7:  
       if (!hasStartedAutoTimer)
       autoTimer.start();
-      if (shooter.shoot(1000.0))
+      //if (shooter.shoot(1000.0))
+      if (shooter.testShoot(0.25)) 
         intake.indexerShoot();
-      if (autoTimer.advanceIfElapsed(6.0))
+      if (autoTimer.advanceIfElapsed(4.0))
       {
         intake.stopIndex();
         autoTimer.stop();
         shooter.shootStop();
         state++;
+        autoTimer.stop();
+        autoTimer.reset();
       }
       break;
     default:
@@ -390,8 +434,15 @@ public class Robot extends TimedRobot
     switch (state)
     {
     case 0:
-      ret = drive.driveTo(63.0, 5.0);
+      autoTimer.start();
+      intake.intakeDown();
       intake.intakeIn();
+      if (autoTimer.hasElapsed(1.0));
+        state++;
+    case 1:
+      ret = drive.driveTo(40.0, 5.0);
+      intake.intakeIn();
+      intake.intakeDown();
       if (ret == 0) {
         drive.stop();
         intake.stopIntake();
@@ -400,28 +451,43 @@ public class Robot extends TimedRobot
       else if (ret == -1)
         state = -1;
       break;
-    case 1:
-      ret = drive.turnTo(90.0, 5.0); //TODO SHOULD BE NEAR 180 RETUNE PID WITH ONE FINAL
+    case 2:
+      intake.intakeUp();
+      intake.stopIntake();
+      ret = drive.turnTo(180.0, 5.0); //TODO SHOULD BE NEAR 180 RETUNE PID WITH ONE FINAL
       if (ret == 0)
       {
         drive.stop();
+        autoTimer.stop();
+        autoTimer.reset();
         state++;
       }
       else if (ret == -1)
         state = -1;
       break;
-    case 2:
+    case 3:
       if (!hasStartedAutoTimer)
         autoTimer.start();
-      if (shooter.shoot(1000.0)) 
+      //if (shooter.shoot(1000.0))
+      if (shooter.testShoot(0.25)) 
         intake.indexerShoot();
-      if (autoTimer.advanceIfElapsed(6.0))
+      if (autoTimer.advanceIfElapsed(4.0))
       {
         intake.stopIndex();
         autoTimer.stop();
         shooter.shootStop();
         state++;
       }
+      break;
+    case 4:
+      ret = drive.driveTo(-15.0, 5.0);
+      if (ret == 0) {
+        drive.stop();
+        intake.stopIntake();
+        state++;
+      }
+      else if (ret == -1)
+        state = -1;
       break;
     default:
       drive.stop();
@@ -440,9 +506,10 @@ public class Robot extends TimedRobot
     case 0:
       if (!hasStartedAutoTimer)
         autoTimer.start();
-      if (shooter.shoot(1000.0)) 
+      //if (shooter.shoot(1000.0))
+      if (shooter.testShoot(0.25)) 
         intake.indexerShoot();
-      if (autoTimer.advanceIfElapsed(6.0))
+      if (autoTimer.advanceIfElapsed(3.0))
       {
         intake.stopIndex();
         autoTimer.stop();
@@ -451,7 +518,7 @@ public class Robot extends TimedRobot
       }
       break;
     case 1:
-      ret = drive.driveTo(-97.0, 5.0);
+      ret = drive.driveTo(-79.0, 5.0);
       if (ret == 0)
         state++;
       else if (ret == -1)

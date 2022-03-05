@@ -47,6 +47,8 @@ public class DriveTrain {
 		tempP = 0.0;
 		tempI = 0.0;
 		tempD = 0.0;
+
+		pidInitialized = false;
 		
 		frontLeft = new WPI_TalonFX(Constants.frontLeftPort);
 		frontRight = new WPI_TalonFX(Constants.frontRightPort);
@@ -105,6 +107,11 @@ public class DriveTrain {
 		difDrive.arcadeDrive(0, 0);
 	}
 
+	public void resetPid()
+	{
+		pidInitialized = false;
+	}
+
     public void imuZeroYaw() 
 	{
         iteration = 0;
@@ -123,7 +130,6 @@ public class DriveTrain {
     
     public void drive(double speed, double turn) {
         difDrive.arcadeDrive(speed, turn);
-		pidInitialized = false;
 	}
 
     public double getRightEncoderPosition()
@@ -259,6 +265,9 @@ public class DriveTrain {
 		SmartDashboard.putNumber("Yaw Error", currentError);
 		if (!pidInitialized) 
 		{
+			System.out.println("resetting pid -----------------------------");
+			System.out.println("83498498273582375407584720");
+			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 			speedController.reset();
 			speedController.setPID(P, I, D); //i was orignally 0
 			speedController.setMaxIOutput(0.4);
@@ -277,9 +286,13 @@ public class DriveTrain {
 		// This is the final output of the PID
 		if(distance > 165)
 			isUTurn = true;
+		if (distance < 0)
+			isUTurn = false;
 
 		driveToRate = speedController.getOutput(getImuYaw(isUTurn), distance);
 		currentError = distance - getImuYaw(isUTurn);
+		if (distance < 0)
+			driveToRate *= -1;
 		difDrive.arcadeDrive(-driveToRate, 0);
 		SmartDashboard.putNumber("TurnResult", getImuYaw(isUTurn));
 
@@ -319,7 +332,7 @@ public class DriveTrain {
 		{					// Within deadband for interval time
 			failTimer.reset();
 			System.out.printf("PID FINISHED %f\n", currentError);
-			pidInitialized = false;
+			//pidInitialized = false;
 			return 0;	// PID is complete (successful)
 		} 
 		else if (failTimer.hasPeriodPassed(timeout)) 	
@@ -332,7 +345,7 @@ public class DriveTrain {
 			intervalTimer.reset();
 			failTimer.reset();
 			speedController.reset();
-			pidInitialized = false;
+			//pidInitialized = false;
 			return -1;
 		} 
 		else	

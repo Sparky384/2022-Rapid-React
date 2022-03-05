@@ -67,8 +67,11 @@ public class Intake {
     }
 
     public void intakeDown() {
-            rearSolenoid.set(on);
-            frontSolenoid.set(off);
+            if (intakeState != COLLECT)
+            {
+                rearSolenoid.set(on);
+                frontSolenoid.set(off);
+            }
             if (intakeState == UP)
             {
                 intakeTimer.reset();
