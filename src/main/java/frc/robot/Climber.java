@@ -10,13 +10,25 @@ public class Climber {
     {
         climberMotor = new WPI_TalonFX(Constants.climberMotorPort); 
         climberMotor.setNeutralMode(NeutralMode.Brake);
+        climberMotor.setSelectedSensorPosition(0.0);
     }
 
     public void move(double Yaxis)
     {
-        if (climberMotor.getSelectedSensorPosition() < Constants.climberMinimumPosition && Yaxis < 0)
+        Yaxis *= -1;
+        System.out.println(Yaxis);
+        System.out.println(climberMotor.getSelectedSensorPosition());
+        System.out.println("----");
+        if (Yaxis < 0 && climberMotor.getSelectedSensorPosition() <= Constants.climberMinimumPosition)
+            climberMotor.set(0);
+        if (Yaxis > 0 && climberMotor.getSelectedSensorPosition() >= Constants.climberMaximumPosition)
             climberMotor.set(0);
         else
-            climberMotor.set(Yaxis);
+        {
+            if (Yaxis > 0)
+                climberMotor.set(Yaxis);
+            else
+                climberMotor.set(Yaxis * 0.5);
+        }
     }
 }

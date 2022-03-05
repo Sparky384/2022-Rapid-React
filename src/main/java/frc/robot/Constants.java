@@ -38,7 +38,8 @@ public class Constants {
     public static int shooterMotorTurnPort; //not going to be used on the actual robot
     public static int climberMotorPort; 
     public static int climberMinimumPosition;
-   
+    public static int climberMaximumPosition;
+
     //camera
     public static final double targetHeight = 93.0;
     public static final double cameraHeight = 40.0;
@@ -57,6 +58,11 @@ public class Constants {
 
     public static final int PILOT = 0;
     public static final int COPILOT = 1;
+
+    public static final double closeSpeed = 2100.0;
+    public static final double midSpeed = 2500.0;
+    public static final double farSpeed = 2900.0;
+    public static final double upSpeed = 3050.0;
 
     //
 
@@ -136,7 +142,8 @@ public class Constants {
             centerDeadBand = 2.5;
             centerIntervalTime = 1.0;
             climberMotorPort = 3;
-            climberMinimumPosition = 5;
+            climberMinimumPosition = 55;
+            climberMaximumPosition = 197000;
         }
     }
 }

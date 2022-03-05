@@ -7,6 +7,8 @@ package frc.robot;
 
 import java.io.File;
 
+import javax.lang.model.util.ElementScanner6;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -22,8 +24,6 @@ public class Robot extends TimedRobot
   private Shooter shooter;
   private int state;
   private SendableChooser<Integer> chooser;
-  private SendableChooser<Double> downSpeedChooser;
-  private SendableChooser<Double> upSpeedChooser;
   private Timer autoTimer;
   private Compressor compressor;
   private Climber climb;
@@ -50,37 +50,8 @@ public class Robot extends TimedRobot
     controller = new Controller();
     shooter = new Shooter();  
     chooser = new SendableChooser<Integer>();
-    downSpeedChooser = new SendableChooser<Double>();
-    upSpeedChooser = new SendableChooser<Double>();
     climb = new Climber();
 
-    downSpeedChooser.addOption("Down Speed", 1000.0);
-    downSpeedChooser.setDefaultOption("1000", 1000.0);
-    downSpeedChooser.addOption("1300", 1300.0);
-    downSpeedChooser.addOption("1600", 1600.0);
-    downSpeedChooser.addOption("1900", 1900.0);
-    downSpeedChooser.addOption("2200", 2200.0);
-    downSpeedChooser.addOption("2500", 2500.0);
-    downSpeedChooser.addOption("2800", 2800.0);
-    downSpeedChooser.addOption("3100", 3100.0);
-    downSpeedChooser.addOption("3400", 3400.0);
-    downSpeedChooser.addOption("3700", 3700.0);
-    downSpeedChooser.addOption("4000", 4000.0);
-
-    upSpeedChooser.addOption("Up Speed", 1000.0);
-    upSpeedChooser.setDefaultOption("1000", 1000.0);
-    upSpeedChooser.addOption("1300", 1300.0);
-    upSpeedChooser.addOption("1600", 1600.0);
-    upSpeedChooser.addOption("1900", 1900.0);
-    upSpeedChooser.addOption("2200", 2200.0);
-    upSpeedChooser.addOption("2500", 2500.0);
-    upSpeedChooser.addOption("2800", 2800.0);
-    upSpeedChooser.addOption("3100", 3100.0);
-    upSpeedChooser.addOption("3400", 3400.0);
-    upSpeedChooser.addOption("3700", 3700.0);
-    upSpeedChooser.addOption("4000", 4000.0);
-
-    chooser.addOption("Three Ball Auto", Constants.THREE_BALL_AUTO);
     chooser.setDefaultOption("Two Ball Auto", Constants.TWO_BALL_AUTO);
     chooser.addOption("One Ball Auto", Constants.ONE_BALL_AUTO);
     chooser.addOption("Zero Ball Auto", Constants.ZERO_BALL_AUTO);
@@ -91,8 +62,6 @@ public class Robot extends TimedRobot
     drive.initializeEncoders();
     
     SmartDashboard.putData("Autonomous Chooser", chooser);
-    SmartDashboard.putData("Down Shooter Speed", downSpeedChooser);
-    SmartDashboard.putData("Up Shooter Speed", upSpeedChooser);
 
     autoTimer = new Timer();
 
@@ -134,15 +103,24 @@ public class Robot extends TimedRobot
       intake.stopIntake();
     }
 
-    if (controller.getButton(Constants.PILOT, ButtonMap.autoShoot))
+    if (controller.getButton(Constants.PILOT, ButtonMap.autoShootMid) || 
+      controller.getButton(Constants.PILOT, ButtonMap.autoShootFar) ||
+      controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
     {
-      double speed = 0.0;
+      double speed;
       if (shooter.getDown())
-        speed = downSpeedChooser.getSelected();
+      {
+        if (controller.getButton(Constants.PILOT, ButtonMap.autoShootFar))
+          speed = Constants.farSpeed;
+        else if (controller.getButton(Constants.PILOT, ButtonMap.autoShootMid))
+          speed = Constants.midSpeed;
+        else
+          speed = Constants.closeSpeed;
+      }
       else
-        speed = upSpeedChooser.getSelected();
+        speed = Constants.upSpeed;
 
-      if (shooter.testShoot(speed) && drive.centerToTarget(15.0) == 1)
+      if (shooter.shoot(speed))// && drive.centerToTarget(15.0) == 1)
         intake.indexerShoot();
       else
         intake.autoIndex();
@@ -157,10 +135,27 @@ public class Robot extends TimedRobot
       else 
         intake.autoIndex();
 
-      if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeed1))
-        shooter.testShoot(0.35);
-      else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeed2))
-        shooter.testShoot(0.5);
+      if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedClose))
+      {
+        if (shooter.getDown())
+          shooter.shoot(Constants.closeSpeed);
+        else
+          shooter.shoot(Constants.upSpeed);
+      }
+      else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedMid))
+      {
+        if (shooter.getDown())
+          shooter.shoot(Constants.midSpeed);
+        else
+          shooter.shoot(Constants.upSpeed);
+      }
+      else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedFar))
+      {      
+        if (shooter.getDown())
+          shooter.shoot(Constants.farSpeed);
+        else
+          shooter.shoot(Constants.upSpeed);
+      }
       else
         shooter.shootStop();
     }
@@ -254,7 +249,7 @@ public class Robot extends TimedRobot
       break;
     case 3:
       autoTimer.start();
-      if (shooter.shoot(1000.0))
+      if (shooter.shoot(Constants.midSpeed))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
       {
@@ -310,7 +305,7 @@ public class Robot extends TimedRobot
       break;
     case 7:  
       autoTimer.start();
-      if (shooter.shoot(1000.0))
+      if (shooter.shoot(Constants.midSpeed))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
       {
@@ -365,13 +360,14 @@ public class Robot extends TimedRobot
       break;
     case 3:
       autoTimer.start();
-      if (shooter.shoot(1000.0))
+      if (shooter.shoot(Constants.midSpeed))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
       {
         intake.stopIndex();
         autoTimer.stop();
         shooter.shootStop();
+        drive.resetPid();
         state++;
       }
       break;
@@ -398,7 +394,7 @@ public class Robot extends TimedRobot
     {
     case 0:
       autoTimer.start();
-      if (shooter.shoot(1000.0))
+      if (shooter.shoot(Constants.closeSpeed))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(3.0))
       {
