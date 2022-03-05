@@ -127,9 +127,9 @@ public class Constants {
             turnIZoneUpper = 20.5;
             turnIZoneLower = 0.7;
             turnDeadBand = 2; //10
-            shooterP = 0.001143;
-            shooterI = 0.00006;
-            shooterD = 0.0045;
+            shooterP = 0.0000038;
+            shooterI = 0.0000185;
+            shooterD = 0.0009;
             shooterMaxI = 400.0;
             shooterIzone = 500.0;
             shooterThreshold = 400.0;

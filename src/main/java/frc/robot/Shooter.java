@@ -102,39 +102,41 @@ public class Shooter {
 
     public boolean shoot(double set)
     {
-        double P = SmartDashboard.getNumber("Shoot P", Constants.shooterP);
-        double I = SmartDashboard.getNumber("Shoot I", Constants.shooterI);
-        double D = SmartDashboard.getNumber("Shoot D", Constants.shooterD);
-        double F = SmartDashboard.getNumber("Shoot F", 0.0);
-        double Pin = SmartDashboard.getNumber("Shoot Pin", 0.0);
+        double F = ((0.0182 * set) - 0.022) / 100.0; // formula found experimentally
+        double Pin = Constants.shooterP;
+        double Iin = Constants.shooterI;
+        double Din = Constants.shooterD;
 
         double setpoint = set;
         double curSpeed = -encoder.getVelocity();
-        pid.setI(I);
-        pid.setD(D);
-
-        if (setpoint - curSpeed < 1000 && setpoint - curSpeed > 30 ||
-            setpoint - curSpeed > -1000 && setpoint - curSpeed < -30)
+        double error = setpoint - curSpeed;
+        if (error < 300 && error > 3 ||
+            error > -300 && error < -3)
         {
-            pid.setI(I);
+            pid.setI(Iin);
+            pid.setD(Din);
             pid.setP(Pin);
             pid.setMaxIOutput(400);
             noMore = true;
         }
         else
         {
-            pid.setP(P);
-            pid.setI(0.0);
+            if (error > 300 || error < -300)
+            {
+                pid.setD(0.0);
+                pid.setP(0.0);
+                pid.setI(0.0);
+            }
             pid.clearError();
         }
-        double speed = pid.getOutput(curSpeed, setpoint);
+        double speed = pid.getOutput(curSpeed, setpoint) + F;
         shooterMotorLeft.set(speed);
         shooterMotorRight.set(-speed);
         SmartDashboard.putNumber("PID Output", speed);
         SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
         SmartDashboard.putNumber("ShooterEncoder", curSpeed);
         SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
-        if (Math.abs(setpoint - curSpeed) < 200)
+        if (Math.abs(error) < 150)
         {
             return true;
         }
@@ -147,7 +149,6 @@ public class Shooter {
     public void stickShoot(double stick)
     {
         double speed = SmartDashboard.getNumber("speed", 0.0);
-        System.out.printf("%f\n", speed);
         shooterMotorLeft.set(-speed);
         shooterMotorRight.set(speed);
         //shooterMotorLeft.set(-0.5 * stick);

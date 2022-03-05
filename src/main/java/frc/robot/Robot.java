@@ -63,8 +63,10 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("Shoot I", Constants.shooterI);
     SmartDashboard.putNumber("Shoot F", Constants.shooterD);
     SmartDashboard.putNumber("Shoot D", 0.0);
-    SmartDashboard.putNumber("Shoot Pin", 0.0);
     SmartDashboard.putNumber("Shooter Percent", 0.0);
+    SmartDashboard.putNumber("Shoot Pin", 0.0);
+    SmartDashboard.putNumber("Shoot Iin", 0.0);
+    SmartDashboard.putNumber("Shoot Din", 0.0);
 
     drive = new DriveTrain();
     intake = new Intake();
@@ -176,11 +178,12 @@ public class Robot extends TimedRobot
         speed = upSpeedChooser.getSelected();
 
       //shooter.testShoot(0.5);
+      shooter.shoot(2000.0);
       //if (shooter.testShoot(SmartDashboard.getNumber("Shooter Percent", 0.5)))// && drive.centerToTarget(15.0) == 1)
-      if (shooter.shoot(2500.0))
+      /*if (shooter.shoot(2000.0))
         intake.indexerShoot();
       else
-        intake.stopIndex();
+        intake.stopIndex();*/
         //intake.autoIndex();
     }
     else
@@ -194,7 +197,7 @@ public class Robot extends TimedRobot
         intake.autoIndex();
 
       if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeed1))
-        shooter.testShoot(0.25);
+        shooter.testShoot(SmartDashboard.getNumber("Shooter Percent", 0.0));
       else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeed2))
         shooter.testShoot(0.5);
       else
