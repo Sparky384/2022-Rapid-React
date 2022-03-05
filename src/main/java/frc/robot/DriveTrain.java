@@ -148,11 +148,11 @@ public class DriveTrain {
 		SmartDashboard.putNumber("Current Error", currentError);
 		SmartDashboard.putNumber("PID OUT", driveToRate);
 		SmartDashboard.putNumber("RightEncoderPosition", getRightEncoderPosition());
-		double P = SmartDashboard.getNumber("Drive P", Constants.driveP);
-		double I = SmartDashboard.getNumber("Drive I", Constants.driveI);
-		double D = SmartDashboard.getNumber("Drive D", Constants.driveD);
-		double IL = SmartDashboard.getNumber("Drive I Lo", Constants.driveIZoneLower);
-		double IU = SmartDashboard.getNumber("Drive I Up", Constants.driveIZoneUpper);
+		double P = Constants.driveP;
+		double I = Constants.driveI;
+		double D = Constants.driveD;
+		double IL = Constants.driveIZoneLower;
+		double IU = Constants.driveIZoneUpper;
         if (!pidInitialized)
         {
             dLock = true;
@@ -230,13 +230,11 @@ public class DriveTrain {
 		if (intervalTimer.hasPeriodPassed(1.0))	
 		{					// Within deadband for interval time
 			failTimer.reset();
-			System.out.printf("PID FINISHED %f&&&&&&&&&&&&&&&& (%f in %f)\n", currentError, max, failTimer.get());
 			pidInitialized = false;
 			return 0;	// PID is complete (successful)
 		} 
 		else if (failTimer.hasPeriodPassed(timeout)) 	
 		{			// the PID has failed!
-			System.out.printf("PID FAILED %f&&&&&&&&&&&&&&&&\n", currentError);
 			frontLeft.set(ControlMode.PercentOutput, 0);		// stop the motors
 			frontRight.set(ControlMode.PercentOutput, 0);
 			intervalTimer.stop();
@@ -255,19 +253,16 @@ public class DriveTrain {
 
 	public int turnTo(double distance, final double timeout)	
 	{	
-		double P = SmartDashboard.getNumber("Turn P", Constants.turnP);
-		double I = SmartDashboard.getNumber("Turn I", Constants.turnI);
-		double D = SmartDashboard.getNumber("Turn D", Constants.turnD);
-		double IL = SmartDashboard.getNumber("Turn I Lo", Constants.turnIZoneLower);
-		double IU = SmartDashboard.getNumber("Turn I Up", Constants.turnIZoneUpper);
+		double P = Constants.turnP;
+		double I = Constants.turnI;
+		double D = Constants.turnD;
+		double IL = Constants.turnIZoneLower;
+		double IU = Constants.turnIZoneUpper;
 		boolean isUTurn = false;
 
 		SmartDashboard.putNumber("Yaw Error", currentError);
 		if (!pidInitialized) 
 		{
-			System.out.println("resetting pid -----------------------------");
-			System.out.println("83498498273582375407584720");
-			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 			speedController.reset();
 			speedController.setPID(P, I, D); //i was orignally 0
 			speedController.setMaxIOutput(0.4);
@@ -331,13 +326,11 @@ public class DriveTrain {
 		if (intervalTimer.hasPeriodPassed(1.0))	
 		{					// Within deadband for interval time
 			failTimer.reset();
-			System.out.printf("PID FINISHED %f\n", currentError);
 			//pidInitialized = false;
 			return 0;	// PID is complete (successful)
 		} 
 		else if (failTimer.hasPeriodPassed(timeout)) 	
 		{			// the PID has failed!
-			System.out.printf("PID FAILED %f\n", currentError);
 			frontLeft.set(ControlMode.PercentOutput, 0);		// stop the motors
 			frontRight.set(ControlMode.PercentOutput, 0);
 			intervalTimer.stop();

@@ -142,7 +142,7 @@ public class Robot extends TimedRobot
       else
         speed = upSpeedChooser.getSelected();
 
-      if (shooter.testShoot(speed) && drive.centerToTarget(15.0) == 1)
+      if (shooter.shoot(speed) && drive.centerToTarget(15.0) == 1)
         intake.indexerShoot();
       else
         intake.autoIndex();

@@ -111,12 +111,6 @@ public class Intake {
     }
 
     public void autoIndex(){
-        SmartDashboard.putBoolean("BottomPhotoEyeBlocked", bottomPhotoEye.get());
-        SmartDashboard.putBoolean("TopPhotoEyeBlocked", topPhotoEye.get());
-        SmartDashboard.putNumber("balls in intake", ballsInIndex);
-        SmartDashboard.putBoolean("prev bottom", prevBottomEye);
-        SmartDashboard.putBoolean("prev top", prevTopEye);
-
         boolean top = topPhotoEye.get();
         boolean bottom = bottomPhotoEye.get();
         if (!bottom || top)
