@@ -58,7 +58,6 @@ public class Robot extends TimedRobot
     chooser.addOption("Do Nothing", Constants.DO_NOTHING);
     
     drive.imuZeroYaw();
-    shooter.resetTurnEncoder();
     drive.initializeEncoders();
     
     SmartDashboard.putData("Autonomous Chooser", chooser);
@@ -120,7 +119,7 @@ public class Robot extends TimedRobot
       else
         speed = Constants.upSpeed;
 
-      if (shooter.shoot(speed))// && drive.centerToTarget(15.0) == 1)
+      if (shooter.shoot(speed) && drive.centerToTarget(15.0) == 1)
         intake.indexerShoot();
       else
         intake.autoIndex();

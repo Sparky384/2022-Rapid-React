@@ -22,67 +22,33 @@ public class Shooter {
     public boolean noMore = false;
 
     public Shooter() {
-    shooterMotorRight = new CANSparkMax(Constants.shooterMotorRightPort, MotorType.kBrushless);
-    shooterMotorLeft = new CANSparkMax(Constants.shooterMotorLeftPort, MotorType.kBrushless);
-    shooterMotorTurn = new CANSparkMax(Constants.shooterMotorTurnPort, MotorType.kBrushless);
-    //shooterMotorRight.setSmartCurrentLimit(60, 60);
-    //shooterMotorLeft.setSmartCurrentLimit(60, 60);
-    shooterMotorTurn.setSmartCurrentLimit(60, 60);
-    encoder = shooterMotorRight.getEncoder();
-    turnEncoder = shooterMotorTurn.getEncoder();
-    currentPosition = (int) encoder.getPosition();
-    
-    solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-    //solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
+        shooterMotorRight = new CANSparkMax(Constants.shooterMotorRightPort, MotorType.kBrushless);
+        shooterMotorLeft = new CANSparkMax(Constants.shooterMotorLeftPort, MotorType.kBrushless);
+        shooterMotorTurn = new CANSparkMax(Constants.shooterMotorTurnPort, MotorType.kBrushless);
+        //shooterMotorRight.setSmartCurrentLimit(60, 60);
+        //shooterMotorLeft.setSmartCurrentLimit(60, 60);
+        shooterMotorTurn.setSmartCurrentLimit(60, 60);
+        encoder = shooterMotorRight.getEncoder();
+        turnEncoder = shooterMotorTurn.getEncoder();
+        currentPosition = (int) encoder.getPosition();
         
-    shooterDown = true;
-    shooterDown();
-    
-    pid = new MiniPID(0.001143, 0.00006, 0.0045);
+        solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+        //solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
+            
+        shooterDown = true;
+        shooterDown();
+        
+        pid = new MiniPID(0.001143, 0.00006, 0.0045);
     }
 
     public void shootOut(){
         shooterMotorRight.set(0.5);
         shooterMotorLeft.set(0.5);
     }
-    public void shootReverse(){
-        shooterMotorRight.set(0.5);
-        shooterMotorLeft.set(0.5);
-    }
+
     public void shootStop(){
-        //System.out.println("STAP");
         shooterMotorRight.set(0.0);
         shooterMotorLeft.set(0.0);
-    }
-    public void shooterTurnRight(){
-        shooterMotorTurn.set(0.1); 
-    }
-
-    public void shooterTurnLeft(){
-        shooterMotorTurn.set(-0.1); 
-    }
-
-    public void stopTurn(){
-        shooterMotorTurn.set(0.0);
-    }
-
-
-    public void resetTurnEncoder(){
-        turnEncoder.setPosition(0.0);
-    }
-    public void shooterTurnStraight(){
-        currentPosition = (int) turnEncoder.getPosition();
-
-        if (currentPosition > 0.5){
-            shooterTurnLeft();
-            currentPosition = (int) turnEncoder.getPosition();
-        } else if (currentPosition < -0.5) {
-            shooterTurnRight();
-            currentPosition = (int) turnEncoder.getPosition();
-        } else {
-            stopTurn();
-        }
-         
     }
 
     public boolean getDown()
@@ -92,8 +58,8 @@ public class Shooter {
 
     public boolean testShoot(double speed)
     {
-        //if (speed > 1.0 || speed < -1.0)
-        //    speed /= 100;
+        if (speed > 1.0 || speed < -1.0)
+            speed /= 100;
         shooterMotorLeft.set(speed);
         shooterMotorRight.set(-speed);
         SmartDashboard.putNumber("ShooterEncoder", -encoder.getVelocity());
@@ -151,19 +117,15 @@ public class Shooter {
         double speed = SmartDashboard.getNumber("speed", 0.0);
         shooterMotorLeft.set(-speed);
         shooterMotorRight.set(speed);
-        //shooterMotorLeft.set(-0.5 * stick);
-        //shooterMotorRight.set(0.5 * stick);
     }
 
     public void shooterUp() {
         solenoidLeft.set(DoubleSolenoid.Value.kForward);
-        //solenoidRight.set(DoubleSolenoid.Value.kForward);
         shooterDown = false;
     }
 
     public void shooterDown() {
         solenoidLeft.set(DoubleSolenoid.Value.kReverse);
-        //solenoidRight.set(DoubleSolenoid.Value.kReverse);
         shooterDown = true;
     }
 }

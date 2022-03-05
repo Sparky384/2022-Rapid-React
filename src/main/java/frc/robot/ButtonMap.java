@@ -17,7 +17,7 @@ public class ButtonMap
 
     // copilot
     public static Buttons indexerIn = Buttons.Y;
-    public static Buttons indexerOut = Buttons.A; // was supposed to be A, black controller A does not work
+    public static Buttons indexerOut = Buttons.A;
     public static Buttons shooterUp = Buttons.DUP;
     public static Buttons shooterDown = Buttons.DDOWN;
     public static Buttons shooterSpeedClose = Buttons.LB;
