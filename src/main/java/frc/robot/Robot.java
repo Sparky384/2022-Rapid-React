@@ -119,7 +119,7 @@ public class Robot extends TimedRobot
       else
         speed = Constants.upSpeed;
 
-      if (shooter.shoot(speed) && drive.centerToTarget(15.0) == 1)
+      if (shooter.shoot(speed) && drive.centerToTarget(5.0) == 1)
         intake.indexerShoot();
       else
         intake.autoIndex();
@@ -339,23 +339,37 @@ public class Robot extends TimedRobot
         drive.stop();
         intake.stopIntake();
         state++;
+        System.out.println("successful drive");
       }
       else if (ret == -1)
         state = -1;
       break;
     case 2:
+    SmartDashboard.putNumber("autoGyro", drive.getImuYaw(false));
       intake.intakeUp();
       intake.stopIntake();
       ret = drive.turnTo(180.0, 5.0);
       if (ret == 0)
       {
+        System.out.println("successful turn");
         drive.stop();
         autoTimer.stop();
         autoTimer.reset();
         state++;
       }
-      else if (ret == -1)
-        state = -1;
+      else if (ret == -1){
+        System.out.println("unsuccessful turn");
+        drive.stop();
+        autoTimer.stop();
+        autoTimer.reset();
+        state++;
+        //state = -1;
+      }
+        //robot screwed up during comp. This ensures it shoots even if the robot timesout on turnTo
+        //drive.stop();
+        ///autoTimer.stop();
+        //autoTimer.reset();
+        //state++;
       break;
     case 3:
       autoTimer.start();

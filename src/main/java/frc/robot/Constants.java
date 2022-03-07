@@ -60,7 +60,7 @@ public class Constants {
     public static final int COPILOT = 1;
 
     public static final double closeSpeed = 2100.0;
-    public static final double midSpeed = 2500.0;
+    public static final double midSpeed = 2700.0;
     public static final double farSpeed = 2900.0;
     public static final double upSpeed = 3050.0;
 

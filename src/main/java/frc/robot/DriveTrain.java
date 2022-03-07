@@ -269,6 +269,7 @@ public class DriveTrain {
 			speedController.setOutputLimits(-0.65, 0.65);
 			speedController.setSetpoint(distance);
 			driveToRate = 0;
+			failTimer.reset();
 			failTimer.start();			// the PID will fail if this timer exceeded
 			pidInitialized = true;
 			currentError = 0;
