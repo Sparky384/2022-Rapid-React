@@ -2,24 +2,29 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter {
     private CANSparkMax shooterMotorRight;
     private CANSparkMax shooterMotorLeft;
     private CANSparkMax shooterMotorTurn;
     private RelativeEncoder encoder;
-    private int currentPosition;
-    private RelativeEncoder turnEncoder;
+    //private int currentPosition;
+    //private RelativeEncoder turnEncoder;
     private MiniPID pid;
     private DoubleSolenoid solenoidLeft;
     //private DoubleSolenoid solenoidRight;
     private boolean shooterDown;
     public boolean noMore = false;
+    
+    // New and improved shooter PID
+    private boolean shooterPidInitialized = false;
+    Timer shooterFailTimer;
+    Timer shooterZoneTimer;
 
     public Shooter() {
         shooterMotorRight = new CANSparkMax(Constants.shooterMotorRightPort, MotorType.kBrushless);
@@ -29,15 +34,18 @@ public class Shooter {
         //shooterMotorLeft.setSmartCurrentLimit(60, 60);
         shooterMotorTurn.setSmartCurrentLimit(60, 60);
         encoder = shooterMotorRight.getEncoder();
-        turnEncoder = shooterMotorTurn.getEncoder();
-        currentPosition = (int) encoder.getPosition();
+        //turnEncoder = shooterMotorTurn.getEncoder();
+        //currentPosition = (int) encoder.getPosition();
         
         solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
         //solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
             
         shooterDown = true;
         shooterDown();
-        
+
+        // Shooter PID
+        shooterFailTimer = new Timer();
+        shooterZoneTimer = new Timer();
         pid = new MiniPID(0.001143, 0.00006, 0.0045);
     }
 
@@ -68,6 +76,15 @@ public class Shooter {
 
     public boolean shoot(double set)
     {
+        // Initialize shooter 
+        if (!shooterPidInitialized)
+        {
+            System.out.println("Shooter not initialized");
+            shooterFailTimer.reset();
+            shooterZoneTimer.reset();
+            shooterPidInitialized = true;
+        }
+                
         double F = ((0.0182 * set) - 0.022) / 100.0; // formula found experimentally
         double Pin = Constants.shooterP;
         double Iin = Constants.shooterI;
@@ -98,12 +115,21 @@ public class Shooter {
         double speed = pid.getOutput(curSpeed, setpoint) + F;
         shooterMotorLeft.set(speed);
         shooterMotorRight.set(-speed);
-        SmartDashboard.putNumber("PID Output", speed);
-        SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
-        SmartDashboard.putNumber("ShooterEncoder", curSpeed);
-        SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
-        if (Math.abs(error) < 150)
+
+        // Do some logging
+        Logging.consoleLog("SPID SP: " + set);
+        Logging.consoleLog("SPID err: " + error);
+        Logging.consoleLog("SPID CV: " + speed);
+        Logging.consoleLog("SPID fbk: " + curSpeed);
+
+        //SmartDashboard.putNumber("PID Output", speed);
+        //SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
+        //SmartDashboard.putNumber("ShooterEncoder", curSpeed);
+        //SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
+        
+        if (Math.abs(error) < 50)  // try a smaller deadband
         {
+            shooterPidInitialized = false;
             return true;
         }
         else 

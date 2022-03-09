@@ -28,6 +28,20 @@ public class Robot extends TimedRobot
   private Compressor compressor;
   private Climber climb;
 
+  public Robot()
+  {
+    // Set up our custom logger.
+    try
+    {
+      Logging.CustomLogger.setup();
+    }
+    catch (Throwable e) 
+    { 
+      Logging.logException(e);
+    }
+
+  }
+
   @Override
   public void robotInit() {
     // check if the robot is the final or prototype
