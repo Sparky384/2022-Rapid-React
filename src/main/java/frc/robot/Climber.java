@@ -16,9 +16,9 @@ public class Climber {
     public void move(double Yaxis)
     {
         Yaxis *= -1;
-        System.out.println(Yaxis);
-        System.out.println(climberMotor.getSelectedSensorPosition());
-        System.out.println("----");
+        //System.out.println(Yaxis);
+        //System.out.println(climberMotor.getSelectedSensorPosition());
+        //System.out.println("----");
         if (Yaxis < 0 && climberMotor.getSelectedSensorPosition() <= Constants.climberMinimumPosition)
             climberMotor.set(0);
         if (Yaxis > 0 && climberMotor.getSelectedSensorPosition() >= Constants.climberMaximumPosition)

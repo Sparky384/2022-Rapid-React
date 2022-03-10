@@ -87,7 +87,7 @@ public class Intake {
     }
 
     public void intakeIn() {
-        stage1Motor.set(0.5);
+        stage1Motor.set(0.75);
     }
 
     public void intakeOut() {
@@ -108,6 +108,16 @@ public class Intake {
 
     public void indexerOut(){
         stage3Motor.set(-0.5);
+    }
+
+    public boolean getBottomEye()
+    {
+        return bottomPhotoEye.get();
+    }
+
+    public boolean getTopEye()
+    {
+        return topPhotoEye.get();
     }
 
     public void autoIndex(){

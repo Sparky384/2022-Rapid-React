@@ -96,6 +96,8 @@ public class Robot extends TimedRobot
     double leftPilotX = -controller.getLeftX(Constants.PILOT);
     double rightPilotY = controller.getRightY(Constants.PILOT);
     drive.drive(leftPilotX, leftPilotY);
+    // A kinder, gentler joystick
+    //drive.drive(scaleJoystickAxis(leftPilotX), leftPilotY);
 
     if (controller.getButton(Constants.PILOT, ButtonMap.climberSafety))
     {
@@ -217,6 +219,8 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset());
     SmartDashboard.putNumber("Gyro", drive.getImuYaw(false));
     SmartDashboard.putNumber("Encoder", drive.getRightEncoderPosition());
+    SmartDashboard.putBoolean("Bottom Photoeye:", intake.getBottomEye());
+    SmartDashboard.putBoolean("Top Photoeye:", intake.getTopEye());
   }
 
   private void threeBallAuto()
@@ -353,7 +357,7 @@ public class Robot extends TimedRobot
         drive.stop();
         intake.stopIntake();
         state++;
-        System.out.println("successful drive");
+        //System.out.println("successful drive");
       }
       else if (ret == -1)
         state = -1;
@@ -365,14 +369,14 @@ public class Robot extends TimedRobot
       ret = drive.turnTo(180.0, 5.0);
       if (ret == 0)
       {
-        System.out.println("successful turn");
+        //System.out.println("successful turn");
         drive.stop();
         autoTimer.stop();
         autoTimer.reset();
         state++;
       }
       else if (ret == -1){
-        System.out.println("unsuccessful turn");
+        //System.out.println("unsuccessful turn");
         drive.stop();
         autoTimer.stop();
         autoTimer.reset();
@@ -468,6 +472,24 @@ public class Robot extends TimedRobot
     intake.stopIndex();
     intake.stopIntake();
     shooter.shootStop();
+  }
+
+  // Scale the joystick value to mitigate oversteering
+  private double scaleJoystickAxis(double input)
+  {
+    double scale = 1.0; // 0.7
+    double output;
+
+    // Start with a simple linear function for now
+    // Might try a more advanced function like a sigmoid
+    // later
+    output = input * scale;
+
+    // Someone on CD used a cube function, which is cool
+    // Result is + for + numbers and - for - numbers
+    //output = Math.pow(input, 3);
+
+    return output;
   }
 
 }

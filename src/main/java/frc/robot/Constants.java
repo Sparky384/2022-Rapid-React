@@ -14,9 +14,11 @@ public class Constants {
     public static double turnIZoneUpper = 0.0;
     public static double turnIZoneLower = 0.0;
     public static double turnDeadBand = 2; //10
-    public static double shooterP = 0.001143;
-    public static double shooterI = 0.00006;
-    public static double shooterD = 0.0045;
+    // shooter pid
+    public static double shooterP = 0.001143;     // 0.001143
+    public static double shooterI = 0.00006;      // 0.00006
+    public static double shooterD = 0.0045;       // 0.0045
+    
     public static double shooterMaxI = 400.0;
     public static double shooterIzone = 500.0;
     public static double shooterThreshold = 400.0;
@@ -27,7 +29,7 @@ public class Constants {
     public static int stage1MotorPort;  //intake motor
     public static int stage2MotorPort;  //intake motor
     public static int stage3MotorPort;  //intake motor
-    public static int bottomPhotoEyePort = 0;
+    public static int bottomPhotoEyePort = 1;
     public static int topPhotoEyePort;
     public static int frontLeftPort;  //drivetrain motors
     public static int frontRightPort;  //drivetrain motors
@@ -76,8 +78,8 @@ public class Constants {
             stage1MotorPort = 4;  //intake motor
             stage2MotorPort = 5;  //intake motor
             stage3MotorPort = 11;  //intake motor
-            bottomPhotoEyePort = 2;
-            topPhotoEyePort = 1;
+            bottomPhotoEyePort = 1;
+            topPhotoEyePort = 0;
             frontLeftPort = 1;  //drivetrain motors
             frontRightPort = 14;  //drivetrain motors
             backLeftPort = 16;  //drivetrain motors
@@ -112,8 +114,8 @@ public class Constants {
             stage1MotorPort = 12;  //intake motor
             stage2MotorPort = 5;  //intake motor
             stage3MotorPort = 4;  //intake motor
-            bottomPhotoEyePort = 0;
-            topPhotoEyePort = 1;
+            bottomPhotoEyePort = 1;
+            topPhotoEyePort = 0;
             frontLeftPort = 14;  //drivetrain motors
             frontRightPort = 23;  //drivetrain motors. we flipped the forts for frontright and backright and they worked, so don't change it for now
             backLeftPort = 15;  //drivetrain motors

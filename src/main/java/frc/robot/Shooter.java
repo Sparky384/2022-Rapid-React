@@ -13,18 +13,15 @@ public class Shooter {
     private CANSparkMax shooterMotorLeft;
     private CANSparkMax shooterMotorTurn;
     private RelativeEncoder encoder;
-    //private int currentPosition;
-    //private RelativeEncoder turnEncoder;
     private MiniPID pid;
     private DoubleSolenoid solenoidLeft;
-    //private DoubleSolenoid solenoidRight;
     private boolean shooterDown;
-    public boolean noMore = false;
     
-    // New and improved shooter PID
-    private boolean shooterPidInitialized = false;
-    Timer shooterFailTimer;
-    Timer shooterZoneTimer;
+    // New and improved shooter PID - maybe
+    //private boolean shooterPidInitialized = false;
+    //private boolean shooterPidTiming = false;
+    //Timer shooterFailTimer;
+    //Timer shooterZoneTimer;
 
     public Shooter() {
         shooterMotorRight = new CANSparkMax(Constants.shooterMotorRightPort, MotorType.kBrushless);
@@ -32,20 +29,15 @@ public class Shooter {
         shooterMotorTurn = new CANSparkMax(Constants.shooterMotorTurnPort, MotorType.kBrushless);
         //shooterMotorRight.setSmartCurrentLimit(60, 60);
         //shooterMotorLeft.setSmartCurrentLimit(60, 60);
-        shooterMotorTurn.setSmartCurrentLimit(60, 60);
-        encoder = shooterMotorRight.getEncoder();
-        //turnEncoder = shooterMotorTurn.getEncoder();
-        //currentPosition = (int) encoder.getPosition();
-        
+        //shooterMotorTurn.setSmartCurrentLimit(60, 60);
+        encoder = shooterMotorRight.getEncoder();        
         solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-        //solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 6, 7);
-            
         shooterDown = true;
         shooterDown();
 
         // Shooter PID
-        shooterFailTimer = new Timer();
-        shooterZoneTimer = new Timer();
+        //shooterFailTimer = new Timer();
+        //shooterZoneTimer = new Timer();
         pid = new MiniPID(0.001143, 0.00006, 0.0045);
     }
 
@@ -76,14 +68,6 @@ public class Shooter {
 
     public boolean shoot(double set)
     {
-        // Initialize shooter 
-        if (!shooterPidInitialized)
-        {
-            System.out.println("Shooter not initialized");
-            shooterFailTimer.reset();
-            shooterZoneTimer.reset();
-            shooterPidInitialized = true;
-        }
                 
         double F = ((0.0182 * set) - 0.022) / 100.0; // formula found experimentally
         double Pin = Constants.shooterP;
@@ -93,18 +77,20 @@ public class Shooter {
         double setpoint = set;
         double curSpeed = -encoder.getVelocity();
         double error = setpoint - curSpeed;
-        if (error < 300 && error > 3 ||
-            error > -300 && error < -3)
+        
+        // Load Pid constants if error is small enough
+        if (Math.abs(error) < 300 || Math.abs(error) > 3)
         {
-            pid.setI(Iin);
-            pid.setD(Din);
-            pid.setP(Pin);
+            pid.setI(Iin);  // why not use Constants.shooterI here?
+            pid.setD(Din);  // ditto
+            pid.setP(Pin);  // ditto
             pid.setMaxIOutput(400);
-            noMore = true;
+            System.out.println("In window");
         }
+        // If error is too large, run off of feed-forward (bias) only
         else
         {
-            if (error > 300 || error < -300)
+            if(Math.abs(error) > 300)
             {
                 pid.setD(0.0);
                 pid.setP(0.0);
@@ -129,7 +115,6 @@ public class Shooter {
         
         if (Math.abs(error) < 50)  // try a smaller deadband
         {
-            shooterPidInitialized = false;
             return true;
         }
         else 
