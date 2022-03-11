@@ -103,7 +103,7 @@ public class Intake {
     }
 
     public void indexerShoot(){
-        stage3Motor.set(0.5);
+        stage3Motor.set(0.75);
     }
 
     public void indexerOut(){

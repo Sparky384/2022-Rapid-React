@@ -66,7 +66,7 @@ public class Shooter {
         return true;
     }
 
-    public boolean shoot(double set)
+    public boolean shoot(double set, int window)
     {
                 
         double F = ((0.0182 * set) - 0.022) / 100.0; // formula found experimentally
@@ -79,18 +79,19 @@ public class Shooter {
         double error = setpoint - curSpeed;
         
         // Load Pid constants if error is small enough
-        if (Math.abs(error) < 300 || Math.abs(error) > 3)
+        if (error < 300 && error > 3 ||
+            error > -300 && error < -3)
         {
             pid.setI(Iin);  // why not use Constants.shooterI here?
             pid.setD(Din);  // ditto
             pid.setP(Pin);  // ditto
             pid.setMaxIOutput(400);
-            System.out.println("In window");
+            //System.out.println("In window");
         }
         // If error is too large, run off of feed-forward (bias) only
         else
         {
-            if(Math.abs(error) > 300)
+            if (error > 300 || error < -300)
             {
                 pid.setD(0.0);
                 pid.setP(0.0);
@@ -113,7 +114,7 @@ public class Shooter {
         //SmartDashboard.putNumber("ShooterEncoder", curSpeed);
         //SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
         
-        if (Math.abs(error) < 50)  // try a smaller deadband
+        if (Math.abs(error) < window)  // try a smaller deadband
         {
             return true;
         }

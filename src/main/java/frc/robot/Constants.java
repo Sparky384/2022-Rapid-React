@@ -17,7 +17,7 @@ public class Constants {
     // shooter pid
     public static double shooterP = 0.001143;     // 0.001143
     public static double shooterI = 0.00006;      // 0.00006
-    public static double shooterD = 0.0045;       // 0.0045
+    public static double shooterD = 0.0045;       // 0.0035
     
     public static double shooterMaxI = 400.0;
     public static double shooterIzone = 500.0;
@@ -61,12 +61,16 @@ public class Constants {
     public static final int PILOT = 0;
     public static final int COPILOT = 1;
 
+
+    // Shooter speeds and zone window, based on shot distance
     public static final double closeSpeed = 2100.0;
     public static final double midSpeed = 2700.0;
     public static final double farSpeed = 2900.0;
     public static final double upSpeed = 3050.0;
-
-    //
+    public static final int closeSpeedWindow = 100;
+    public static final int midSpeedWindow = 100;
+    public static final int farSpeedWindow = 100;
+    public static final int upSpeedWindow = 100;
 
     public static final int proto = 0;
     public static final int sparky = 1;

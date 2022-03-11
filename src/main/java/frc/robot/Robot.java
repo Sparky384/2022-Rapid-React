@@ -95,9 +95,9 @@ public class Robot extends TimedRobot
     double leftPilotY = controller.getLeftY(Constants.PILOT);
     double leftPilotX = -controller.getLeftX(Constants.PILOT);
     double rightPilotY = controller.getRightY(Constants.PILOT);
-    drive.drive(leftPilotX, leftPilotY);
+    //drive.drive(leftPilotX, leftPilotY);
     // A kinder, gentler joystick
-    //drive.drive(scaleJoystickAxis(leftPilotX), leftPilotY);
+    drive.drive(scaleJoystickAxis(leftPilotX), leftPilotY);
 
     if (controller.getButton(Constants.PILOT, ButtonMap.climberSafety))
     {
@@ -123,19 +123,32 @@ public class Robot extends TimedRobot
       controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
     {
       double speed;
+      int window;
       if (shooter.getDown())
       {
         if (controller.getButton(Constants.PILOT, ButtonMap.autoShootFar))
-          speed = Constants.farSpeed;
+          {
+            speed = Constants.farSpeed;
+            window = Constants.farSpeedWindow;
+          }
         else if (controller.getButton(Constants.PILOT, ButtonMap.autoShootMid))
-          speed = Constants.midSpeed;
+          { 
+            speed = Constants.midSpeed;
+            window = Constants.midSpeedWindow;
+          }
         else
+        {
           speed = Constants.closeSpeed;
+          window = Constants.closeSpeedWindow;
+        }
       }
       else
+      {
         speed = Constants.upSpeed;
+        window = Constants.upSpeedWindow;
+      }
 
-      if (shooter.shoot(speed) && drive.centerToTarget(5.0) == 1)
+      if (shooter.shoot(speed, window) && drive.centerToTarget(5.0) == 1)
         intake.indexerShoot();
       else
         intake.autoIndex();
@@ -153,23 +166,23 @@ public class Robot extends TimedRobot
       if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedClose))
       {
         if (shooter.getDown())
-          shooter.shoot(Constants.closeSpeed);
+          shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow);
         else
-          shooter.shoot(Constants.upSpeed);
+          shooter.shoot(Constants.upSpeed, Constants.upSpeedWindow);
       }
       else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedMid))
       {
         if (shooter.getDown())
-          shooter.shoot(Constants.midSpeed);
+          shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
         else
-          shooter.shoot(Constants.upSpeed);
+          shooter.shoot(Constants.upSpeed, Constants.upSpeedWindow);
       }
       else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedFar))
       {      
         if (shooter.getDown())
-          shooter.shoot(Constants.farSpeed);
+          shooter.shoot(Constants.farSpeed, Constants.farSpeedWindow);
         else
-          shooter.shoot(Constants.upSpeed);
+          shooter.shoot(Constants.upSpeed, Constants.upSpeedWindow);
       }
       else
         shooter.shootStop();
@@ -266,7 +279,7 @@ public class Robot extends TimedRobot
       break;
     case 3:
       autoTimer.start();
-      if (shooter.shoot(Constants.midSpeed))
+      if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
       {
@@ -322,7 +335,7 @@ public class Robot extends TimedRobot
       break;
     case 7:  
       autoTimer.start();
-      if (shooter.shoot(Constants.midSpeed))
+      if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
       {
@@ -391,7 +404,7 @@ public class Robot extends TimedRobot
       break;
     case 3:
       autoTimer.start();
-      if (shooter.shoot(Constants.midSpeed))
+      if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
       {
@@ -425,7 +438,7 @@ public class Robot extends TimedRobot
     {
     case 0:
       autoTimer.start();
-      if (shooter.shoot(Constants.closeSpeed))
+      if (shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(3.0))
       {
@@ -477,7 +490,7 @@ public class Robot extends TimedRobot
   // Scale the joystick value to mitigate oversteering
   private double scaleJoystickAxis(double input)
   {
-    double scale = 1.0; // 0.7
+    double scale = 0.7; // 0.7
     double output;
 
     // Start with a simple linear function for now
