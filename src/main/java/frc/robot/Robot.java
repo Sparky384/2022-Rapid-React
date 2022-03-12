@@ -319,7 +319,7 @@ public class Robot extends TimedRobot
       intake.lockIndex();
       if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
-      if (autoTimer.advanceIfElapsed(4.0))
+      if (autoTimer.advanceIfElapsed(2.8))
       {
         intake.stopIndex();
         autoTimer.stop();
@@ -333,7 +333,7 @@ public class Robot extends TimedRobot
     case 4:
       intake.intakeUp();
       intake.stopIntake();
-      ret = drive.turnTo(-85.0, 5.0);
+      ret = drive.turnTo(-82.0, 5.0);
       if (ret == 0)
       {
         drive.stop();
@@ -348,6 +348,7 @@ public class Robot extends TimedRobot
       ret = drive.driveTo(90.0, 5.0, false); // may not be the correct distance
       intake.intakeIn();
       intake.intakeDown();
+      intake.indexToTop();
       if (ret == 0) {
         drive.stop();
         intake.stopIntake();
@@ -361,7 +362,9 @@ public class Robot extends TimedRobot
     case 6:
       intake.intakeUp();
       intake.stopIntake();
-      ret = drive.turnTo(102.0, 5.0);
+      intake.indexToTop();
+      shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+      ret = drive.turnTo(125.0, 5.0);
       if (ret == 0)
       {
         drive.stop();
@@ -373,7 +376,9 @@ public class Robot extends TimedRobot
         state = -1;
       break;
     case 7:
-      ret = drive.centerToTarget(2.0, Constants.midLimelightWindow);
+    intake.indexToTop();
+    shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+    ret = drive.centerToTarget(0.01, Constants.midLimelightWindow);
       if (ret == 0)
       {
         state++;

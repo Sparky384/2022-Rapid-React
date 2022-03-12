@@ -66,7 +66,7 @@ public class DriveTrain {
         rightMotors.getInverted();
         failTimer = new Timer();
         intervalTimer = new Timer();
-        SupplyCurrentLimitConfiguration currentConfig = new SupplyCurrentLimitConfiguration(true, 40, 35, 100);
+        SupplyCurrentLimitConfiguration currentConfig = new SupplyCurrentLimitConfiguration(true, 80, 100, 5);
         iteration = 0;
 
         frontRight.configSupplyCurrentLimit(currentConfig);

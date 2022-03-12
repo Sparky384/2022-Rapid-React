@@ -149,4 +149,11 @@ public class Intake {
     public void unlockIndex(){
         indexLock = false;
     }
+    public void indexToTop(){
+        boolean top = topPhotoEye.get();
+        if(!top){
+            stage3Motor.set(0.75);
+        }
+
+    }
 }
