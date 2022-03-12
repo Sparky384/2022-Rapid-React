@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import javax.lang.model.util.ElementScanner6;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 
@@ -40,6 +43,7 @@ public class DriveTrain {
 	double tempP;
 	double tempI;
 	double tempD;
+	boolean prevFinished;
 
     DriveTrain() {
 		tempP = 0.0;
@@ -47,7 +51,8 @@ public class DriveTrain {
 		tempD = 0.0;
 
 		pidInitialized = false;
-		
+		prevFinished = false;
+
 		frontLeft = new WPI_TalonFX(Constants.frontLeftPort);
 		frontRight = new WPI_TalonFX(Constants.frontRightPort);
 		backLeft = new WPI_TalonFX(Constants.backLeftPort);
@@ -116,11 +121,23 @@ public class DriveTrain {
         imu.zeroYaw();
     }
 
-    public float getImuYaw(boolean isUTurn) 
+    public float getImuYaw(boolean isRight) 
 	{
         float yaw = imu.getYaw(); //positive values are clockwise
-        if (yaw < 0 && isUTurn)
-			yaw = 180 + (180 - Math.abs(yaw));
+        if (isRight)
+		{
+			if (yaw < -45)
+			{
+				yaw = 180 + (180 - Math.abs(yaw));
+			}
+		}
+		else
+		{
+			if (yaw > 45)
+			{
+				yaw = -180 - (180 - yaw);
+			}
+		}
 		iteration++;
         yaw += (iteration * 0.0000382);
         return yaw;
@@ -141,14 +158,26 @@ public class DriveTrain {
 		frontRight.getSensorCollection().setIntegratedSensorPosition(0, 0);
 	}
     
-    public int driveTo(double distance, final double timeout) 
+    public int driveTo(double distance, final double timeout, boolean isShortDist) 
     {
 		SmartDashboard.putNumber("Current Error", currentError);
 		SmartDashboard.putNumber("PID OUT", driveToRate);
 		SmartDashboard.putNumber("RightEncoderPosition", getRightEncoderPosition());
-		double P = Constants.driveP;
-		double I = Constants.driveI;
-		double D = Constants.driveD;
+		double P;
+		double I;
+		double D;
+		if (isShortDist)
+		{
+			P = Constants.driveShortP;
+			I = Constants.driveShortI;
+			D = Constants.driveShortD;
+		}
+		else
+		{
+			P = Constants.driveLongP;
+			I = Constants.driveLongI;
+			D = Constants.driveLongD;
+		}
 		double IL = Constants.driveIZoneLower;
 		double IU = Constants.driveIZoneUpper;
         if (!pidInitialized)
@@ -158,7 +187,7 @@ public class DriveTrain {
 			speedController.reset();
 			speedController.setPID(P, I, D); // add PID values here
 			speedController.setMaxIOutput(0.3);
-			speedController.setOutputLimits(-0.70, 0.70);
+			speedController.setOutputLimits(-0.85, 0.85);
 			speedController.setSetpoint(distance);
 			driveToRate = 0;
 			failTimer.reset();
@@ -225,7 +254,7 @@ public class DriveTrain {
 			speedController.setI(0);
 		}
 
-		if (intervalTimer.hasPeriodPassed(1.0))	
+		if (intervalTimer.hasPeriodPassed(0.8))	
 		{					// Within deadband for interval time
 			failTimer.reset();
 			pidInitialized = false;
@@ -258,7 +287,6 @@ public class DriveTrain {
 		double IU = Constants.turnIZoneUpper;
 		boolean isUTurn = false;
 
-		SmartDashboard.putNumber("Yaw Error", currentError);
 		if (!pidInitialized) 
 		{
 			speedController.reset();
@@ -278,17 +306,22 @@ public class DriveTrain {
 			inIZone = false;
 		}
 		// This is the final output of the PID
-		if(distance > 165)
-			isUTurn = true;
-		if (distance < 0)
-			isUTurn = false;
+		boolean isRight;
+		if (distance > 0)
+			isRight = true;
+		else
+			isRight = false;
 
-		driveToRate = speedController.getOutput(getImuYaw(isUTurn), distance);
-		currentError = distance - getImuYaw(isUTurn);
-		if (distance < 0)
-			driveToRate *= -1;
+		double curAngle = getImuYaw(isRight);
+		driveToRate = speedController.getOutput(curAngle, distance);
+		currentError = distance - curAngle;
+		//if (distance < 0)
+		//	driveToRate *= -1;
 		difDrive.arcadeDrive(-driveToRate, 0);
 		SmartDashboard.putNumber("TurnResult", getImuYaw(isUTurn));
+		SmartDashboard.putNumber("Yaw Error", currentError);
+		SmartDashboard.putNumber("Not TurnResult", getImuYaw(!isUTurn));
+		SmartDashboard.putBoolean("uturn", isUTurn);
 
 		if (Math.abs(currentError) < Constants.turnDeadBand) 	
 		{
@@ -322,10 +355,10 @@ public class DriveTrain {
 			speedController.setI(0);
 		}
 
-		if (intervalTimer.hasPeriodPassed(1.0))	
+		if (intervalTimer.hasPeriodPassed(0.5))	
 		{					// Within deadband for interval time
 			failTimer.reset();
-			//pidInitialized = false;
+			pidInitialized = false;
 			return 0;	// PID is complete (successful)
 		} 
 		else if (failTimer.hasPeriodPassed(timeout)) 	
@@ -337,7 +370,7 @@ public class DriveTrain {
 			intervalTimer.reset();
 			failTimer.reset();
 			speedController.reset();
-			//pidInitialized = false;
+			pidInitialized = false;
 			return -1;
 		} 
 		else	
@@ -346,40 +379,57 @@ public class DriveTrain {
 		}
 	}
 	
-	public int centerToTarget(double timeout)
+	public void resetCenter()
+	{
+		centerInitialized = false;
+		prevFinished = false;
+	}
+
+	public int centerToTarget(double timeout, double window)
 	{
 		double error = Limelight.getTargetAngleXOffset();
+		SmartDashboard.putNumber("erer", error);
+		SmartDashboard.putNumber("window", window);
+		SmartDashboard.putNumber("timeout", timeout);
 		if(!centerInitialized)
 		{
+			prevFinished = false;
 			centerTiming = false;
 			centerIntervalTimer.stop();
 			centerIntervalTimer.reset();
 			centerFailTimer.reset();
 			centerFailTimer.start();
 			centerInitialized = true;
+			System.out.println("init--------------------------------------------------------");
 		}
-		if(error > 0.0 + Constants.centerDeadBand)
-			difDrive.arcadeDrive(-0.325, 0.0);
-		if(error < 0.0 - Constants.centerDeadBand)
-			difDrive.arcadeDrive(0.325, 0.0);
-		
-		if(Math.abs(error) < Constants.centerDeadBand && !centerTiming)
+		if(error < window && error > -window)
 		{
 			difDrive.arcadeDrive(0.0, 0.0);
 			centerIntervalTimer.start();
 			centerTiming = true;
 		}
-		
-		if(centerIntervalTimer.hasPeriodPassed(Constants.centerIntervalTime))
+		else if(error < window)
+			difDrive.arcadeDrive(0.325, 0.0);
+		else if(error > -window)
+			difDrive.arcadeDrive(-0.325, 0.0);
+
+		if(prevFinished || centerIntervalTimer.hasPeriodPassed(Constants.centerIntervalTime))
 		{
+			centerFailTimer.stop();
+			//centerFailTimer.reset();
+			//centerIntervalTimer.stop();
 			difDrive.arcadeDrive(0.0, 0.0);
-			centerInitialized = false;
+			//centerInitialized = false;
+			prevFinished = true;
 			return 0;
 		}
 		else if (centerFailTimer.hasPeriodPassed(timeout))
 		{
+			centerIntervalTimer.stop();
+			//centerIntervalTimer.reset();
+			//centerFailTimer.stop();
 			difDrive.arcadeDrive(0.0, 0.0);
-			centerInitialized = false;
+			//centerInitialized = false;
 			return -1;
 		}
 		return 1;

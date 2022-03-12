@@ -70,9 +70,9 @@ public class Shooter {
     {
                 
         double F = ((0.0182 * set) - 0.022) / 100.0; // formula found experimentally
-        double Pin = Constants.shooterP;
-        double Iin = Constants.shooterI;
-        double Din = Constants.shooterD;
+        double Pin = SmartDashboard.getNumber("shooterP", Constants.shooterP); //Constants.shooterP;
+        double Iin = SmartDashboard.getNumber("shooterI", Constants.shooterI); //Constants.shooterI;
+        double Din = SmartDashboard.getNumber("shooterD", Constants.shooterD); //Constants.shooterD;
 
         double setpoint = set;
         double curSpeed = -encoder.getVelocity();
@@ -112,8 +112,9 @@ public class Shooter {
         //SmartDashboard.putNumber("PID Output", speed);
         //SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
         //SmartDashboard.putNumber("ShooterEncoder", curSpeed);
-        //SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
+        SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
         
+        window = 150;
         if (Math.abs(error) < window)  // try a smaller deadband
         {
             return true;

@@ -2,18 +2,21 @@ package frc.robot;
 
 public class Constants {
     //driveTo method constants
-    public static double driveP = 0.02896;
-    public static double driveI = 1.55;
-    public static double driveD = 0.0;
+    public static double driveShortP = 0.02896;
+    public static double driveShortI = 1.55;
+    public static double driveShortD = 0.0;
+    public static double driveLongP = 0.02896;
+    public static double driveLongI = 1.55;
+    public static double driveLongD = 0.0;
     public static double driveIZoneUpper = 0.0;
     public static double driveIZoneLower = 0.0;
     public static double deadBand = 10;
-    public static double turnP = 0.009300; //0.0245  
-    public static double turnI = 0.000001; //0.00375
-    public static double turnD = 0.089000; //0.0
-    public static double turnIZoneUpper = 0.0;
+    public static double turnP = 0.010148; //0.0245  
+    public static double turnI = 0.001763; //0.00375
+    public static double turnD = 0.090113; //0.0
+    public static double turnIZoneUpper = 10.0;
     public static double turnIZoneLower = 0.0;
-    public static double turnDeadBand = 2; //10
+    public static double turnDeadBand = 3; //10
     // shooter pid
     public static double shooterP = 0.001143;     // 0.001143
     public static double shooterI = 0.00006;      // 0.00006
@@ -71,6 +74,11 @@ public class Constants {
     public static final int midSpeedWindow = 100;
     public static final int farSpeedWindow = 100;
     public static final int upSpeedWindow = 100;
+    public static final double closeLimelightWindow = 2;
+    public static final double midLimelightWindow = 2;
+    public static final double farLimelightWindow = 2;
+    public static final double upLimelightWindow = 2;
+
 
     public static final int proto = 0;
     public static final int sparky = 1;
@@ -92,9 +100,9 @@ public class Constants {
             shooterMotorLeftPort = 2;
             shooterMotorTurnPort = 10; //not going to be used on the actual robot
 
-            driveP = 0.02896;
-            driveI = 1.55;
-            driveD = 0.0;
+            driveShortP = 0.02896;
+            driveShortI = 1.55;
+            driveShortD = 0.0;
             driveIZoneUpper = 11.0;
             driveIZoneLower = 0.5;
             deadBand = 10;
@@ -127,15 +135,18 @@ public class Constants {
             shooterMotorRightPort = 13;
             shooterMotorLeftPort = 2;
 
-            driveP = 0.02896;
-            driveI = 1.55;
-            driveD = 0.0;
+            driveShortP = 0.02792;
+            driveShortI = 0.002055;
+            driveShortD = 0.00209;
+            driveLongP = 0.02111;
+            driveLongI = 0.002045;
+            driveLongD = 0.00309;
             driveIZoneUpper = 11.0;
             driveIZoneLower = 0.5;
             deadBand = 5;
-            turnP = 0.01009; //0.0245  
-            turnI = 0.00076; //0.00375
-            turnD = 0.0901; //0.0
+            turnP = 0.010148; //0.01009
+            turnI = 0.001763; //0.00076
+            turnD = 0.090113; //0.0901
             turnIZoneUpper = 20.5;
             turnIZoneLower = 0.7;
             turnDeadBand = 2; //10

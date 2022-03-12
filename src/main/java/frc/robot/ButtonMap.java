@@ -12,6 +12,8 @@ public class ButtonMap
     public static Buttons R = Buttons.DRIGHT;
     public static Buttons autoShootClose = Buttons.RB;
     public static Buttons autoShootMid = Buttons.B;
+    public static Buttons turnTo = Buttons.X;
+    public static Buttons turnTo1 = Buttons.Y;
     // drive = left stick
     // climber = right stick
 
