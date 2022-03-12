@@ -85,12 +85,14 @@ public class Robot extends TimedRobot
 
     compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     compressor.enableDigital();
+    intake.unlockIndex();
   }
   
   public void teleopInit()
   {
     drive.initializeEncoders();
     drive.imuZeroYaw();
+    intake.unlockIndex();
   }
 
   @Override
@@ -232,6 +234,7 @@ public class Robot extends TimedRobot
     state = 0;
     drive.imuZeroYaw();
     drive.initializeEncoders();
+    intake.unlockIndex();
   }
 
    public void autonomousPeriodic() 
@@ -313,6 +316,7 @@ public class Robot extends TimedRobot
       break;
     case 3:
       autoTimer.start();
+      intake.lockIndex();
       if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
@@ -320,6 +324,7 @@ public class Robot extends TimedRobot
         intake.stopIndex();
         autoTimer.stop();
         shooter.shootStop();
+        intake.unlockIndex();
         state++;
         autoTimer.stop();
         autoTimer.reset();
@@ -356,7 +361,7 @@ public class Robot extends TimedRobot
     case 6:
       intake.intakeUp();
       intake.stopIntake();
-      ret = drive.turnTo(95.0, 5.0);
+      ret = drive.turnTo(102.0, 5.0);
       if (ret == 0)
       {
         drive.stop();
@@ -378,14 +383,16 @@ public class Robot extends TimedRobot
         state++;
       }
       break;
-    case 8:  
+    case 8: 
       autoTimer.start();
+      intake.lockIndex();
       if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
       {
         intake.stopIndex();
         autoTimer.stop();
+        intake.unlockIndex();
         shooter.shootStop();
         state++;
       }
@@ -462,13 +469,18 @@ public class Robot extends TimedRobot
       break;
     case 4:
       autoTimer.start();
-      if (shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow))
+      intake.lockIndex();
+      Boolean autoRet;
+      autoRet = shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow);
+      SmartDashboard.putBoolean("autoret", autoRet);
+      if (autoRet)
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(2.5))
       {
         intake.stopIndex();
         autoTimer.stop();
         shooter.shootStop();
+        intake.unlockIndex();
         drive.resetPid();
         state++;
       }
@@ -543,6 +555,7 @@ public class Robot extends TimedRobot
     intake.stopIndex();
     intake.stopIntake();
     shooter.shootStop();
+    intake.unlockIndex();
   }
 
   // Scale the joystick value to mitigate oversteering

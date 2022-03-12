@@ -30,6 +30,7 @@ public class Intake {
     private final int COLLECT = 2;
     private int intakeState;
     private double waitTime = 1.0;
+    private boolean indexLock;
 
     private final DoubleSolenoid.Value on = DoubleSolenoid.Value.kReverse;
     private final DoubleSolenoid.Value off = DoubleSolenoid.Value.kForward;
@@ -54,6 +55,8 @@ public class Intake {
         intakeTimer = new Timer();
         intakeState = DOWN;
         intakeUp();
+
+        indexLock = false;
     }
 
     public void intakeUp() {
@@ -123,15 +126,27 @@ public class Intake {
     public void autoIndex(){
         boolean top = topPhotoEye.get();
         boolean bottom = bottomPhotoEye.get();
-        if (!bottom || top)
-        {
-            //stage2Motor.set(0.0);
+       if (!indexLock) {
+            if (!bottom || top)
+            {
+                //stage2Motor.set(0.0);
+                stage3Motor.set(0.0);
+            }
+            else if (bottom && !top)
+            {
+                //stage2Motor.set(-0.2);
+                stage3Motor.set(0.75);
+            }
+        }
+    }
+
+    public void lockIndex(){
+        if (!indexLock)
             stage3Motor.set(0.0);
-        }
-        else if (bottom && !top)
-        {
-            //stage2Motor.set(-0.2);
-            stage3Motor.set(0.75);
-        }
+        indexLock = true;
+    }
+
+    public void unlockIndex(){
+        indexLock = false;
     }
 }

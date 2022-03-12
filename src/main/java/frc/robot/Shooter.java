@@ -114,7 +114,6 @@ public class Shooter {
         //SmartDashboard.putNumber("ShooterEncoder", curSpeed);
         SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
         
-        window = 150;
         if (Math.abs(error) < window)  // try a smaller deadband
         {
             return true;
