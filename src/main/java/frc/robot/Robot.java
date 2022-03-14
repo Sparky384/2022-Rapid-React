@@ -177,6 +177,7 @@ public class Robot extends TimedRobot
       SmartDashboard.putBoolean("ret1 (shoot)", ret1);
       SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
 
+      // Put the ball advance here - dcohen
       if (ret1 && ret2 != 1)
         intake.indexerShoot();
       else

@@ -68,16 +68,16 @@ public class Constants {
     // Shooter speeds and zone window, based on shot distance
     public static final double closeSpeed = 2100.0;
     public static final double midSpeed = 2700.0;
-    public static final double farSpeed = 2900.0;
+    public static final double farSpeed = 3000.0;
     public static final double upSpeed = 3050.0;
     public static final int closeSpeedWindow = 100;
     public static final int midSpeedWindow = 100;
     public static final int farSpeedWindow = 100;
-    public static final int upSpeedWindow = 100;
-    public static final double closeLimelightWindow = 2;
-    public static final double midLimelightWindow = 2;
-    public static final double farLimelightWindow = 2;
-    public static final double upLimelightWindow = 2;
+    public static final int upSpeedWindow = 60;
+    public static final double closeLimelightWindow = 6;
+    public static final double midLimelightWindow = 6;
+    public static final double farLimelightWindow = 4;
+    public static final double upLimelightWindow = 4;
 
 
     public static final int proto = 0;

@@ -59,7 +59,9 @@ public class DriveTrain {
 		backRight = new WPI_TalonFX(Constants.backRightPort);
 		leftMotors = new MotorControllerGroup(frontLeft, backLeft);
 		rightMotors = new MotorControllerGroup(frontRight, backRight);
+		// Comment this out when using new drive code
 		difDrive = new DifferentialDrive(leftMotors, rightMotors);
+		// *******************************************************
 		centerIntervalTimer = new Timer();
 		centerFailTimer = new Timer();
 
@@ -144,7 +146,11 @@ public class DriveTrain {
     }
     
     public void drive(double speed, double turn) {
-        difDrive.arcadeDrive(speed, turn);
+        // This is the legacy drive method
+		difDrive.arcadeDrive(speed, turn);
+		leftMotors.set(speed);
+
+
 	}
 
     public double getRightEncoderPosition()
