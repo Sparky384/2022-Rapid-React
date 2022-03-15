@@ -102,10 +102,12 @@ public class Robot extends TimedRobot
     double leftPilotY = controller.getLeftY(Constants.PILOT);
     double leftPilotX = -controller.getLeftX(Constants.PILOT);
     double rightPilotY = controller.getRightY(Constants.PILOT);
-    //drive.drive(leftPilotX, leftPilotY);
-    // A kinder, gentler joystick
-    //drive.drive(scaleJoystickAxis(leftPilotX), leftPilotY);
 
+    // Track the number of balls in the intake - must run continuously
+    //intake.updateIndexBallCount();
+
+    // ***************************************************************
+    // I guess this is for testing/tuning the turnTo PID
     if (controller.getButton(Constants.PILOT, ButtonMap.turnTo))
       drive.driveTo(40, 5.0, true); 
     //drive.turnTo(180.0, 5.0);
@@ -114,7 +116,8 @@ public class Robot extends TimedRobot
     //drive.turnTo(-85.0, 5.0);
     else
       drive.resetPid();
-    
+    // ***************************************************************
+
     if (controller.getButton(Constants.PILOT, ButtonMap.climberSafety))
     {
       // climber control goes on right stick
@@ -174,14 +177,17 @@ public class Robot extends TimedRobot
       int ret2 = drive.centerToTarget(3.0, limelightWindow);
       System.out.printf("%b %d\n", ret1, ret2);
 
-      SmartDashboard.putBoolean("ret1 (shoot)", ret1);
-      SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
+      //SmartDashboard.putBoolean("ret1 (shoot)", ret1);
+      //SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
 
       // Put the ball advance here - dcohen
+      // We have to know the ball count here if we want to index
+      // 2nd ball to top photoeye - see intake.autoIndex method
       if (ret1 && ret2 != 1)
         intake.indexerShoot();
       else
-        intake.autoIndex();
+        intake.indexToTop();
+        //intake.autoIndex();
     }
     else
     {
@@ -261,17 +267,18 @@ public class Robot extends TimedRobot
 
   private void dashboardOutput() 
   {
-    SmartDashboard.putNumber("centerFailTimer", drive.centerFailTimer.get());
-		SmartDashboard.putNumber("CenterIntervalTimer", drive.centerIntervalTimer.get());
-    SmartDashboard.putBoolean("centerInitialized", drive.centerInitialized);
+    //SmartDashboard.putNumber("centerFailTimer", drive.centerFailTimer.get());
+		//SmartDashboard.putNumber("CenterIntervalTimer", drive.centerIntervalTimer.get());
+    //SmartDashboard.putBoolean("centerInitialized", drive.centerInitialized);
     SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets());
-    SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset());
-    SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset());
+    //SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset());
+    //SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset());
     SmartDashboard.putNumber("Left Gyro", drive.getImuYaw(false));
     SmartDashboard.putNumber("Right Gyro", drive.getImuYaw(true));
     SmartDashboard.putNumber("Encoder", drive.getRightEncoderPosition());
     SmartDashboard.putBoolean("Bottom Photoeye:", intake.getBottomEye());
     SmartDashboard.putBoolean("Top Photoeye:", intake.getTopEye());
+    SmartDashboard.putNumber("Indexer Ball Count", intake.getIndexBallCount());
   }
 
   private void threeBallAuto()
@@ -303,6 +310,7 @@ public class Robot extends TimedRobot
       intake.intakeUp();
       intake.stopIntake();
       ret = drive.turnTo(180.0, 5.0);
+      shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
       if (ret == 0)
       {
         drive.stop();
@@ -392,6 +400,7 @@ public class Robot extends TimedRobot
     case 8: 
       autoTimer.start();
       intake.lockIndex();
+      drive.centerToTarget(0.01, Constants.midLimelightWindow);
       if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))

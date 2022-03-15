@@ -20,7 +20,6 @@ public class Intake {
     //is true during the setup process for shooting so that the ball is in position. bug when holding shooter joystick while intake is going. 
     private boolean prevTopEye;
     private boolean prevBottomEye;
-    private int ballsInIndex;
     
     private DoubleSolenoid rearSolenoid;
     private DoubleSolenoid frontSolenoid;
@@ -32,9 +31,18 @@ public class Intake {
     private double waitTime = 1.0;
     private boolean indexLock;
 
+    
     private final DoubleSolenoid.Value on = DoubleSolenoid.Value.kReverse;
     private final DoubleSolenoid.Value off = DoubleSolenoid.Value.kForward;
     private final DoubleSolenoid.Value open = DoubleSolenoid.Value.kOff;
+
+    // Track number of balls in indexer
+    private Timer ballIndexEntryTimer;
+    private Timer ballIndexExitTimer;
+    private int ballsInIndex;
+    private boolean ballEntered;
+    private boolean ballExited;
+
 
     public Intake() {
         stage1Motor = new CANSparkMax(Constants.stage1MotorPort, MotorType.kBrushless);
@@ -57,6 +65,9 @@ public class Intake {
         intakeUp();
 
         indexLock = false;
+
+        ballIndexEntryTimer = new Timer();
+        ballIndexExitTimer = new Timer();
     }
 
     public void intakeUp() {
@@ -154,6 +165,67 @@ public class Intake {
         if(!top){
             stage3Motor.set(0.75);
         }
+        else {
+            stage3Motor.set(0.0);
+        }
+    }
 
+    // Updates the number of balls in the indexer
+    // Used to optimize timing for the autoshooting
+    // plus the 3-ball autonomous mode
+    public void updateIndexBallCount()
+    {
+        boolean bottom = bottomPhotoEye.get();
+        boolean top = topPhotoEye.get();
+
+        // A ball is just detected in the intake
+        if (bottom)
+        {
+            ballIndexEntryTimer.start();
+        }
+
+        // A ball has been in the intake PE for a sufficient
+        // amount of time, and then passed it
+        if (ballIndexEntryTimer.hasElapsed(1.0) && !bottom)
+        {
+            ballEntered = true;
+            ballIndexEntryTimer.reset();
+            setIndexBallCount(getIndexBallCount() + 1);
+        }
+
+        // A ball is just detected in the pre-shooter stage,
+        // at the top PE
+        if (top)
+        {
+            ballIndexExitTimer.start();
+        }
+
+        // A ball has been in the intake entry PE for a sufficient
+        // amount of time, and then passed it
+        if (ballIndexExitTimer.hasElapsed(1.0) && !top)
+        {
+            ballExited = true;
+            ballIndexExitTimer.reset();
+            setIndexBallCount(getIndexBallCount() - 1);
+        }
+
+        // Error checking
+        if(getIndexBallCount() < 0 || getIndexBallCount() > 2)
+        {
+            System.out.println("Index ball count error");
+            // I did this so calling program could detect a
+            // ball count error and act accordingly
+            setIndexBallCount(-1);
+        }
+    }
+
+    public int getIndexBallCount()
+    {
+        return ballsInIndex;
+    }
+
+    public void setIndexBallCount(int count)
+    {
+        ballsInIndex = count;
     }
 }
