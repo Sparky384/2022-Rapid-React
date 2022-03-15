@@ -16,7 +16,7 @@ public class Constants {
     public static double turnD = 0.090113; //0.0
     public static double turnIZoneUpper = 10.0;
     public static double turnIZoneLower = 0.0;
-    public static double turnDeadBand = 3; //10
+    public static double turnDeadBand = 1.0; //10
     // shooter pid
     public static double shooterP = 0.001143;     // 0.001143
     public static double shooterI = 0.00006;      // 0.00006
@@ -71,6 +71,7 @@ public class Constants {
     public static final double farSpeed = 3000.0;
     public static final double upSpeed = 3050.0;
     public static final int closeSpeedWindow = 100;
+    public static final int twoBallAutoWindow = 40;
     public static final int midSpeedWindow = 100;
     public static final int farSpeedWindow = 100;
     public static final int upSpeedWindow = 60;

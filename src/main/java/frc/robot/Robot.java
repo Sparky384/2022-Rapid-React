@@ -342,7 +342,7 @@ public class Robot extends TimedRobot
     case 4:
       intake.intakeUp();
       intake.stopIntake();
-      ret = drive.turnTo(-82.0, 5.0);
+      ret = drive.turnTo(-79.0, 5.0);
       if (ret == 0)
       {
         drive.stop();
@@ -471,7 +471,7 @@ public class Robot extends TimedRobot
       break;
     case 3:
       ret = drive.driveTo(60.0, 5.0, false);
-      shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow);
+      shooter.shoot(Constants.closeSpeed, Constants.twoBallAutoWindow);
       intake.intakeUp();
       if (ret == 0) {
         drive.stop();

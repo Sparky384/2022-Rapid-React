@@ -145,9 +145,50 @@ public class DriveTrain {
         return yaw;
     }
     
-    public void drive(double speed, double turn) {
-        // This is the legacy drive method
-		difDrive.arcadeDrive(speed, turn);
+	private double L(double s, double t, double a, double b)
+	{
+		return s + b * t * (1 - s);
+	}
+
+	private double R(double s, double t, double a, double b)
+	{
+		return s - b * t + s * t * (b - a - 1);
+	}
+
+    public void drive(double speed, double turn) 
+	{
+		double left;
+		double right;
+		double a = 0; // 0
+		double b = 1; // b
+    	if (speed >=0)
+		{
+ 			if (turn >= 0)
+			{
+				left = L(speed, turn, a, b);
+  				right = R(speed, turn, a, b);
+			}
+			else
+			{
+  				left = R(speed, -turn, a, b);
+  				right = L(speed, -turn, a, b);
+			}
+		}
+		else
+		{
+ 			if (turn >= 0)
+			{
+  				left = -R(-speed, turn, a, b);
+  				right = -L(-speed, turn, a, b);
+			}
+ 			else
+			{
+  				left = -L(-speed, -turn, a, b);
+  				right = -R(-speed, -turn, a, b);
+			}
+		}
+		leftMotors.set(left);
+		rightMotors.set(right);
 	}
 
     public double getRightEncoderPosition()
@@ -358,7 +399,7 @@ public class DriveTrain {
 			speedController.setI(0);
 		}
 
-		if (intervalTimer.hasPeriodPassed(0.5))	
+		if (intervalTimer.hasPeriodPassed(0.05)) // 0.5	
 		{					// Within deadband for interval time
 			failTimer.reset();
 			pidInitialized = false;
