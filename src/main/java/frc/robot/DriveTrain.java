@@ -148,9 +148,6 @@ public class DriveTrain {
     public void drive(double speed, double turn) {
         // This is the legacy drive method
 		difDrive.arcadeDrive(speed, turn);
-		leftMotors.set(speed);
-
-
 	}
 
     public double getRightEncoderPosition()
