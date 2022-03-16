@@ -105,6 +105,10 @@ public class DriveTrain {
         imu = new AHRS(SPI.Port.kMXP);
         speedController = new MiniPID(0, 0, 0);
 		max = 0;
+
+		SmartDashboard.putNumber("a", 0);
+		SmartDashboard.putNumber("b", 1);
+
     }
 
 	public void stop()
@@ -144,51 +148,10 @@ public class DriveTrain {
         yaw += (iteration * 0.0000382);
         return yaw;
     }
-    
-	private double L(double s, double t, double a, double b)
-	{
-		return s + b * t * (1 - s);
-	}
-
-	private double R(double s, double t, double a, double b)
-	{
-		return s - b * t + s * t * (b - a - 1);
-	}
 
     public void drive(double speed, double turn) 
 	{
-		double left;
-		double right;
-		double a = 0; // 0
-		double b = 1; // b
-    	if (speed >=0)
-		{
- 			if (turn >= 0)
-			{
-				left = L(speed, turn, a, b);
-  				right = R(speed, turn, a, b);
-			}
-			else
-			{
-  				left = R(speed, -turn, a, b);
-  				right = L(speed, -turn, a, b);
-			}
-		}
-		else
-		{
- 			if (turn >= 0)
-			{
-  				left = -R(-speed, turn, a, b);
-  				right = -L(-speed, turn, a, b);
-			}
- 			else
-			{
-  				left = -L(-speed, -turn, a, b);
-  				right = -R(-speed, -turn, a, b);
-			}
-		}
-		leftMotors.set(left);
-		rightMotors.set(right);
+		difDrive.arcadeDrive(speed, turn);
 	}
 
     public double getRightEncoderPosition()

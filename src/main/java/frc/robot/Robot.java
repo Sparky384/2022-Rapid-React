@@ -10,6 +10,7 @@ import java.io.File;
 import javax.lang.model.util.ElementScanner6;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -27,6 +28,7 @@ public class Robot extends TimedRobot
   private Timer autoTimer;
   private Compressor compressor;
   private Climber climb;
+  private SendableChooser<Integer> scaleChooser;
 
   public Robot()
   {
@@ -86,6 +88,11 @@ public class Robot extends TimedRobot
     compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     compressor.enableDigital();
     intake.unlockIndex();
+    
+    scaleChooser = new SendableChooser<Integer>();
+    scaleChooser.addOption("Scale On", 0);
+    scaleChooser.setDefaultOption("Scale Off", 1);
+    SmartDashboard.putData("Scale Chooser", scaleChooser);
   }
   
   public void teleopInit()
@@ -174,7 +181,11 @@ public class Robot extends TimedRobot
       }
 
       boolean ret1 = shooter.shoot(speed, window);
-      int ret2 = drive.centerToTarget(3.0, limelightWindow);
+      int ret2;
+      if (speed != Constants.closeSpeed)
+        ret2 = drive.centerToTarget(3.0, limelightWindow);
+      else
+        ret2 = 0;
       System.out.printf("%b %d\n", ret1, ret2);
 
       //SmartDashboard.putBoolean("ret1 (shoot)", ret1);
@@ -574,7 +585,7 @@ public class Robot extends TimedRobot
   }
 
   // Scale the joystick value to mitigate oversteering
-  private double scaleJoystickAxis(double input)
+  private double scaleJoystickAxis(double turn)
   {
     double scale = 0.7; // 0.7
     double output;
@@ -582,12 +593,14 @@ public class Robot extends TimedRobot
     // Start with a simple linear function for now
     // Might try a more advanced function like a sigmoid
     // later
-    output = input * scale;
+    if (scaleChooser.getSelected() == 0)
+      output = turn * scale;
+    else
+      output = turn;
 
     // Someone on CD used a cube function, which is cool
     // Result is + for + numbers and - for - numbers
     //output = Math.pow(input, 3);
-
     return output;
   }
 
