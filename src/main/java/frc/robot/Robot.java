@@ -587,14 +587,18 @@ public class Robot extends TimedRobot
   // Scale the joystick value to mitigate oversteering
   private double scaleJoystickAxis(double turn)
   {
-    double scale = 0.7; // 0.7
+    double scale = 0.8; // 0.7
     double output;
+    double scaledTurn = scale * turn;
 
     // Start with a simple linear function for now
     // Might try a more advanced function like a sigmoid
     // later
     if (scaleChooser.getSelected() == 0)
-      output = turn * scale;
+      //output = turn * scale;
+      //output = 1 / (1+Math.pow(Math.exp(1), scale*turn));
+      //output = (scaledTurn*1.2) / Math.pow(1+(Math.pow(scaledTurn,2)), 0.5);
+      output = (Math.pow(turn, 3) + (0.18*turn)) * scale; 
     else
       output = turn;
 
