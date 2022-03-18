@@ -28,11 +28,8 @@ public class Robot extends TimedRobot
   private Timer autoTimer;
   private Compressor compressor;
   private Climber climb;
-  private SendableChooser<Integer> scaleChooser;
 
   private boolean shooterAtSpeed;
-
-  private double output;
 
   public Robot()
   {
@@ -92,17 +89,7 @@ public class Robot extends TimedRobot
     compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     compressor.enableDigital();
     intake.unlockIndex();
-
-    output = 0;
     
-    scaleChooser = new SendableChooser<Integer>();
-    scaleChooser.addOption("Scale1 On", 1);
-    scaleChooser.addOption("Scale2 On", 2);
-    scaleChooser.addOption("Scale2 Limit On", 3);
-    scaleChooser.addOption("Scale3 On", 4);
-    scaleChooser.addOption("Yesterday Scale", 5);
-    scaleChooser.setDefaultOption("Scale Off", 0);
-    SmartDashboard.putData("Scale Chooser", scaleChooser);
   }
   
   public void teleopInit()
@@ -154,7 +141,7 @@ public class Robot extends TimedRobot
       intake.stopIntake();
     }
 
-    // Look and see if buttons for auto shoot with auto limelight centering
+    // Look and see if buttons for auto shoot and auto limelight centering
     // are pressed
     if (controller.getButton(Constants.PILOT, ButtonMap.autoShootMid) || 
       controller.getButton(Constants.PILOT, ButtonMap.autoShootFar))
@@ -624,66 +611,16 @@ public class Robot extends TimedRobot
   private double scaleJoystickAxis(double turn)
   {
     double scale = 0.8; // 0.7
-    double limit = 0.6;
+    double output;
     //double scaledTurn = scale * turn;
 
     // Start with a simple linear function for now
     // Might try a more advanced function like a sigmoid
     // later
-    if (scaleChooser.getSelected() == 1) //scale1
       //output = turn * scale;
       //output = 1 / (1+Math.pow(Math.exp(1), scale*turn));
       //output = (scaledTurn*1.2) / Math.pow(1+(Math.pow(scaledTurn,2)), 0.5);
-      //output = (Math.pow(turn, 3) + (0.18*turn)) * scale; 
-    {
-      if(turn <= -0.5)
-        output = (-1.2*Math.pow(turn, 2)*scale) + 0.008;
-      else if (-0.5 < turn && turn < 0.5)
-        output = (Math.pow(turn, 3) + (0.18*turn)) * scale;
-      else
-        output = (1.2*Math.pow(turn, 2)*scale) - 0.008;
-    }
-
-    else if (scaleChooser.getSelected() == 2) //scale2
-    {
-      if(turn <= -0.5)
-        output = (-0.9*Math.pow(turn, 2)*scale) - 0.052;
-      else if (-0.5 < turn && turn < 0.5)
-        output = (Math.pow(turn, 3) + (0.18*turn)) * scale;
-      else
-        output = (0.9*Math.pow(turn, 2)*scale) + 0.052;
-    }
-
-    else if (scaleChooser.getSelected() == 3)
-    {
-      if(turn <= -0.5)
-        output = (-0.9*Math.pow(turn, 2)*scale) - 0.052;
-      else if (-0.5 < turn && turn < 0.5)
-        output = (Math.pow(turn, 3) + (0.18*turn)) * scale;
-      else
-        output = (0.9*Math.pow(turn, 2)*scale) + 0.052;
-
-      if (output >= limit) {
-        output = limit;
-      } else if (output <= -limit) {
-        output = -limit;
-      }
-    }
-    else if (scaleChooser.getSelected() == 4)
-    {
-      if(turn <= -0.5)
-        output = (-0.7*Math.pow(turn, 2)*scale) - 0.092;
-      else if (-0.5 < turn && turn < 0.5)
-        output = (Math.pow(turn, 3) + (0.18*turn)) * scale;
-      else
-        output = (0.7*Math.pow(turn, 2)*scale) + 0.092;
-    }
-
-    else if (scaleChooser.getSelected() == 5)
       output = (Math.pow(turn, 3) + (0.18*turn)) * scale; 
-
-    else
-      output = turn;
 
     // Someone on CD used a cube function, which is cool
     // Result is + for + numbers and - for - numbers
