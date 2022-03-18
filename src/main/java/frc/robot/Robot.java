@@ -30,6 +30,8 @@ public class Robot extends TimedRobot
   private Climber climb;
   private SendableChooser<Integer> scaleChooser;
 
+  private boolean shooterAtSpeed;
+
   public Robot()
   {
     // Set up our custom logger.
@@ -144,9 +146,10 @@ public class Robot extends TimedRobot
       intake.stopIntake();
     }
 
+    // Look and see if buttons for auto shoot and auto limelight centering
+    // are pressed
     if (controller.getButton(Constants.PILOT, ButtonMap.autoShootMid) || 
-      controller.getButton(Constants.PILOT, ButtonMap.autoShootFar) ||
-      controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
+      controller.getButton(Constants.PILOT, ButtonMap.autoShootFar))
     {
       double speed;
       int window;
@@ -182,18 +185,11 @@ public class Robot extends TimedRobot
 
       boolean ret1 = shooter.shoot(speed, window);
       int ret2;
-      if (speed != Constants.closeSpeed)
-        ret2 = drive.centerToTarget(3.0, limelightWindow);
-      else
-        ret2 = 0;
-      System.out.printf("%b %d\n", ret1, ret2);
+      ret2 = drive.centerToTarget(3.0, limelightWindow);
 
       //SmartDashboard.putBoolean("ret1 (shoot)", ret1);
       //SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
 
-      // Put the ball advance here - dcohen
-      // We have to know the ball count here if we want to index
-      // 2nd ball to top photoeye - see intake.autoIndex method
       if (ret1 && ret2 != 1)
         intake.indexerShoot();
       else
@@ -201,6 +197,8 @@ public class Robot extends TimedRobot
         //intake.autoIndex();
     }
     else
+    // Auto shoot buttons not pressed, so allow driving and look for auto shooting 
+    // with non-limelight centering
     {
       drive.resetCenter();
       drive.drive(scaleJoystickAxis(leftPilotX), leftPilotY);
@@ -233,8 +231,38 @@ public class Robot extends TimedRobot
         else
           shooter.shoot(Constants.upSpeed, Constants.upSpeedWindow);
       }
+      // Add the condition here for close shooting without the limelight aim
+      // This is a pilot function, for the close shot only
+      else if (controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
+      {
+        if (shooter.getDown())
+        {
+         
+          boolean ret = shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow);
+
+          if (ret == true)
+          {
+            shooterAtSpeed = true;
+          }
+          
+          if (shooterAtSpeed)
+          {
+            intake.indexerShoot();
+            System.out.println("Shooting now");
+          }
+          else 
+          {
+            intake.indexToTop();
+          }
+        }
+        else
+        {
+          shooter.shoot(Constants.upSpeed, Constants.upSpeedWindow);
+        }
+      }
       else
         shooter.shootStop();
+        shooterAtSpeed = false;
     }
 
     // copilot commands
