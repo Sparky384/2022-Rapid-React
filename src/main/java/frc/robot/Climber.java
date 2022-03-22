@@ -3,6 +3,8 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Climber {
     private WPI_TalonFX climberMotor;
 
@@ -19,6 +21,7 @@ public class Climber {
         //System.out.println(Yaxis);
         //System.out.println(climberMotor.getSelectedSensorPosition());
         //System.out.println("----");
+        SmartDashboard.putNumber("ClimberMotorEncoder", climberMotor.getSelectedSensorPosition());
         if (Yaxis < 0 && climberMotor.getSelectedSensorPosition() <= Constants.climberMinimumPosition)
             climberMotor.set(0);
         if (Yaxis > 0 && climberMotor.getSelectedSensorPosition() >= Constants.climberMaximumPosition)

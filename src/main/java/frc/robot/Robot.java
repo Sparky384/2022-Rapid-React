@@ -343,7 +343,7 @@ public class Robot extends TimedRobot
     case 2:
       intake.intakeUp();
       intake.stopIntake();
-      ret = drive.turnTo(180.0, 5.0);
+      ret = drive.turnTo(180.0, 5.0); //first turn
       shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
       if (ret == 0)
       {
@@ -376,7 +376,7 @@ public class Robot extends TimedRobot
     case 4:
       intake.intakeUp();
       intake.stopIntake();
-      ret = drive.turnTo(-79.0, 5.0);
+      ret = drive.turnTo(-79.0, 5.0); //second turn
       if (ret == 0)
       {
         drive.stop();
@@ -407,7 +407,7 @@ public class Robot extends TimedRobot
       intake.stopIntake();
       intake.indexToTop();
       shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
-      ret = drive.turnTo(125.0, 5.0);
+      ret = drive.turnTo(125.0, 5.0); //third turn
       if (ret == 0)
       {
         drive.stop();

@@ -67,7 +67,7 @@ public class Constants {
 
     // Shooter speeds and zone window, based on shot distance
     public static final double closeSpeed = 2100.0;
-    public static final double midSpeed = 2700.0;
+    public static final double midSpeed = 2850.0;
     public static final double farSpeed = 3000.0;
     public static final double upSpeed = 3050.0;
     public static final int closeSpeedWindow = 100;
@@ -161,7 +161,7 @@ public class Constants {
             centerIntervalTime = 1.0;
             climberMotorPort = 3;
             climberMinimumPosition = 55;
-            climberMaximumPosition = 197000;
+            climberMaximumPosition = 230000;
         }
     }
 }
