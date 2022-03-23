@@ -40,7 +40,7 @@ public class Constants {
     public static int backRightPort;  //drivetrain motors
     public static int shooterMotorRightPort;
     public static int shooterMotorLeftPort;
-    public static int shooterMotorTurnPort; //not going to be used on the actual robot
+    //public static int shooterMotorTurnPort; //not going to be used on the actual robot
     public static int climberMotorPort; 
     public static int climberMinimumPosition;
     public static int climberMaximumPosition;
@@ -99,7 +99,7 @@ public class Constants {
             backRightPort = 15;  //drivetrain motors
             shooterMotorRightPort = 13;
             shooterMotorLeftPort = 2;
-            shooterMotorTurnPort = 10; //not going to be used on the actual robot
+            //shooterMotorTurnPort = 10; //not going to be used on the actual robot
 
             driveShortP = 0.02896;
             driveShortI = 1.55;

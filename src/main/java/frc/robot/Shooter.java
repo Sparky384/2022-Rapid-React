@@ -6,27 +6,21 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Timer;
+//import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter {
     private CANSparkMax shooterMotorRight;
     private CANSparkMax shooterMotorLeft;
-    private CANSparkMax shooterMotorTurn;
+    //private CANSparkMax shooterMotorTurn;
     private RelativeEncoder encoder;
     private MiniPID pid;
     private DoubleSolenoid solenoidLeft;
     private boolean shooterDown;
     
-    // New and improved shooter PID - maybe
-    //private boolean shooterPidInitialized = false;
-    //private boolean shooterPidTiming = false;
-    //Timer shooterFailTimer;
-    //Timer shooterZoneTimer;
-
     public Shooter() {
         shooterMotorRight = new CANSparkMax(Constants.shooterMotorRightPort, MotorType.kBrushless);
         shooterMotorLeft = new CANSparkMax(Constants.shooterMotorLeftPort, MotorType.kBrushless);
-        shooterMotorTurn = new CANSparkMax(Constants.shooterMotorTurnPort, MotorType.kBrushless);
+        //shooterMotorTurn = new CANSparkMax(Constants.shooterMotorTurnPort, MotorType.kBrushless);
         //shooterMotorRight.setSmartCurrentLimit(60, 60);
         //shooterMotorLeft.setSmartCurrentLimit(60, 60);
         //shooterMotorTurn.setSmartCurrentLimit(60, 60);
