@@ -80,6 +80,9 @@ public class Constants {
     public static final double farLimelightWindow = 4;
     public static final double upLimelightWindow = 4;
 
+    // Intake and indexer speeds
+    public static final double indexerSpeed = 0.75;
+    public static final double intakeSpeed = 0.75;
 
     public static final int proto = 0;
     public static final int sparky = 1;

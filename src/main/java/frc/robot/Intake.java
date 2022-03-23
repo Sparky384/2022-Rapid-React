@@ -37,11 +37,11 @@ public class Intake {
     private final DoubleSolenoid.Value open = DoubleSolenoid.Value.kOff;
 
     // Track number of balls in indexer
-    private Timer ballIndexEntryTimer;
-    private Timer ballIndexExitTimer;
-    private int ballsInIndex;
-    private boolean ballEntered;
-    private boolean ballExited;
+    //private Timer ballIndexEntryTimer;
+    //private Timer ballIndexExitTimer;
+    //private int ballsInIndex;
+    //private boolean ballEntered;
+    //private boolean ballExited;
 
 
     public Intake() {
@@ -55,7 +55,7 @@ public class Intake {
         topPhotoEye = new DigitalInput(Constants.topPhotoEyePort);
         prevTopEye = false;
         prevBottomEye = false;
-        ballsInIndex = 0;
+        //ballsInIndex = 0;
 
         rearSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 5, 4);
         frontSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 2);
@@ -66,8 +66,8 @@ public class Intake {
 
         indexLock = false;
 
-        ballIndexEntryTimer = new Timer();
-        ballIndexExitTimer = new Timer();
+        //ballIndexEntryTimer = new Timer();
+        //ballIndexExitTimer = new Timer();
     }
 
     public void intakeUp() {
@@ -101,7 +101,7 @@ public class Intake {
     }
 
     public void intakeIn() {
-        stage1Motor.set(0.75);
+        stage1Motor.set(Constants.intakeSpeed);
     }
 
     public void intakeOut() {
@@ -117,7 +117,7 @@ public class Intake {
     }
 
     public void indexerShoot(){
-        stage3Motor.set(0.75);
+        stage3Motor.set(Constants.indexerSpeed);
     }
 
     public void indexerOut(){
@@ -163,12 +163,14 @@ public class Intake {
     public void indexToTop(){
         boolean top = topPhotoEye.get();
         if(!top){
-            stage3Motor.set(0.75);
+            stage3Motor.set(Constants.indexerSpeed);
         }
         else {
             stage3Motor.set(0.0);
         }
     }
+
+    /*
 
     // Updates the number of balls in the indexer
     // Used to optimize timing for the autoshooting
@@ -228,4 +230,5 @@ public class Intake {
     {
         ballsInIndex = count;
     }
+    */
 }
