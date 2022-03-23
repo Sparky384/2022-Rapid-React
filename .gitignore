@@ -1,7 +1,6 @@
 *.lock
 *.bin
 *.class
-*.json
 *.dll
 *.pdb
 *.jar

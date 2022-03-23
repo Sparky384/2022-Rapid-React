@@ -97,6 +97,7 @@ public class Robot extends TimedRobot
     drive.initializeEncoders();
     drive.imuZeroYaw();
     intake.unlockIndex();
+    Limelight.lightOff();
   }
 
   @Override
@@ -150,6 +151,9 @@ public class Robot extends TimedRobot
       int window;
       double limelightWindow;
 
+      // Turn on the limelight
+      Limelight.lightOn();
+
       if (shooter.getDown())
       {
         if (controller.getButton(Constants.PILOT, ButtonMap.autoShootFar))
@@ -197,6 +201,10 @@ public class Robot extends TimedRobot
     {
       drive.resetCenter();
       drive.drive(scaleJoystickAxis(leftPilotX), leftPilotY);
+
+      // Turn off the limelight
+      Limelight.lightOff();
+
       // give control of shooter/indexer to copilot if not auto shooting
       if (controller.getButton(Constants.COPILOT, ButtonMap.indexerOut))
         intake.indexerOut();
@@ -276,6 +284,7 @@ public class Robot extends TimedRobot
     drive.imuZeroYaw();
     drive.initializeEncoders();
     intake.unlockIndex();
+    Limelight.lightOn();
   }
 
    public void autonomousPeriodic() 
@@ -312,7 +321,7 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("Encoder", drive.getRightEncoderPosition());
     SmartDashboard.putBoolean("Bottom Photoeye:", intake.getBottomEye());
     SmartDashboard.putBoolean("Top Photoeye:", intake.getTopEye());
-    SmartDashboard.putNumber("Indexer Ball Count", intake.getIndexBallCount());
+    //SmartDashboard.putNumber("Indexer Ball Count", intake.getIndexBallCount());
   }
 
   private void threeBallAuto()
