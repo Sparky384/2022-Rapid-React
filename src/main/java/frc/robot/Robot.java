@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.networktables.*;               // for limelight ball vision
 
 public class Robot extends TimedRobot 
 {
@@ -30,6 +31,12 @@ public class Robot extends TimedRobot
   private Climber climb;
 
   private boolean shooterAtSpeed;
+
+  // For limelight ball vision
+  // Git is such as POS
+  public NetworkTable limelight1 = NetworkTableInstance.getDefault().getTable("limelight1");
+  public NetworkTable limelight2 = NetworkTableInstance.getDefault().getTable("limelight2");
+
 
   public Robot()
   {
