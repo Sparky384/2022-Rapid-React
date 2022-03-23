@@ -1,0 +1,9 @@
+*.lock
+*.bin
+*.class
+*.json
+*.dll
+*.pdb
+*.jar
+*.so*
+*.properties
