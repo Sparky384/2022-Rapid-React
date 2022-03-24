@@ -416,9 +416,9 @@ public class DriveTrain {
 			centerTiming = true;
 		}
 		else if(error < window)
-			difDrive.arcadeDrive(0.325, 0.0);
+			difDrive.arcadeDrive(0.4, 0.0); //0.325
 		else if(error > -window)
-			difDrive.arcadeDrive(-0.325, 0.0);
+			difDrive.arcadeDrive(-0.4, 0.0); //-0.325
 
 		if(prevFinished || centerIntervalTimer.hasPeriodPassed(Constants.centerIntervalTime))
 		{
