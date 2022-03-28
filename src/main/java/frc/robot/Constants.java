@@ -46,9 +46,9 @@ public class Constants {
     public static int climberMaximumPosition;
 
     //camera
-    public static final double targetHeight = 93.0;
-    public static final double cameraHeight = 40.0;
-    public static final double cameraAngle = Math.toRadians(0.0);
+    public static final double targetHeight = 102.62;
+    public static final double cameraHeight = 30.88;
+    public static final double cameraAngle = Math.toRadians(30.0);
    
     //autono-moose
     public static final int TURN_AND_DRIVE= 0;
@@ -64,6 +64,7 @@ public class Constants {
     public static final int PILOT = 0;
     public static final int COPILOT = 1;
 
+    public static final double ballWindow = 4;
 
     // Shooter speeds and zone window, based on shot distance
     public static final double closeSpeed = 2100.0;
@@ -86,6 +87,9 @@ public class Constants {
 
     public static final int proto = 0;
     public static final int sparky = 1;
+
+    public static final String BALL = "limelight-ball";
+    public static final String GOAL = "limelight-goal";
 
     Constants(int bot)
     {

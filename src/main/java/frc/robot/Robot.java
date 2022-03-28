@@ -60,7 +60,7 @@ public class Robot extends TimedRobot
       new Constants(Constants.sparky); // sets the port numbers
     }*/
     new Constants(Constants.sparky);
-    SmartDashboard.putNumber("Shooter Percent", 0.0);
+    //SmartDashboard.putNumber("Shooter Percent", 0.0);
 
     drive = new DriveTrain();
     intake = new Intake();
@@ -97,7 +97,8 @@ public class Robot extends TimedRobot
     drive.initializeEncoders();
     drive.imuZeroYaw();
     intake.unlockIndex();
-    Limelight.lightOff();
+    Limelight.lightOff(Constants.GOAL);
+    Limelight.lightOff(Constants.BALL);
   }
 
   @Override
@@ -152,7 +153,7 @@ public class Robot extends TimedRobot
       double limelightWindow;
 
       // Turn on the limelight
-      Limelight.lightOn();
+      Limelight.lightOn(Constants.GOAL);
 
       if (shooter.getDown())
       {
@@ -184,7 +185,7 @@ public class Robot extends TimedRobot
 
       boolean ret1 = shooter.shoot(speed, window);
       int ret2;
-      ret2 = drive.centerToTarget(3.0, limelightWindow);
+      ret2 = drive.centerToTarget(3.0, limelightWindow, Constants.GOAL);
 
       //SmartDashboard.putBoolean("ret1 (shoot)", ret1);
       //SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
@@ -203,7 +204,7 @@ public class Robot extends TimedRobot
       drive.drive(scaleJoystickAxis(leftPilotX), leftPilotY);
 
       // Turn off the limelight
-      Limelight.lightOff();
+      Limelight.lightOff(Constants.GOAL);
 
       // give control of shooter/indexer to copilot if not auto shooting
       if (controller.getButton(Constants.COPILOT, ButtonMap.indexerOut))
@@ -284,7 +285,7 @@ public class Robot extends TimedRobot
     drive.imuZeroYaw();
     drive.initializeEncoders();
     intake.unlockIndex();
-    Limelight.lightOn();
+    Limelight.lightOn(Constants.GOAL);
   }
 
    public void autonomousPeriodic() 
@@ -313,15 +314,16 @@ public class Robot extends TimedRobot
     //SmartDashboard.putNumber("centerFailTimer", drive.centerFailTimer.get());
 		//SmartDashboard.putNumber("CenterIntervalTimer", drive.centerIntervalTimer.get());
     //SmartDashboard.putBoolean("centerInitialized", drive.centerInitialized);
-    SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets());
-    //SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset());
-    //SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset());
-    SmartDashboard.putNumber("Left Gyro", drive.getImuYaw(false));
-    SmartDashboard.putNumber("Right Gyro", drive.getImuYaw(true));
-    SmartDashboard.putNumber("Encoder", drive.getRightEncoderPosition());
+    SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets(Constants.GOAL));
+    //SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset(Constants.GOAL));
+    //SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset(Constants.GOAL));
+    //SmartDashboard.putNumber("Left Gyro", drive.getImuYaw(false));
+    //SmartDashboard.putNumber("Right Gyro", drive.getImuYaw(true));
+    //SmartDashboard.putNumber("Encoder", drive.getRightEncoderPosition());
     SmartDashboard.putBoolean("Bottom Photoeye:", intake.getBottomEye());
     SmartDashboard.putBoolean("Top Photoeye:", intake.getTopEye());
     //SmartDashboard.putNumber("Indexer Ball Count", intake.getIndexBallCount());
+    SmartDashboard.putNumber("Target Distance", Limelight.calculateDistance(Constants.GOAL));
   }
 
   private void threeBallAuto()
@@ -430,7 +432,7 @@ public class Robot extends TimedRobot
     case 7:
     intake.indexToTop();
     shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
-    ret = drive.centerToTarget(0.01, Constants.midLimelightWindow);
+    ret = drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL);
       if (ret == 0)
       {
         state++;
@@ -443,7 +445,7 @@ public class Robot extends TimedRobot
     case 8: 
       autoTimer.start();
       intake.lockIndex();
-      drive.centerToTarget(0.01, Constants.midLimelightWindow);
+      drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL);
       if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))

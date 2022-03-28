@@ -392,9 +392,9 @@ public class DriveTrain {
 		prevFinished = false;
 	}
 
-	public int centerToTarget(double timeout, double window)
+	public int centerToTarget(double timeout, double window, String cam)
 	{
-		double error = Limelight.getTargetAngleXOffset();
+		double error = Limelight.getTargetAngleXOffset(Constants.GOAL);
 		SmartDashboard.putNumber("erer", error);
 		SmartDashboard.putNumber("window", window);
 		SmartDashboard.putNumber("timeout", timeout);

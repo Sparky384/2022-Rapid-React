@@ -79,7 +79,7 @@ public class Shooter {
             pid.setI(Iin);  // why not use Constants.shooterI here?
             pid.setD(Din);  // ditto
             pid.setP(Pin);  // ditto
-            pid.setMaxIOutput(400);
+            pid.setMaxIOutput(160); //190
             //System.out.println("In window");
         }
         // If error is too large, run off of feed-forward (bias) only
@@ -98,10 +98,10 @@ public class Shooter {
         shooterMotorRight.set(-speed);
 
         // Do some logging
-        //Logging.consoleLog("SPID SP: " + set);
-        //Logging.consoleLog("SPID err: " + error);
-        //Logging.consoleLog("SPID CV: " + speed);
-        //Logging.consoleLog("SPID fbk: " + curSpeed);
+        Logging.consoleLog("SPID SP: " + set);
+        Logging.consoleLog("SPID err: " + error);
+        Logging.consoleLog("SPID CV: " + speed);
+        Logging.consoleLog("SPID fbk: " + curSpeed);
 
         //SmartDashboard.putNumber("PID Output", speed);
         //SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
