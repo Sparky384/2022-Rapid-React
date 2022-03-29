@@ -38,7 +38,8 @@ public class Limelight {
         double angle = Math.toRadians(getTargetAngleYOffset(cam)) + Constants.cameraAngle;
         double heightDiff = Constants.targetHeight - Constants.cameraHeight;
         double distance = heightDiff / Math.tan(angle);
-        return distance;
+        distance -= 30;
+        return distance; 
     }
 
     public static void toggleLight(String cam)
