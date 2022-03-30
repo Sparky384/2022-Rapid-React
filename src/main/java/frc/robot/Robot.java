@@ -155,6 +155,7 @@ public class Robot extends TimedRobot
       double speed;
       int window;
       double limelightWindow;
+      shooter.shooterUp();
 
       // Turn on the limelight
       Limelight.lightOn(Constants.GOAL);
@@ -212,12 +213,12 @@ public class Robot extends TimedRobot
         System.out.println("Spinning up for LL shot");
       }
 
-      //SmartDashboard.putNumber("Shooter speed: ", speed);
+      SmartDashboard.putNumber("Shooter speed: ", speed);
       //SmartDashboard.putBoolean("ret1 (shoot)", ret1);
       //SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
 
       if (ret1 && ret2 != 1) {
-        shooter.shooterUp();  // raise the shooter hood
+        //shooter.shooterUp();  // raise the shooter hood
         intake.indexerShoot();
       }
       else
@@ -266,6 +267,7 @@ public class Robot extends TimedRobot
       // This is a pilot function, for the close shot only
       else if (controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
       {
+        shooter.shooterDown();
         if (shooter.getDown())
         {
          
@@ -278,7 +280,7 @@ public class Robot extends TimedRobot
           
           if (shooterAtSpeed)
           {
-            shooter.shooterDown();  // lower the shooter hood
+            //shooter.shooterDown();  // lower the shooter hood
             intake.indexerShoot();
             System.out.println("Taking close hub shot");
           }
@@ -302,6 +304,9 @@ public class Robot extends TimedRobot
       shooter.shooterUp();
     if (controller.getButton(Constants.COPILOT, ButtonMap.shooterDown))
       shooter.shooterDown();
+      //allows for a COPILOT prespin and prevents an issue where COPILOT might accidentally continue holding the prespin button while PILOT is shooting.
+    if (controller.getButton(Constants.COPILOT, ButtonMap.shooterPreSpin) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootMid) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootFar) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
+      shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
 
     dashboardOutput();
   }
@@ -352,6 +357,7 @@ public class Robot extends TimedRobot
     //SmartDashboard.putBoolean("Top Photoeye:", intake.getTopEye());
     //SmartDashboard.putNumber("Indexer Ball Count", intake.getIndexBallCount());
     SmartDashboard.putNumber("Target Distance", Limelight.calculateDistance(Constants.GOAL));
+    SmartDashboard.putNumber("LL Angle", Limelight.getTargetAngleYOffset(Constants.GOAL));
   }
 
   private void threeBallAuto()

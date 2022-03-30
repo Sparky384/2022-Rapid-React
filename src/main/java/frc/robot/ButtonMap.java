@@ -25,4 +25,5 @@ public class ButtonMap
     public static Buttons shooterSpeedClose = Buttons.LB;
     public static Buttons shooterSpeedMid = Buttons.RB;
     public static Buttons shooterSpeedFar = Buttons.RT;
+    public static Buttons shooterPreSpin = Buttons.B;
 }
