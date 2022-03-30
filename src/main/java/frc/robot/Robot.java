@@ -32,6 +32,7 @@ public class Robot extends TimedRobot
   // Limelight distance calculations
   LimelightData limelightData = new LimelightData();
 
+  // Currently used for close shot only - what about mid and far shots?
   private boolean shooterAtSpeed;
 
   public Robot()
@@ -182,34 +183,43 @@ public class Robot extends TimedRobot
         window = Constants.midSpeedWindow;
         limelightWindow = Constants.midLimelightWindow;
       }
-  
-      // Now center and take the shot
+
       /*
+      Now center and take the shot
+
       If we get a success value from limelight centering, lock in calculated
       value of speed and pass it to shooter.shoot().  If not, we punt and pass the 
       midSpeed value
       */
       int ret2 = drive.centerToTarget(3.0, limelightWindow, Constants.GOAL);
-      // Set the shooter.shoot return value to false until centering shot made
+      // Initialize with false until centering started
       boolean ret1 = false;
 
-      // Centering successful, do a calculaed shot
+      // Centering successful, do a calculated shot
       if(ret2 == 0) {
         speed = limelightData.interpolate(limelightData.finalDistance, limelightData.rpm, Limelight.calculateDistance(Constants.GOAL));
-        ret1 = shooter.shoot(speed, window);
+        ret1 = shooter.shoot(speed, Constants.midSpeedWindow);
+        System.out.printf("Calculated LL speed passed: %f\n", speed);
       }
       // Centering unsuccessful, punt and take a mid shot guess
       else if (ret2 == -1) {
-        speed = Constants.midSpeed;
-        ret1 = shooter.shoot(speed, window);
+        ret1 = shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+        System.out.printf("Calculated LL speed failed, taking midrange: %f\n", speed);
+      }
+      // Spin up the shooter while waiting for LL centering to finish
+      else if(ret2 == 1) {
+        ret1 = shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+        System.out.println("Spinning up for LL shot");
       }
 
-      SmartDashboard.putNumber("Shooter speed: ", speed);
+      //SmartDashboard.putNumber("Shooter speed: ", speed);
       //SmartDashboard.putBoolean("ret1 (shoot)", ret1);
       //SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
 
-      if (ret1 && ret2 != 1)
+      if (ret1 && ret2 != 1) {
+        shooter.shooterUp();  // raise the shooter hood
         intake.indexerShoot();
+      }
       else
         intake.indexToTop();
     }
@@ -268,8 +278,9 @@ public class Robot extends TimedRobot
           
           if (shooterAtSpeed)
           {
+            shooter.shooterDown();  // lower the shooter hood
             intake.indexerShoot();
-            //System.out.println("Shooting now");
+            System.out.println("Taking close hub shot");
           }
           else 
           {
