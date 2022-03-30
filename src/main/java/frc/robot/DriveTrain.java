@@ -407,7 +407,7 @@ public class DriveTrain {
 			centerFailTimer.reset();
 			centerFailTimer.start();
 			centerInitialized = true;
-			System.out.println("init--------------------------------------------------------");
+			//System.out.println("init--------------------------------------------------------");
 		}
 		if(error < window && error > -window)
 		{

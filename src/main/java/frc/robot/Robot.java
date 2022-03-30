@@ -29,6 +29,9 @@ public class Robot extends TimedRobot
   private Compressor compressor;
   private Climber climb;
 
+  // Limelight distance calculations
+  LimelightData limelightData = new LimelightData();
+
   private boolean shooterAtSpeed;
 
   public Robot()
@@ -75,9 +78,9 @@ public class Robot extends TimedRobot
     chooser.addOption("Zero Ball Auto", Constants.ZERO_BALL_AUTO);
     chooser.addOption("Do Nothing", Constants.DO_NOTHING);
 
-    SmartDashboard.putNumber("shooterP", Constants.shooterP);
-    SmartDashboard.putNumber("shooterI", Constants.shooterI);
-    SmartDashboard.putNumber("shooterD", Constants.shooterD);
+    //SmartDashboard.putNumber("shooterP", Constants.shooterP);
+    //SmartDashboard.putNumber("shooterI", Constants.shooterI);
+    //SmartDashboard.putNumber("shooterD", Constants.shooterD);
     
     drive.imuZeroYaw();
     drive.initializeEncoders();
@@ -155,38 +158,53 @@ public class Robot extends TimedRobot
       // Turn on the limelight
       Limelight.lightOn(Constants.GOAL);
 
-      if (shooter.getDown())
+      // A post shot is being made
+      if (controller.getButton(Constants.PILOT, ButtonMap.autoShootFar))
       {
-        if (controller.getButton(Constants.PILOT, ButtonMap.autoShootFar))
-          {
-            speed = Constants.farSpeed;
-            window = Constants.farSpeedWindow;
-            limelightWindow = Constants.farLimelightWindow;
-          }
-        else if (controller.getButton(Constants.PILOT, ButtonMap.autoShootMid))
-          { 
-            speed = Constants.midSpeed;
-            window = Constants.midSpeedWindow;
-            limelightWindow = Constants.midLimelightWindow;
-          }
-        else
-        {
-          speed = Constants.closeSpeed;
-          window = Constants.closeSpeedWindow;
-          limelightWindow = Constants.closeLimelightWindow;
-        }
+        speed = Constants.farSpeed;
+        window = Constants.farSpeedWindow;
+        limelightWindow = Constants.farLimelightWindow;
       }
-      else
+      /*
+      A mid shot is being made, so speed is a function of limelight, unless the
+      camera doesn't target. If that is the case, then we'll load a midspeed
+      value, which should be a halfway point best guess
+      */
+      else if (controller.getButton(Constants.PILOT, ButtonMap.autoShootMid))
+      { 
+        speed = Constants.midSpeed;
+        window = Constants.midSpeedWindow;
+        limelightWindow = Constants.midLimelightWindow;
+      }
+      else  // we require a default speed here, or compiler will complain
       {
-        speed = Constants.upSpeed;
-        window = Constants.upSpeedWindow;
-        limelightWindow = Constants.upLimelightWindow;
+        speed = Constants.midSpeed;
+        window = Constants.midSpeedWindow;
+        limelightWindow = Constants.midLimelightWindow;
+      }
+  
+      // Now center and take the shot
+      /*
+      If we get a success value from limelight centering, lock in calculated
+      value of speed and pass it to shooter.shoot().  If not, we punt and pass the 
+      midSpeed value
+      */
+      int ret2 = drive.centerToTarget(3.0, limelightWindow, Constants.GOAL);
+      // Set the shooter.shoot return value to false until centering shot made
+      boolean ret1 = false;
+
+      // Centering successful, do a calculaed shot
+      if(ret2 == 0) {
+        speed = limelightData.interpolate(limelightData.finalDistance, limelightData.rpm, Limelight.calculateDistance(Constants.GOAL));
+        ret1 = shooter.shoot(speed, window);
+      }
+      // Centering unsuccessful, punt and take a mid shot guess
+      else if (ret2 == -1) {
+        speed = Constants.midSpeed;
+        ret1 = shooter.shoot(speed, window);
       }
 
-      boolean ret1 = shooter.shoot(speed, window);
-      int ret2;
-      ret2 = drive.centerToTarget(3.0, limelightWindow, Constants.GOAL);
-
+      SmartDashboard.putNumber("Shooter speed: ", speed);
       //SmartDashboard.putBoolean("ret1 (shoot)", ret1);
       //SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
 
@@ -194,7 +212,6 @@ public class Robot extends TimedRobot
         intake.indexerShoot();
       else
         intake.indexToTop();
-        //intake.autoIndex();
     }
     else
     // Auto shoot buttons not pressed, so allow driving and look for auto shooting 
@@ -252,7 +269,7 @@ public class Robot extends TimedRobot
           if (shooterAtSpeed)
           {
             intake.indexerShoot();
-            System.out.println("Shooting now");
+            //System.out.println("Shooting now");
           }
           else 
           {
@@ -320,8 +337,8 @@ public class Robot extends TimedRobot
     //SmartDashboard.putNumber("Left Gyro", drive.getImuYaw(false));
     //SmartDashboard.putNumber("Right Gyro", drive.getImuYaw(true));
     //SmartDashboard.putNumber("Encoder", drive.getRightEncoderPosition());
-    SmartDashboard.putBoolean("Bottom Photoeye:", intake.getBottomEye());
-    SmartDashboard.putBoolean("Top Photoeye:", intake.getTopEye());
+    //SmartDashboard.putBoolean("Bottom Photoeye:", intake.getBottomEye());
+    //SmartDashboard.putBoolean("Top Photoeye:", intake.getTopEye());
     //SmartDashboard.putNumber("Indexer Ball Count", intake.getIndexBallCount());
     SmartDashboard.putNumber("Target Distance", Limelight.calculateDistance(Constants.GOAL));
   }

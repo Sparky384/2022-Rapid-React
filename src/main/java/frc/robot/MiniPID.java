@@ -148,9 +148,9 @@ public class MiniPID {
 
 			// Do the simple parts of the calculations
 			double error=setpoint-actual;
-			SmartDashboard.putNumber("set", setpoint);
-			SmartDashboard.putNumber("actual", actual);
-			SmartDashboard.putNumber("error", error);
+			//SmartDashboard.putNumber("set", setpoint);
+			//SmartDashboard.putNumber("actual", actual);
+			//SmartDashboard.putNumber("error", error);
 
 			// Calculate F output. Notice, this depends only on the setpoint, and not the error. 
 			Foutput=F*setpoint;
