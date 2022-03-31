@@ -56,7 +56,7 @@ public class Shooter {
             speed /= 100;
         shooterMotorLeft.set(speed);
         shooterMotorRight.set(-speed);
-        SmartDashboard.putNumber("ShooterEncoder", -encoder.getVelocity());
+        //SmartDashboard.putNumber("ShooterEncoder", -encoder.getVelocity());
         return true;
     }
 
@@ -133,5 +133,9 @@ public class Shooter {
     public void shooterDown() {
         solenoidLeft.set(DoubleSolenoid.Value.kReverse);
         shooterDown = true;
+    }
+
+    public double getVelocity() {
+        return encoder.getVelocity();
     }
 }

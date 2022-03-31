@@ -8,7 +8,7 @@ public class LimelightData {
     as measured by a tape measure
     */
     public final double measuredDistance[] = {
-        55,65,76,86,96,106,116,126,136,146,156,166,172
+        45,55,65,76,86,96,106,116,126,136,146,156,166,176
     };
 
     /*
@@ -17,7 +17,7 @@ public class LimelightData {
     Based on the calculateDistance() method in the Limelight class 
     */
     public final double rawDistance[] = {
-        71,82,97,109,120,130,143,154,165,180,189,198,207
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0    
     };
 
     /*
@@ -25,10 +25,12 @@ public class LimelightData {
     Subtracted 30 (average error) from measuredDistance to get this. Note that this is an approximation,
     but it's a pretty good one.  The offset was selected to minimize the error of the far end of 
     the shooting range, at the expense of the close end.  Better results could be obtained by subtracting
-    a correction "curve" which is a function of distance, and not just a straight line. 
+    a correction "curve" which is a function of distance, and not just a straight line.
+    
+    Hopefully we won't need this anymore.
     */
     public final double finalDistance[] = {
-        40,52,67,78,90,100,113,124,135,149,159,168,176
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0
     };
 
 /*
@@ -36,21 +38,30 @@ public class LimelightData {
     I didn't take as many data points as needed, so this will need to be fixed
     */
     public final double targetYAngle[] = {
-        14.02,9.86,5.79,3.18,0.69,-1.53,-3.69,-5.4,-7.14 
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0 
     };
 
     /*
     RPM values for best shot at each measured distance value
     */
     public final double rpm[] = {
-        1950,2050,2175,2300,2375,2450,2525,2600,2700,2800,3000,3200,3375
+        //1950,2050,2175,2300,2375,2450,2525,2600,2700,2800,3000,3200,3375
+        // The first value, 1500, is just a guess I made and should be replaced
+        // with real value
+        1500,1950,2050,2175,2300,2375,2450,2525,2600,2700,2800,3000,3200,3375
     };
 
     // Just for convenience
     int numPoints = measuredDistance.length;
 
+     /*
+    I got this from the internet - seems to work really well
+    Note that both xa[] and ya[] arrays must be the same size, or weird
+    results can occur.
 
-    // I gots this from the internet - seems to wprk really well
+    I tested this method to make sure it extrapolates as well as it interpolates,
+    and it did for the values I gave it.
+    */
     public double interpolate(double xa[], double ya[], double x) {
         /*
         Given arrays xa[1..n] and ya[1..n], and given a value x, 

@@ -198,8 +198,12 @@ public class Robot extends TimedRobot
 
       // Centering successful, do a calculated shot
       if(ret2 == 0) {
+        // I found an error in the Limelight.calculateDistance() method, which is fixed now
+        // so let's try the distance measurement again
+        //speed = limelightData.interpolate
+        //  (limelightData.targetYAngle, limelightData.rpm, Limelight.getTargetAngleYOffset(Constants.GOAL));
         speed = limelightData.interpolate
-          (limelightData.targetYAngle, limelightData.rpm, Limelight.getTargetAngleYOffset(Constants.GOAL));
+          (limelightData.finalDistance, limelightData.rpm, Limelight.calculateDistance(Constants.GOAL));
         
           ret1 = shooter.shoot(speed, Constants.midSpeedWindow);
           Logging.consoleLog("Robot.java: LL center passed, LL angle " + Limelight.getTargetAngleYOffset(Constants.GOAL) );
