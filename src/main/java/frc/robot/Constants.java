@@ -48,7 +48,7 @@ public class Constants {
     //camera
     public static final double targetHeight = 102.62;
     public static final double cameraHeight = 30.88;
-    public static final double cameraAngle = Math.toRadians(30.0);
+    public static final double cameraAngle = 30.0;  // degrees here, convert ro radians
    
     //autono-moose
     public static final int TURN_AND_DRIVE= 0;
@@ -67,13 +67,13 @@ public class Constants {
     public static final double ballWindow = 4;
 
     // Shooter speeds and zone window, based on shot distance
-    public static final double closeSpeed = 2100.0;
+    public static final double closeSpeed = 1950.0;
     public static final double midSpeed = 2000.0; //2850
     public static final double farSpeed = 3000.0;
     public static final double upSpeed = 3375.0;
     public static final int closeSpeedWindow = 100;
     public static final int twoBallAutoWindow = 40;
-    public static final int midSpeedWindow = 75;
+    public static final int midSpeedWindow = 50;
     public static final int farSpeedWindow = 100;
     public static final int upSpeedWindow = 60;
     public static final double closeLimelightWindow = 6;

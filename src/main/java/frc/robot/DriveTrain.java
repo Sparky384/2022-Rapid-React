@@ -106,8 +106,8 @@ public class DriveTrain {
         speedController = new MiniPID(0, 0, 0);
 		max = 0;
 
-		SmartDashboard.putNumber("a", 0);
-		SmartDashboard.putNumber("b", 1);
+		//SmartDashboard.putNumber("a", 0);
+		//SmartDashboard.putNumber("b", 1);
 
     }
 
@@ -167,9 +167,9 @@ public class DriveTrain {
     
     public int driveTo(double distance, final double timeout, boolean isShortDist) 
     {
-		SmartDashboard.putNumber("Current Error", currentError);
-		SmartDashboard.putNumber("PID OUT", driveToRate);
-		SmartDashboard.putNumber("RightEncoderPosition", getRightEncoderPosition());
+		//SmartDashboard.putNumber("Current Error", currentError);
+		//SmartDashboard.putNumber("PID OUT", driveToRate);
+		//SmartDashboard.putNumber("RightEncoderPosition", getRightEncoderPosition());
 		double P;
 		double I;
 		double D;
@@ -214,7 +214,7 @@ public class DriveTrain {
 
 		driveToRate = speedController.getOutput(getRightEncoderPosition(), distance);
 		currentError = distance - (getRightEncoderPosition());
-		SmartDashboard.putNumber("drive error", currentError);
+		//SmartDashboard.putNumber("drive error", currentError);
 		difDrive.arcadeDrive(0, -driveToRate);
 		if (getRightEncoderPosition() > max)
 			max = getRightEncoderPosition();
@@ -325,10 +325,10 @@ public class DriveTrain {
 		//if (distance < 0)
 		//	driveToRate *= -1;
 		difDrive.arcadeDrive(-driveToRate, 0);
-		SmartDashboard.putNumber("TurnResult", getImuYaw(isUTurn));
-		SmartDashboard.putNumber("Yaw Error", currentError);
-		SmartDashboard.putNumber("Not TurnResult", getImuYaw(!isUTurn));
-		SmartDashboard.putBoolean("uturn", isUTurn);
+		//SmartDashboard.putNumber("TurnResult", getImuYaw(isUTurn));
+		//SmartDashboard.putNumber("Yaw Error", currentError);
+		//SmartDashboard.putNumber("Not TurnResult", getImuYaw(!isUTurn));
+		//SmartDashboard.putBoolean("uturn", isUTurn);
 
 		if (Math.abs(currentError) < Constants.turnDeadBand) 	
 		{
@@ -395,9 +395,9 @@ public class DriveTrain {
 	public int centerToTarget(double timeout, double window, String cam)
 	{
 		double error = Limelight.getTargetAngleXOffset(Constants.GOAL);
-		SmartDashboard.putNumber("erer", error);
-		SmartDashboard.putNumber("window", window);
-		SmartDashboard.putNumber("timeout", timeout);
+		//SmartDashboard.putNumber("erer", error);
+		//SmartDashboard.putNumber("window", window);
+		//SmartDashboard.putNumber("timeout", timeout);
 		if(!centerInitialized)
 		{
 			prevFinished = false;

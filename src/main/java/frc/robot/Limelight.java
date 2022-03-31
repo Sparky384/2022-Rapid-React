@@ -42,7 +42,7 @@ public class Limelight {
         // Angle must be in radians
         double distance = heightDiff / Math.tan(angle);
         // This offset brought the raw versus measured curves together
-        distance -= 20; //30
+        distance -= 22;
         return distance; 
     }
 

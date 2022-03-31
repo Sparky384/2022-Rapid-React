@@ -34,6 +34,7 @@ public class Robot extends TimedRobot
 
   // Currently used for close shot only - what about mid and far shots?
   private boolean shooterAtSpeed;
+  private boolean ret1 = false;
 
   public Robot()
   {
@@ -194,30 +195,41 @@ public class Robot extends TimedRobot
       */
       int ret2 = drive.centerToTarget(3.0, limelightWindow, Constants.GOAL);
       // Initialize with false until centering started
-      boolean ret1 = false;
+      //boolean ret1 = false;
 
       // Centering successful, do a calculated shot
       if(ret2 == 0) {
-        // I found an error in the Limelight.calculateDistance() method, which is fixed now
-        // so let's try the distance measurement again
-        //speed = limelightData.interpolate
-        //  (limelightData.targetYAngle, limelightData.rpm, Limelight.getTargetAngleYOffset(Constants.GOAL));
         speed = limelightData.interpolate
           (limelightData.finalDistance, limelightData.rpm, Limelight.calculateDistance(Constants.GOAL));
+
+          // The interpolator blows up when the robot is too close (41" or less)
+          if(speed < 1900.0) {
+            speed = 1900;
+          }
         
           ret1 = shooter.shoot(speed, Constants.midSpeedWindow);
-          Logging.consoleLog("Robot.java: LL center passed, LL angle " + Limelight.getTargetAngleYOffset(Constants.GOAL) );
-          Logging.consoleLog("Robot.java: LL center passed, ret1/calcSpeed/feedback value: " + ret1, speed, shooter.getVelocity());
+          Logging.consoleLog("------------------------------------------------------------------");
+          Logging.consoleLog("Robot.java: LL center passed, LL angle: " + Limelight.getTargetAngleYOffset(Constants.GOAL) );
+          Logging.consoleLog("Robot.java: LL center passed, LL distance: " + Limelight.calculateDistance(Constants.GOAL) );
+          Logging.consoleLog("Robot.java: LL center passed, ret1: " + ret1);
+          Logging.consoleLog("Robot.java: LL center passed, calcSpeed: " + speed);
+          Logging.consoleLog("Robot.java: LL center passed, feedback value: " + shooter.getVelocity());
+          //SmartDashboard.putNumber("Calculated shooter distance", Limelight.calculateDistance(Constants.GOAL));
+          //SmartDashboard.putNumber("LL Angle Y offset", Limelight.getTargetAngleYOffset(Constants.GOAL));
       }
       // Centering unsuccessful, punt and take a mid shot guess
       else if (ret2 == -1) {
         ret1 = shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
-        Logging.consoleLog("Robot.java: LL center failed, ret1/feedback value: " + ret1, shooter.getVelocity() );
+        Logging.consoleLog("------------------------------------------------------------------");
+        Logging.consoleLog("Robot.java: LL center failed, ret1: " + ret1);
+        Logging.consoleLog("Robot.java: LL center failed, feedback value: " + shooter.getVelocity() );
       }
       // Spin up the shooter while waiting for LL centering to finish
       else if(ret2 == 1) {
         ret1 = shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
-        Logging.consoleLog("Robot.java: LL prespin, ret1/feedback value: " + ret1, shooter.getVelocity());
+        Logging.consoleLog("------------------------------------------------------------------");
+        Logging.consoleLog("Robot.java: LL prespin, ret1: " + ret1);
+        Logging.consoleLog("Robot.java: LL prespin, feedback value: " + shooter.getVelocity());
         //System.out.println("Spinning up for LL shot");
       }
 
@@ -227,11 +239,14 @@ public class Robot extends TimedRobot
 
       if (ret1 && ret2 != 1) {
         intake.indexerShoot();
-        Logging.consoleLog("Robot.java: Firing, speed/feedback value: " + speed, shooter.getVelocity()));
+        Logging.consoleLog("------------------------------------------------------------------");
+        Logging.consoleLog("Robot.java: Firing, speed: " + speed);
+        Logging.consoleLog("Robot.java: Firing, feedback value: " + shooter.getVelocity());
         Logging.consoleLog("Robot.java: Firing, top photoeye value: " + intake.getTopEye());
       }
       else
         intake.indexToTop();
+        Logging.consoleLog("------------------------------------------------------------------");
         Logging.consoleLog("Robot.java: shooter/centering not complete, indexing to top: ");
     }
     else
@@ -360,7 +375,7 @@ public class Robot extends TimedRobot
     //SmartDashboard.putNumber("centerFailTimer", drive.centerFailTimer.get());
 		//SmartDashboard.putNumber("CenterIntervalTimer", drive.centerIntervalTimer.get());
     //SmartDashboard.putBoolean("centerInitialized", drive.centerInitialized);
-    SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets(Constants.GOAL));
+    //SmartDashboard.putNumber("Camera has target:", Limelight.getValidTargets(Constants.GOAL));
     //SmartDashboard.putNumber("Target X (horiz) offset:", Limelight.getTargetAngleXOffset(Constants.GOAL));
     //SmartDashboard.putNumber("Target Y offset:", Limelight.getTargetAngleYOffset(Constants.GOAL));
     //SmartDashboard.putNumber("Left Gyro", drive.getImuYaw(false));
@@ -369,8 +384,8 @@ public class Robot extends TimedRobot
     //SmartDashboard.putBoolean("Bottom Photoeye:", intake.getBottomEye());
     //SmartDashboard.putBoolean("Top Photoeye:", intake.getTopEye());
     //SmartDashboard.putNumber("Indexer Ball Count", intake.getIndexBallCount());
-    SmartDashboard.putNumber("Target Distance", Limelight.calculateDistance(Constants.GOAL));
-    SmartDashboard.putNumber("LL Angle", Limelight.getTargetAngleYOffset(Constants.GOAL));
+    //SmartDashboard.putNumber("Target Distance", Limelight.calculateDistance(Constants.GOAL));
+    //SmartDashboard.putNumber("LL Angle", Limelight.getTargetAngleYOffset(Constants.GOAL));
   }
 
   private void threeBallAuto()
@@ -535,7 +550,7 @@ public class Robot extends TimedRobot
         state = -1;
       break;
     case 2:
-    SmartDashboard.putNumber("autoGyro", drive.getImuYaw(false));
+      //SmartDashboard.putNumber("autoGyro", drive.getImuYaw(false));
       intake.intakeUp();
       intake.stopIntake();
       ret = drive.turnTo(180.0, 5.0);
@@ -579,7 +594,7 @@ public class Robot extends TimedRobot
       intake.lockIndex();
       Boolean autoRet;
       autoRet = shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow);
-      SmartDashboard.putBoolean("autoret", autoRet);
+      //SmartDashboard.putBoolean("autoret", autoRet);
       if (autoRet)
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(2.5))

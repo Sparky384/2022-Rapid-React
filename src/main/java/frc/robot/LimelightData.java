@@ -17,7 +17,7 @@ public class LimelightData {
     Based on the calculateDistance() method in the Limelight class 
     */
     public final double rawDistance[] = {
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0    
+        57.8,69.3,81.1,94.2,105.8,116.4,126.6,134.7,149.1,161.4,172.8,182.3,196.5,210.4    
     };
 
     /*
@@ -30,7 +30,7 @@ public class LimelightData {
     Hopefully we won't need this anymore.
     */
     public final double finalDistance[] = {
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        35.8,47.3,61.1,74.2,85.8,96.4,106.6,114.7,129.1,141.4,152.8,162.3,176.5,190.4
     };
 
 /*
@@ -38,7 +38,7 @@ public class LimelightData {
     I didn't take as many data points as needed, so this will need to be fixed
     */
     public final double targetYAngle[] = {
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+        21.12,16.0,11.5,7.2,4.1,1.6,-0.4,-1.96,-4.3,-6.0,-7.4,-8.5,-9.95,-11.2 
     };
 
     /*
@@ -48,7 +48,8 @@ public class LimelightData {
         //1950,2050,2175,2300,2375,2450,2525,2600,2700,2800,3000,3200,3375
         // The first value, 1500, is just a guess I made and should be replaced
         // with real value
-        1500,1950,2050,2175,2300,2375,2450,2525,2600,2700,2800,3000,3200,3375
+        //1500,1950,2050,2175,2300,2375,2450,2525,2600,2700,2800,3000,3200,3375
+        1400,1600,2050,2175,2300,2375,2450,2525,2600,2700,2800,3000,3200,3375
     };
 
     // Just for convenience
@@ -131,7 +132,6 @@ public class LimelightData {
             on the target x. The last dy added is thus the error indication.
             */
         }
-
         return y;
     }
 

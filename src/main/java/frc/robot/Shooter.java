@@ -79,7 +79,7 @@ public class Shooter {
             pid.setI(Iin);  // why not use Constants.shooterI here?
             pid.setD(Din);  // ditto
             pid.setP(Pin);  // ditto
-            pid.setMaxIOutput(160); //190
+            pid.setMaxIOutput(190); //160
             //System.out.println("In window");
         }
         // If error is too large, run off of feed-forward (bias) only
@@ -106,7 +106,7 @@ public class Shooter {
         //SmartDashboard.putNumber("PID Output", speed);
         //SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
         //SmartDashboard.putNumber("ShooterEncoder", curSpeed);
-        SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
+        //SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
         
         if (Math.abs(error) < window)  // try a smaller deadband
         {
@@ -136,6 +136,6 @@ public class Shooter {
     }
 
     public double getVelocity() {
-        return encoder.getVelocity();
+        return -encoder.getVelocity();
     }
 }
