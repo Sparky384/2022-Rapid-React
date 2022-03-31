@@ -198,19 +198,23 @@ public class Robot extends TimedRobot
 
       // Centering successful, do a calculated shot
       if(ret2 == 0) {
-        speed = limelightData.interpolate(limelightData.finalDistance, limelightData.rpm, Limelight.calculateDistance(Constants.GOAL));
-        ret1 = shooter.shoot(speed, Constants.midSpeedWindow);
-        System.out.printf("Calculated LL speed passed: %f\n", speed);
+        speed = limelightData.interpolate
+          (limelightData.targetYAngle, limelightData.rpm, Limelight.getTargetAngleYOffset(Constants.GOAL));
+        
+          ret1 = shooter.shoot(speed, Constants.midSpeedWindow);
+          Logging.consoleLog("Robot.java: LL center passed, LL angle " + Limelight.getTargetAngleYOffset(Constants.GOAL) );
+          Logging.consoleLog("Robot.java: LL center passed, ret1/calcSpeed/feedback value: " + ret1, speed, shooter.getVelocity());
       }
       // Centering unsuccessful, punt and take a mid shot guess
       else if (ret2 == -1) {
         ret1 = shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
-        System.out.printf("Calculated LL speed failed, taking midrange: %f\n", speed);
+        Logging.consoleLog("Robot.java: LL center failed, ret1/feedback value: " + ret1, shooter.getVelocity() );
       }
       // Spin up the shooter while waiting for LL centering to finish
       else if(ret2 == 1) {
         ret1 = shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
-        System.out.println("Spinning up for LL shot");
+        Logging.consoleLog("Robot.java: LL prespin, ret1/feedback value: " + ret1, shooter.getVelocity());
+        //System.out.println("Spinning up for LL shot");
       }
 
       SmartDashboard.putNumber("Shooter speed: ", speed);
@@ -218,11 +222,13 @@ public class Robot extends TimedRobot
       //SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
 
       if (ret1 && ret2 != 1) {
-        //shooter.shooterUp();  // raise the shooter hood
         intake.indexerShoot();
+        Logging.consoleLog("Robot.java: Firing, speed/feedback value: " + speed, shooter.getVelocity()));
+        Logging.consoleLog("Robot.java: Firing, top photoeye value: " + intake.getTopEye());
       }
       else
         intake.indexToTop();
+        Logging.consoleLog("Robot.java: shooter/centering not complete, indexing to top: ");
     }
     else
     // Auto shoot buttons not pressed, so allow driving and look for auto shooting 
@@ -304,9 +310,12 @@ public class Robot extends TimedRobot
       shooter.shooterUp();
     if (controller.getButton(Constants.COPILOT, ButtonMap.shooterDown))
       shooter.shooterDown();
-      //allows for a COPILOT prespin and prevents an issue where COPILOT might accidentally continue holding the prespin button while PILOT is shooting.
-    if (controller.getButton(Constants.COPILOT, ButtonMap.shooterPreSpin) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootMid) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootFar) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
+      // Allows for a COPILOT prespin and prevents an issue where COPILOT might accidentally continue holding the prespin button while PILOT is shooting.
+      // Temporarily disaled for testing
+      /*
+      if (controller.getButton(Constants.COPILOT, ButtonMap.shooterPreSpin) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootMid) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootFar) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
       shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+      */
 
     dashboardOutput();
   }

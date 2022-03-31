@@ -31,6 +31,14 @@ public class LimelightData {
         40,52,67,78,90,100,113,124,135,149,159,168,176
     };
 
+/*
+    Limelight Y angle values at each measured distance value
+    I didn't take as many data points as needed, so this will need to be fixed
+    */
+    public final double targetYAngle[] = {
+        14.02,9.86,5.79,3.18,0.69,-1.53,-3.69,-5.4,-7.14 
+    };
+
     /*
     RPM values for best shot at each measured distance value
     */
