@@ -1,11 +1,18 @@
 package frc.robot;
 
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Limelight {
 
     private static boolean lightOn = false; 
     private static boolean visionMode = true;
+    private static ArrayList<Boolean> alive = new ArrayList<>();
 
     public static double getTargetAngleXOffset(String cam)
     {
@@ -44,6 +51,22 @@ public class Limelight {
         // This offset brought the raw versus measured curves together
         distance -= 22;
         return distance; 
+    }
+
+    public static boolean isLimelightAlive()
+    {
+      try {
+      InetAddress cam = InetAddress.getByName("10.3.84.11");
+      alive.add(cam.isReachable(4)); // 4 ms timeout
+      if (alive.size() > 3)
+        alive.remove(0);
+      if (alive.size() == 3)
+        return !alive.get(0) && !alive.get(1) && !alive.get(2); // not alive if 3 failed pings
+      else
+        return true; // always return true if less than 3 values
+      } catch (Exception e) {
+        return false;
+      }
     }
 
     public static void toggleLight(String cam)

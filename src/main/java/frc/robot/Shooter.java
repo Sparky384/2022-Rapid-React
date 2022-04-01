@@ -63,10 +63,14 @@ public class Shooter {
     public boolean shoot(double set, int window)
     {
                 
-        double F = ((0.0182 * set) - 0.022) / 100.0; // formula found experimentally
+        double F = ((0.0182 * set) - 0.0396) / 100.0; // formula found experimentally
         double Pin = SmartDashboard.getNumber("shooterP", Constants.shooterP); //Constants.shooterP;
         double Iin = SmartDashboard.getNumber("shooterI", Constants.shooterI); //Constants.shooterI;
         double Din = SmartDashboard.getNumber("shooterD", Constants.shooterD); //Constants.shooterD;
+        SmartDashboard.putNumber("shoot F setpoint", F);
+        Logging.consoleLog("Shooter.java: shooter F setpoint: " + F);
+        SmartDashboard.putNumber("shoot setpoint", set);
+        Logging.consoleLog("Shooter.java: shooter setpoint: " + set);
 
         double setpoint = set;
         double curSpeed = -encoder.getVelocity();
@@ -101,11 +105,12 @@ public class Shooter {
         //Logging.consoleLog("SPID SP: " + set);
         //Logging.consoleLog("SPID err: " + error);
         //Logging.consoleLog("SPID CV: " + speed);
-        //Logging.consoleLog("SPID fbk: " + curSpeed);
+        Logging.consoleLog("SPID fbk: " + curSpeed);
 
         //SmartDashboard.putNumber("PID Output", speed);
         //SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
-        //SmartDashboard.putNumber("ShooterEncoder", curSpeed);
+        SmartDashboard.putNumber("ShooterEncoder", curSpeed);
+        SmartDashboard.putNumber("Current", shooterMotorLeft.getOutputCurrent());
         //SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
         
         if (Math.abs(error) < window)  // try a smaller deadband

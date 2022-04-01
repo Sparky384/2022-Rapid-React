@@ -1,11 +1,42 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 public class Controller {
     XboxController pilot = new XboxController(0);
     XboxController copilot = new XboxController(1);
 
+    public void rumble(int stick)
+    {
+        if (stick == Constants.PILOT)
+        {
+            pilot.setRumble(RumbleType.kLeftRumble, 1.0);
+            pilot.setRumble(RumbleType.kRightRumble, 1.0);
+        }
+        else
+        {
+            copilot.setRumble(RumbleType.kLeftRumble, 1.0);
+            copilot.setRumble(RumbleType.kRightRumble, 1.0);
+        }
+        
+    }
+
+    public void stopRumble(int stick)
+    {
+        if (stick == Constants.PILOT)
+        {
+            pilot.setRumble(RumbleType.kLeftRumble, 0.0);
+            pilot.setRumble(RumbleType.kRightRumble, 0.0);
+        }
+        else
+        {
+            copilot.setRumble(RumbleType.kLeftRumble, 0.0);
+            copilot.setRumble(RumbleType.kRightRumble, 0.0);
+        }
+
+    }
+    
     public double getRightY(int stick) 
     {
         if (stick == Constants.PILOT)
