@@ -73,6 +73,10 @@ public class Robot extends TimedRobot
     new Constants(Constants.sparky);
     //SmartDashboard.putNumber("Shooter Percent", 0.0);
 
+    SmartDashboard.putNumber("TURN P", 0.0);
+    SmartDashboard.putNumber("TURN I", 0.0);
+    SmartDashboard.putNumber("TURN D", 0.0);
+
     drive = new DriveTrain();
     intake = new Intake();
     controller = new Controller();
@@ -102,10 +106,12 @@ public class Robot extends TimedRobot
     compressor.enableDigital();
     intake.unlockIndex();
     runFirstCenter = true;
+    shooter.shooterDown();
   }
   
   public void teleopInit()
   {
+    shooter.shooterDown();
     drive.initializeEncoders();
     drive.imuZeroYaw();
     intake.unlockIndex();
@@ -127,7 +133,7 @@ public class Robot extends TimedRobot
     // ***************************************************************
     // I guess this is for testing/tuning the turnTo PID
     if (controller.getButton(Constants.PILOT, ButtonMap.turnTo))
-      drive.driveTo(40, 5.0, true); 
+      SmartDashboard.putNumber("RET", drive.turnTo(-79.0, 5.0)); 
     //drive.turnTo(180.0, 5.0);
     else if (controller.getButton(Constants.PILOT, ButtonMap.turnTo1))
       drive.driveTo(60, 5.0, false);
@@ -438,6 +444,7 @@ public class Robot extends TimedRobot
       autoTimer.start();
       intake.intakeDown();
       intake.intakeIn();
+      shooter.shooterUp();
       if (autoTimer.hasElapsed(1.0));
         state++;
     case 1:
@@ -458,7 +465,7 @@ public class Robot extends TimedRobot
       intake.intakeUp();
       intake.stopIntake();
       ret = drive.turnTo(180.0, 5.0); //first turn
-      shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+      shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow);
       if (ret == 0)
       {
         drive.stop();
@@ -467,16 +474,20 @@ public class Robot extends TimedRobot
         state++;
         autoTimer.stop();
         autoTimer.reset();
+        drive.resetPid();
       }
       else if (ret == -1)
+      {
+        System.out.println("the u turn timed out ******************************&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
         state = -1;
+      }
       break;
     case 3:
       autoTimer.start();
       intake.lockIndex();
-      if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
+      if (shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
-      if (autoTimer.advanceIfElapsed(2.8))
+      if (autoTimer.advanceIfElapsed(2.3))
       {
         intake.stopIndex();
         autoTimer.stop();
@@ -485,6 +496,7 @@ public class Robot extends TimedRobot
         state++;
         autoTimer.stop();
         autoTimer.reset();
+        drive.resetPid();
       }
       break;
     case 4:
@@ -499,7 +511,24 @@ public class Robot extends TimedRobot
         state++;
       }
       else if (ret == -1)
+      {
+        System.out.println("YO I TIMEDOUT ===============================");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
+        System.out.println("/////////////////////////////////////////////////////////////");
         state = -1;
+      }
       break;
     case 5:
       ret = drive.driveTo(90.0, 5.0, false); // may not be the correct distance
@@ -520,7 +549,7 @@ public class Robot extends TimedRobot
       intake.intakeUp();
       intake.stopIntake();
       intake.indexToTop();
-      shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+      shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow);
       ret = drive.turnTo(125.0, 5.0); //third turn
       if (ret == 0)
       {
@@ -534,7 +563,7 @@ public class Robot extends TimedRobot
       break;
     case 7:
     intake.indexToTop();
-    shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+    shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow);
     ret = drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL, -1);
       if (ret == 0)
       {
@@ -549,7 +578,7 @@ public class Robot extends TimedRobot
       autoTimer.start();
       intake.lockIndex();
       drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL, -1);
-      if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
+      if (shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
       {
@@ -649,7 +678,7 @@ public class Robot extends TimedRobot
       }
       break;
     case 5:
-      ret = drive.driveTo(-75.0, 1.5, false);
+      ret = drive.driveTo(-70.0, 1.5, false);
       if (ret == 0) {
         drive.stop();
         intake.stopIntake();
@@ -670,11 +699,13 @@ public class Robot extends TimedRobot
     switch (state)
     {
     case 0:
+      intake.lockIndex();
       autoTimer.start();
       if (shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow))
         intake.indexerShoot();
-      if (autoTimer.advanceIfElapsed(3.0))
+      if (autoTimer.advanceIfElapsed(4.0))
       {
+        intake.unlockIndex();
         intake.stopIndex();
         autoTimer.stop();
         shooter.shootStop();
@@ -682,7 +713,7 @@ public class Robot extends TimedRobot
       }
       break;
     case 1:
-      ret = drive.driveTo(-79.0, 3.0, false);
+      ret = drive.driveTo(-74.0, 3.0, false);
       if (ret == 0)
         state++;
       else if (ret == -1)

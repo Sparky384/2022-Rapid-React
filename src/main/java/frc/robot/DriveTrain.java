@@ -301,6 +301,7 @@ public class DriveTrain {
 			speedController.setMaxIOutput(0.4);
 			speedController.setOutputLimits(-0.65, 0.65);
 			speedController.setSetpoint(distance);
+			System.out.printf("anything you want %f %f %f\n", P, I, D);
 			driveToRate = 0;
 			failTimer.reset();
 			failTimer.start();			// the PID will fail if this timer exceeded
@@ -322,10 +323,11 @@ public class DriveTrain {
 		double curAngle = getImuYaw(isRight);
 		driveToRate = speedController.getOutput(curAngle, distance);
 		currentError = distance - curAngle;
+		SmartDashboard.putNumber("turn pid output", driveToRate);
 		//if (distance < 0)
 		//	driveToRate *= -1;
-		difDrive.arcadeDrive(-driveToRate, 0);
-		//SmartDashboard.putNumber("TurnResult", getImuYaw(isUTurn));
+		drive(-driveToRate, 0.0);
+		SmartDashboard.putNumber("TurnResult", getImuYaw(isUTurn));
 		//SmartDashboard.putNumber("Yaw Error", currentError);
 		//SmartDashboard.putNumber("Not TurnResult", getImuYaw(!isUTurn));
 		//SmartDashboard.putBoolean("uturn", isUTurn);

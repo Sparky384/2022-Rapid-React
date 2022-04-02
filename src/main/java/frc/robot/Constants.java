@@ -11,10 +11,10 @@ public class Constants {
     public static double driveIZoneUpper = 0.0;
     public static double driveIZoneLower = 0.0;
     public static double deadBand = 10;
-    public static double turnP = 0.010148; //0.0245  
-    public static double turnI = 0.001763; //0.00375
-    public static double turnD = 0.090113; //0.0
-    public static double turnIZoneUpper = 10.0;
+    public static double turnP = 0.011; //0.01015
+    public static double turnI = 0.00177; //0.00177
+    public static double turnD = 0.090113; //0.090113
+    public static double turnIZoneUpper = 25.0; //10
     public static double turnIZoneLower = 0.0;
     public static double turnDeadBand = 1.0; //10
     // shooter pid
@@ -69,6 +69,7 @@ public class Constants {
     // Shooter speeds and zone window, based on shot distance
     public static final double closeSpeed = 1950.0;
     public static final double midSpeed = 2000.0; //2850
+    public static final double threeAutoSpeed = 2300.0; //2850
     public static final double farSpeed = 3000.0;
     public static final double upSpeed = 3375.0;
     public static final int closeSpeedWindow = 100;
@@ -154,8 +155,8 @@ public class Constants {
             driveIZoneUpper = 11.0;
             driveIZoneLower = 0.5;
             deadBand = 5;
-            turnP = 0.010148; //0.01009
-            turnI = 0.001763; //0.00076
+            turnP = 0.013; //0.01015
+            turnI = 0.00177; //0.00177
             turnD = 0.090113; //0.0901
             turnIZoneUpper = 20.5;
             turnIZoneLower = 0.7;
