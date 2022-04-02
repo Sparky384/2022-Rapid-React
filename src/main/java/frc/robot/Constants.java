@@ -77,9 +77,11 @@ public class Constants {
     public static final int farSpeedWindow = 50;
     public static final int upSpeedWindow = 60;
     public static final double closeLimelightWindow = 6;
-    public static final double midLimelightWindow = 4;
-    public static final double farLimelightWindow = 4;
-    public static final double upLimelightWindow = 4;
+    public static final double midLimelightWindow = 3;
+    public static final double farLimelightWindow = 3;
+    public static final double closeLimelightOffset = 0.1;
+    public static final double farLimelightOffset = 0.08;
+    //public static final double upLimelightWindow = 4;
 
     // Intake and indexer speeds
     public static final double indexerSpeed = 1.0;
@@ -165,7 +167,7 @@ public class Constants {
             shooterIzone = 500.0;
             shooterThreshold = 400.0;
             centerDeadBand = 2.5;
-            centerIntervalTime = 1.0;
+            centerIntervalTime = 0.2;
             climberMotorPort = 3;
             climberMinimumPosition = 55;
             climberMaximumPosition = 230000;

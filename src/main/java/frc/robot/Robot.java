@@ -31,6 +31,7 @@ public class Robot extends TimedRobot
   private Timer autoTimer;
   private Compressor compressor;
   private Climber climb;
+  private boolean runFirstCenter;
 
   // Limelight distance calculations
   LimelightData limelightData = new LimelightData();
@@ -100,7 +101,7 @@ public class Robot extends TimedRobot
     compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     compressor.enableDigital();
     intake.unlockIndex();
-    
+    runFirstCenter = true;
   }
   
   public void teleopInit()
@@ -209,19 +210,22 @@ public class Robot extends TimedRobot
       else
         controller.stopRumble(Constants.PILOT);
 
-      int ret2 = drive.centerToTarget(3.0, limelightWindow, Constants.GOAL);
+      int ret2 = 0;
+      if (runFirstCenter)
+        ret2 = drive.centerToTarget(3.0, limelightWindow, Constants.GOAL, -1);
       
       // Initialize with false until centering started
       //boolean ret1 = false;
 
-      
-      
-
       // Centering successful, do a calculated shot
       if(ret2 == 0) {
+        if (runFirstCenter)
+          drive.resetCenter();
+        runFirstCenter = false;
         speed = limelightData.interpolate
           (limelightData.finalDistance, limelightData.rpm, Limelight.calculateDistance(Constants.GOAL));
-
+          
+          ret2 = drive.centerToTarget(3.0, limelightWindow, Constants.GOAL, (int) speed);
           // The interpolator blows up when the robot is too close (41" or less)
           if(speed < 1900.0) {
             speed = 1900;
@@ -232,6 +236,16 @@ public class Robot extends TimedRobot
             ret1 = shooter.shoot(Constants.farSpeed, Constants.farSpeedWindow);
           else
             ret1 = shooter.shoot(speed, Constants.midSpeedWindow);
+
+            if (ret1 && ret2 != 1) {
+              intake.indexerShoot();
+              //Logging.consoleLog("------------------------------------------------------------------");
+              //Logging.consoleLog("Robot.java: Firing, speed: " + speed);
+              //Logging.consoleLog("Robot.java: Firing, feedback value: " + shooter.getVelocity());
+              //Logging.consoleLog("Robot.java: Firing, top photoeye value: " + intake.getTopEye());
+            }
+            else
+              intake.indexToTop();
           //Logging.consoleLog("------------------------------------------------------------------");
           //Logging.consoleLog("Robot.java: LL center passed, LL angle: " + Limelight.getTargetAngleYOffset(Constants.GOAL) );
           //Logging.consoleLog("Robot.java: LL center passed, LL distance: " + Limelight.calculateDistance(Constants.GOAL) );
@@ -244,6 +258,7 @@ public class Robot extends TimedRobot
       // Centering unsuccessful, punt and take a mid shot guess
       else if (ret2 == -1) {
         ret1 = shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+        intake.indexerShoot();
         //Logging.consoleLog("------------------------------------------------------------------");
         //Logging.consoleLog("Robot.java: LL center failed, ret1: " + ret1);
         //Logging.consoleLog("Robot.java: LL center failed, feedback value: " + shooter.getVelocity() );
@@ -254,6 +269,7 @@ public class Robot extends TimedRobot
           ret1 = shooter.shoot(Constants.farSpeed, Constants.farSpeedWindow);
         else 
           ret1 = shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
+          intake.indexToTop();
         //Logging.consoleLog("------------------------------------------------------------------");
         //Logging.consoleLog("Robot.java: LL prespin, ret1: " + ret1);
         //Logging.consoleLog("Robot.java: LL prespin, feedback value: " + shooter.getVelocity());
@@ -264,15 +280,6 @@ public class Robot extends TimedRobot
       //SmartDashboard.putBoolean("ret1 (shoot)", ret1);
       //SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
 
-      if (ret1 && ret2 != 1) {
-        intake.indexerShoot();
-        //Logging.consoleLog("------------------------------------------------------------------");
-        //Logging.consoleLog("Robot.java: Firing, speed: " + speed);
-        //Logging.consoleLog("Robot.java: Firing, feedback value: " + shooter.getVelocity());
-        //Logging.consoleLog("Robot.java: Firing, top photoeye value: " + intake.getTopEye());
-      }
-      else
-        intake.indexToTop();
         //Logging.consoleLog("------------------------------------------------------------------");
         //Logging.consoleLog("Robot.java: shooter/centering not complete, indexing to top: ");
     }
@@ -280,6 +287,7 @@ public class Robot extends TimedRobot
     // Auto shoot buttons not pressed, so allow driving and look for auto shooting 
     // with non-limelight centering
     {
+      runFirstCenter = true;
       drive.resetCenter();
       drive.drive(scaleJoystickAxis(leftPilotX), leftPilotY);
 
@@ -527,7 +535,7 @@ public class Robot extends TimedRobot
     case 7:
     intake.indexToTop();
     shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
-    ret = drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL);
+    ret = drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL, -1);
       if (ret == 0)
       {
         state++;
@@ -540,7 +548,7 @@ public class Robot extends TimedRobot
     case 8: 
       autoTimer.start();
       intake.lockIndex();
-      drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL);
+      drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL, -1);
       if (shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow))
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
