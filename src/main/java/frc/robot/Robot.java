@@ -85,9 +85,9 @@ public class Robot extends TimedRobot
     chooser.addOption("Zero Ball Auto", Constants.ZERO_BALL_AUTO);
     chooser.addOption("Do Nothing", Constants.DO_NOTHING);
 
-    //SmartDashboard.putNumber("shooterP", Constants.shooterP);
-    //SmartDashboard.putNumber("shooterI", Constants.shooterI);
-    //SmartDashboard.putNumber("shooterD", Constants.shooterD);
+    SmartDashboard.putNumber("shooterP", Constants.shooterP);
+    SmartDashboard.putNumber("shooterI", Constants.shooterI);
+    SmartDashboard.putNumber("shooterD", Constants.shooterD);
     
     drive.imuZeroYaw();
     drive.initializeEncoders();

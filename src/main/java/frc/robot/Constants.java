@@ -74,10 +74,10 @@ public class Constants {
     public static final int closeSpeedWindow = 100;
     public static final int twoBallAutoWindow = 40;
     public static final int midSpeedWindow = 50;
-    public static final int farSpeedWindow = 100;
+    public static final int farSpeedWindow = 50;
     public static final int upSpeedWindow = 60;
     public static final double closeLimelightWindow = 6;
-    public static final double midLimelightWindow = 8;
+    public static final double midLimelightWindow = 4;
     public static final double farLimelightWindow = 4;
     public static final double upLimelightWindow = 4;
 
@@ -158,9 +158,9 @@ public class Constants {
             turnIZoneUpper = 20.5;
             turnIZoneLower = 0.7;
             turnDeadBand = 2; //10
-            shooterP = 0.0000038;
-            shooterI = 0.0000185;
-            shooterD = 0.0009;
+            shooterP = 0.0000051;
+            shooterI = 0.0000038;
+            shooterD = 0.00000;
             shooterMaxI = 400.0;
             shooterIzone = 500.0;
             shooterThreshold = 400.0;

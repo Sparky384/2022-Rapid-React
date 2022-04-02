@@ -63,10 +63,10 @@ public class Shooter {
     public boolean shoot(double set, int window)
     {
                 
-        double F = ((0.0182 * set) - 0.0396) / 100.0; // formula found experimentally
-        double Pin = SmartDashboard.getNumber("shooterP", Constants.shooterP); //Constants.shooterP;
-        double Iin = SmartDashboard.getNumber("shooterI", Constants.shooterI); //Constants.shooterI;
-        double Din = SmartDashboard.getNumber("shooterD", Constants.shooterD); //Constants.shooterD;
+        double F = ((0.018574 * set) - 0.02) / 100.0; // formula found experimentally
+        double Pin = Constants.shooterP;
+        double Iin = Constants.shooterI;
+        double Din = Constants.shooterD;
         SmartDashboard.putNumber("shoot F setpoint", F);
         Logging.consoleLog("Shooter.java: shooter F setpoint: " + F);
         SmartDashboard.putNumber("shoot setpoint", set);
@@ -83,7 +83,7 @@ public class Shooter {
             pid.setI(Iin);  // why not use Constants.shooterI here?
             pid.setD(Din);  // ditto
             pid.setP(Pin);  // ditto
-            pid.setMaxIOutput(190); //160
+            pid.setMaxIOutput(400); //160
             //System.out.println("In window");
         }
         // If error is too large, run off of feed-forward (bias) only
@@ -110,6 +110,7 @@ public class Shooter {
         //SmartDashboard.putNumber("PID Output", speed);
         //SmartDashboard.putNumber("ShooterTurnPosition", turnEncoder.getPosition());
         SmartDashboard.putNumber("ShooterEncoder", curSpeed);
+        SmartDashboard.putNumber("shot -- set", setpoint);
         SmartDashboard.putNumber("Current", shooterMotorLeft.getOutputCurrent());
         //SmartDashboard.putNumber("Shoot Error", setpoint - curSpeed);
         
