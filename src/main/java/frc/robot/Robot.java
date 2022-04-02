@@ -226,6 +226,7 @@ public class Robot extends TimedRobot
           if(speed < 1900.0) {
             speed = 1900;
           }
+
         
           if (controller.getButton(Constants.PILOT, ButtonMap.autoShootFar))
             ret1 = shooter.shoot(Constants.farSpeed, Constants.farSpeedWindow);
