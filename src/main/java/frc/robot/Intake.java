@@ -140,12 +140,10 @@ public class Intake {
        if (!indexLock) {
             if (!bottom || top)
             {
-                //stage2Motor.set(0.0);
                 stage3Motor.set(0.0);
             }
             else if (bottom && !top)
             {
-                //stage2Motor.set(-0.2);
                 stage3Motor.set(0.75);
             }
         }

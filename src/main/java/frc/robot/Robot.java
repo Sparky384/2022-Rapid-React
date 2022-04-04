@@ -326,13 +326,6 @@ public class Robot extends TimedRobot
         else
           shooter.shoot(Constants.upSpeed, Constants.upSpeedWindow);
       }
-      else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedFar))
-      {      
-        if (shooter.getDown())
-          shooter.shoot(Constants.farSpeed, Constants.farSpeedWindow);
-        else
-          shooter.shoot(Constants.upSpeed, Constants.upSpeedWindow);
-      }
       // Add the condition here for close shooting without the limelight aim
       // This is a pilot function, for the close shot only
       else if (controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
@@ -376,7 +369,14 @@ public class Robot extends TimedRobot
       shooter.shooterUp();
     if (controller.getButton(Constants.COPILOT, ButtonMap.shooterDown))
       shooter.shooterDown();
-      
+    if (controller.getButton(Constants.COPILOT, ButtonMap.copilotClimberSafety) && controller.getButton(Constants.COPILOT, ButtonMap.climberSetUp))
+    {
+     if (climb.getClimberPosition() < Constants.climberPosition) {
+      climb.move(-0.5);
+     } else {
+      climb.move(0.0);
+     }
+    }
       // Allows for a COPILOT prespin and prevents an issue where COPILOT might accidentally continue holding the prespin button while PILOT is shooting.
       // Temporarily disaled for testing
       //if (controller.getButton(Constants.COPILOT, ButtonMap.shooterPreSpin) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootMid) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootFar) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
@@ -433,6 +433,7 @@ public class Robot extends TimedRobot
     //SmartDashboard.putNumber("Indexer Ball Count", intake.getIndexBallCount());
     //SmartDashboard.putNumber("Target Distance", Limelight.calculateDistance(Constants.GOAL));
     //SmartDashboard.putNumber("LL Angle", Limelight.getTargetAngleYOffset(Constants.GOAL));
+
   }
 
   private void threeBallAuto()

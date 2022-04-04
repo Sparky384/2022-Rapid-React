@@ -21,7 +21,7 @@ public class Climber {
         //System.out.println(Yaxis);
         //System.out.println(climberMotor.getSelectedSensorPosition());
         //System.out.println("----");
-        //SmartDashboard.putNumber("ClimberMotorEncoder", climberMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("ClimberMotorEncoder", climberMotor.getSelectedSensorPosition());
         if (Yaxis < 0 && climberMotor.getSelectedSensorPosition() <= Constants.climberMinimumPosition)
             climberMotor.set(0);
         if (Yaxis > 0 && climberMotor.getSelectedSensorPosition() >= Constants.climberMaximumPosition)
@@ -33,5 +33,9 @@ public class Climber {
             else
                 climberMotor.set(Yaxis * 0.5);
         }
+    }
+
+    public double getClimberPosition() {
+        return climberMotor.getSelectedSensorPosition();
     }
 }

@@ -213,7 +213,7 @@ public class Controller {
         else
             return copilot.getPOV() == 270;
     }
-
+    
 
     public boolean getButton(int stick, Buttons button)
     {

@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Constants {
     //driveTo method constants
     public static double driveShortP = 0.02896;
@@ -93,6 +95,9 @@ public class Constants {
 
     public static final String BALL = "limelight-ball";
     public static final String GOAL = "limelight-goal";
+
+    //climber setup stuff
+    public static final int climberPosition = 94388; // negative goes up, , sets the climber above the low bar
 
     Constants(int bot)
     {
