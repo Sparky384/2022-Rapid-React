@@ -397,6 +397,14 @@ public class DriveTrain {
 	public int centerToTarget(double timeout, double window, String cam, int speed)
 	{
 		double error = Limelight.getTargetAngleXOffset(Constants.GOAL);
+		//xangleoffset is negative when the target is left of the crosshair. it's positive when
+		//the target is right of the crosshair
+
+		//positive error makes the robot turn right
+		//negative error makes the robot turn left
+
+		//the higher the limelight offset, the more to the right "zero" is
+
 		//SmartDashboard.putNumber("erer", error);
 		//SmartDashboard.putNumber("window", window);
 		//SmartDashboard.putNumber("timeout", timeout);

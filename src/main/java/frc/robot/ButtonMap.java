@@ -25,6 +25,6 @@ public class ButtonMap
     public static Buttons shooterSpeedClose = Buttons.LB;
     public static Buttons shooterSpeedMid = Buttons.RB;
     public static Buttons shooterPreSpin = Buttons.B;
-    public static Buttons climberSetUp = Buttons.DLEFT;
+    public static Buttons climberSetUp = Buttons.X;
     public static Buttons copilotClimberSafety = Buttons.RT;
 }

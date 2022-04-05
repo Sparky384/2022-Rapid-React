@@ -82,8 +82,8 @@ public class Constants {
     public static final double closeLimelightWindow = 6;
     public static final double midLimelightWindow = 3;
     public static final double farLimelightWindow = 3;
-    public static final double closeLimelightOffset = 0.1;
-    public static final double farLimelightOffset = 0.08;
+    public static final double closeLimelightOffset = 0.1*100.0;
+    public static final double farLimelightOffset = 0.08*100.0;
     //public static final double upLimelightWindow = 4;
 
     // Intake and indexer speeds

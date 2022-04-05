@@ -90,9 +90,9 @@ public class Robot extends TimedRobot
     chooser.addOption("Zero Ball Auto", Constants.ZERO_BALL_AUTO);
     chooser.addOption("Do Nothing", Constants.DO_NOTHING);
 
-    SmartDashboard.putNumber("shooterP", Constants.shooterP);
-    SmartDashboard.putNumber("shooterI", Constants.shooterI);
-    SmartDashboard.putNumber("shooterD", Constants.shooterD);
+    //SmartDashboard.putNumber("shooterP", Constants.shooterP);
+    //SmartDashboard.putNumber("shooterI", Constants.shooterI);
+    //SmartDashboard.putNumber("shooterD", Constants.shooterD);
     
     drive.imuZeroYaw();
     drive.initializeEncoders();
@@ -147,8 +147,20 @@ public class Robot extends TimedRobot
       // climber control goes on right stick
       climb.move(rightPilotY);
     }
+    else if (controller.getButton(Constants.COPILOT, ButtonMap.copilotClimberSafety) && controller.getButton(Constants.COPILOT, ButtonMap.climberSetUp))
+    {
+      //if copilot climber safety and climber setup is being pressed the climber will go up until it reaches it's setpoint
+      if (climb.getClimberPosition() < Constants.climberPosition) 
+      {
+        climb.move(-0.5);
+      } 
+      else 
+      {
+        climb.move(0.0);
+      } 
+    }
     else
-      climb.move(0);
+      climb.move(0.0);
 
     if (controller.getButton(Constants.PILOT, ButtonMap.intakeOut))
     {
@@ -369,14 +381,6 @@ public class Robot extends TimedRobot
       shooter.shooterUp();
     if (controller.getButton(Constants.COPILOT, ButtonMap.shooterDown))
       shooter.shooterDown();
-    if (controller.getButton(Constants.COPILOT, ButtonMap.copilotClimberSafety) && controller.getButton(Constants.COPILOT, ButtonMap.climberSetUp))
-    {
-     if (climb.getClimberPosition() < Constants.climberPosition) {
-      climb.move(-0.5);
-     } else {
-      climb.move(0.0);
-     }
-    }
       // Allows for a COPILOT prespin and prevents an issue where COPILOT might accidentally continue holding the prespin button while PILOT is shooting.
       // Temporarily disaled for testing
       //if (controller.getButton(Constants.COPILOT, ButtonMap.shooterPreSpin) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootMid) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootFar) && !controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
