@@ -69,9 +69,9 @@ public class Constants {
     public static final double ballWindow = 4;
 
     // Shooter speeds and zone window, based on shot distance
-    public static final double closeSpeed = 1800.0; //1950
+    public static final double closeSpeed = 1850.0; //1950
     public static final double midSpeed = 2000.0; //2850
-    public static final double threeAutoSpeed = 2300.0; //2850
+    public static final double threeAutoSpeed = 2250.0; //2300
     public static final double farSpeed = 3000.0;
     public static final double upSpeed = 3375.0;
     public static final int closeSpeedWindow = 100;

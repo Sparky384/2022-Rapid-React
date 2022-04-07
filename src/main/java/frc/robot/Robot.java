@@ -147,9 +147,13 @@ public class Robot extends TimedRobot
     {
       // climber control goes on right stick
       climb.move(rightPilotY);
+      // Lower the shooter to unlock the ratchet, or climber will be locked
+      shooter.shooterDown();
     }
     else if (controller.getButton(Constants.COPILOT, ButtonMap.copilotClimberSafety) && controller.getButton(Constants.COPILOT, ButtonMap.climberSetUp))
     {
+      // Lower the shooter to unlock the ratchet, or climber will be locked
+      shooter.shooterDown();
       //if copilot climber safety and climber setup is being pressed the climber will go up until it reaches it's setpoint
       if (climb.getClimberPosition() < Constants.climberPosition) 
       {
