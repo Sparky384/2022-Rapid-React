@@ -73,9 +73,9 @@ public class Robot extends TimedRobot
     new Constants(Constants.sparky);
     //SmartDashboard.putNumber("Shooter Percent", 0.0);
 
-    SmartDashboard.putNumber("TURN P", 0.0);
-    SmartDashboard.putNumber("TURN I", 0.0);
-    SmartDashboard.putNumber("TURN D", 0.0);
+    //SmartDashboard.putNumber("TURN P", 0.0);
+    //SmartDashboard.putNumber("TURN I", 0.0);
+    //SmartDashboard.putNumber("TURN D", 0.0);
 
     drive = new DriveTrain();
     intake = new Intake();
@@ -107,6 +107,7 @@ public class Robot extends TimedRobot
     intake.unlockIndex();
     runFirstCenter = true;
     shooter.shooterDown();
+    Limelight.setCamMode(Constants.BALL, 1); //sets ball cam to not use vision processing
   }
   
   public void teleopInit()
@@ -294,7 +295,7 @@ public class Robot extends TimedRobot
         //System.out.println("Spinning up for LL shot");
       }
 
-      SmartDashboard.putNumber("Shooter speed: ", speed);
+      //SmartDashboard.putNumber("Shooter speed: ", speed);
       //SmartDashboard.putBoolean("ret1 (shoot)", ret1);
       //SmartDashboard.putNumber("ret2 (centerToTarget)", ret2);
 

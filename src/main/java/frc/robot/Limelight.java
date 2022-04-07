@@ -109,6 +109,11 @@ public class Limelight {
         }
     }
 
+    public static void setCamMode(String cam, int value)
+    {
+      NetworkTableInstance.getDefault().getTable(cam).getEntry("camMode").setNumber(value);
+    }
+
     public static boolean getLight(String cam) 
     {
       return lightOn;
