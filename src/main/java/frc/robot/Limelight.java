@@ -42,14 +42,20 @@ public class Limelight {
 
     public static double calculateDistance(String cam)
     {
-        // Found a math error here
-        // double angle = Math.toRadians(getTargetAngleYOffset(cam)) + Constants.cameraAngle;
+
+        // Uncomment for snapshot mode
+        //boolean snapShotTaken = false;
+
         double angle = Math.toRadians(getTargetAngleYOffset(cam) + Constants.cameraAngle);
         double heightDiff = Constants.targetHeight - Constants.cameraHeight; //71.74
         // Angle must be in radians
         double distance = heightDiff / Math.tan(angle);
         // This offset brought the raw versus measured curves together
         distance -= 22;
+
+        // Take a snapshot
+        takeSnapShot(Constants.GOAL);
+
         return distance; 
     }
 
@@ -118,4 +124,15 @@ public class Limelight {
     {
       return lightOn;
     }
+
+    public static void takeSnapShot(String cam) 
+    {
+      NetworkTableInstance.getDefault().getTable(cam).getEntry("snapshot").setNumber(1);
+    }
+
+    public static void resetSnapShot(String cam) 
+    {
+      NetworkTableInstance.getDefault().getTable(cam).getEntry("snapshot").setNumber(0);
+    }
+
 }

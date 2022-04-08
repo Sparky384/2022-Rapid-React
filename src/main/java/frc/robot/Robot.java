@@ -108,6 +108,8 @@ public class Robot extends TimedRobot
     runFirstCenter = true;
     shooter.shooterDown();
     Limelight.setCamMode(Constants.BALL, 1); //sets ball cam to not use vision processing
+    // For LL snapshots, snapshot must be reset before taking picture
+    //Limelight.resetSnapShot(Constants.GOAL);
   }
   
   public void teleopInit()
@@ -320,6 +322,8 @@ public class Robot extends TimedRobot
 
       // Turn off the limelight
       Limelight.lightOff(Constants.GOAL);
+      // Reset snapshots
+      Limelight.resetSnapShot(Constants.GOAL);
 
       // give control of shooter/indexer to copilot if not auto shooting
       if (controller.getButton(Constants.COPILOT, ButtonMap.indexerOut))
