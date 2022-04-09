@@ -33,6 +33,7 @@ public class Robot extends TimedRobot
   private Compressor compressor;
   private Climber climb;
   private boolean runFirstCenter;
+  private Timer climberDelay;
 
   // Limelight distance calculations
   LimelightData limelightData = new LimelightData();
@@ -84,6 +85,7 @@ public class Robot extends TimedRobot
     shooter = new Shooter();  
     chooser = new SendableChooser<Integer>();
     climb = new Climber();
+    climberDelay = new Timer();
 
     chooser.addOption("Three Ball Auto", Constants.THREE_BALL_AUTO);
     chooser.setDefaultOption("Two Ball Auto", Constants.TWO_BALL_AUTO);
@@ -156,27 +158,36 @@ public class Robot extends TimedRobot
     // Controls for climbing, both pilot and copliot
     if (controller.getButton(Constants.PILOT, ButtonMap.climberSafety))
     {
+      climberDelay.start();
       // climber control goes on right stick
-      climb.move(rightPilotY);
+      if (climberDelay.hasPeriodPassed(0.15))
+        climb.move(rightPilotY);
       // Lower the shooter to unlock the ratchet, or climber will be locked
       shooter.shooterDown();
     }
     else if (controller.getButton(Constants.COPILOT, ButtonMap.copilotClimberSafety) && controller.getButton(Constants.COPILOT, ButtonMap.climberSetUp))
     {
+      climberDelay.start();
       // Lower the shooter to unlock the ratchet, or climber will be locked
       shooter.shooterDown();
       //if copilot climber safety and climber setup is being pressed the climber will go up until it reaches it's setpoint
       if (climb.getClimberPosition() < Constants.climberPosition) 
       {
-        climb.move(-0.5);
+        if (climberDelay.hasPeriodPassed(0.15))
+        {
+          climb.move(-0.5);
+        }
       } 
       else 
       {
         climb.move(0.0);
       } 
     }
-    else
+    else {
       climb.move(0.0);
+      climberDelay.stop();
+      climberDelay.reset();
+    }
 
     //controls for intaking, intake goes out when pressed and goes out when not pressed
     if (controller.getButton(Constants.PILOT, ButtonMap.intakeOut))
