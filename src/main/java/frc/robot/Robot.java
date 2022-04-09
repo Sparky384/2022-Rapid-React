@@ -13,6 +13,7 @@ import javax.lang.model.util.ElementScanner6;
 import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -111,6 +112,10 @@ public class Robot extends TimedRobot
     // For LL snapshots, snapshot must be reset before taking picture
     //Limelight.resetSnapShot(Constants.GOAL);
   }
+
+  public void teleopExit()
+  {
+  }
   
   public void teleopInit()
   {
@@ -125,13 +130,16 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic() 
   {
+    // If match is about to end, latch climber mechanism
+    // regardless of control state
+    if (DriverStation.getMatchTime() <= 0.15)
+    {
+      shooter.shooterUp();
+    }
     // pilot commands
     double leftPilotY = controller.getLeftY(Constants.PILOT);
     double leftPilotX = -controller.getLeftX(Constants.PILOT);
     double rightPilotY = controller.getRightY(Constants.PILOT);
-
-    // Track the number of balls in the intake - must run continuously
-    //intake.updateIndexBallCount();
 
     // ***************************************************************
     // I guess this is for testing/tuning the turnTo PID
@@ -144,7 +152,8 @@ public class Robot extends TimedRobot
     else
       drive.resetPid();
     // ***************************************************************
-
+    
+    // Controls for climbing, both pilot and copliot
     if (controller.getButton(Constants.PILOT, ButtonMap.climberSafety))
     {
       // climber control goes on right stick
@@ -169,6 +178,7 @@ public class Robot extends TimedRobot
     else
       climb.move(0.0);
 
+    //controls for intaking, intake goes out when pressed and goes out when not pressed
     if (controller.getButton(Constants.PILOT, ButtonMap.intakeOut))
     {
       intake.intakeDown();
@@ -256,12 +266,12 @@ public class Robot extends TimedRobot
             speed = 1900;
           }
 
-        
+          //far shot without calculating speeds
           if (controller.getButton(Constants.PILOT, ButtonMap.autoShootFar))
             ret1 = shooter.shoot(Constants.farSpeed, Constants.farSpeedWindow);
           else
             ret1 = shooter.shoot(speed, Constants.midSpeedWindow);
-
+            //if shooter and centering are ongoing index to top, if they fail or pass: shoot
             if (ret1 && ret2 != 1) {
               intake.indexerShoot();
               //Logging.consoleLog("------------------------------------------------------------------");
@@ -333,14 +343,14 @@ public class Robot extends TimedRobot
       else if (!controller.getButton(Constants.PILOT, ButtonMap.autoShootClose))
         intake.autoIndex();
 
-      if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedClose))
+      if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedClose)) //Copilot close shot
       {
         if (shooter.getDown())
           shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow);
         else
           shooter.shoot(Constants.upSpeed, Constants.upSpeedWindow);
       }
-      else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedMid))
+      else if (controller.getButton(Constants.COPILOT, ButtonMap.shooterSpeedMid)) //copilot midshot
       {
         if (shooter.getDown())
           shooter.shoot(Constants.midSpeed, Constants.midSpeedWindow);
@@ -430,7 +440,7 @@ public class Robot extends TimedRobot
     }
   } 
 
-  private void dashboardOutput() 
+  private void dashboardOutput() //useful for storing all dashboard code
   {
     //SmartDashboard.putNumber("centerFailTimer", drive.centerFailTimer.get());
 		//SmartDashboard.putNumber("CenterIntervalTimer", drive.centerIntervalTimer.get());
@@ -454,14 +464,14 @@ public class Robot extends TimedRobot
     int ret;
     switch (state)
     {
-    case 0:
+    case 0: //sets up to intake balls
       autoTimer.start();
       intake.intakeDown();
       intake.intakeIn();
       shooter.shooterUp();
       if (autoTimer.hasElapsed(1.0));
         state++;
-    case 1:
+    case 1: //moves robot to pick up second ball
       ret = drive.driveTo(40.0, 5.0, true);
       intake.intakeIn();
       intake.intakeDown();
@@ -475,7 +485,7 @@ public class Robot extends TimedRobot
       else if (ret == -1)
         state = -1;
       break;
-    case 2:
+    case 2: //turns robot towards goal and ramps up shooter in preperation
       intake.intakeUp();
       intake.stopIntake();
       ret = drive.turnTo(180.0, 5.0); //first turn
@@ -496,10 +506,10 @@ public class Robot extends TimedRobot
         state = -1;
       }
       break;
-    case 3:
+    case 3: //shoots the first and second ball in goal
       autoTimer.start();
       intake.lockIndex();
-      if (shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow))
+      if (shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow)) //shot one
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(2.3))
       {
@@ -513,7 +523,7 @@ public class Robot extends TimedRobot
         drive.resetPid();
       }
       break;
-    case 4:
+    case 4: //turns robot to third goal
       intake.intakeUp();
       intake.stopIntake();
       ret = drive.turnTo(-79.0, 5.0); //second turn
@@ -544,7 +554,7 @@ public class Robot extends TimedRobot
         state = -1;
       }
       break;
-    case 5:
+    case 5: //drives and intakes third ball
       ret = drive.driveTo(90.0, 5.0, false); // may not be the correct distance
       intake.intakeIn();
       intake.intakeDown();
@@ -559,7 +569,7 @@ public class Robot extends TimedRobot
       else if (ret == -1)
         state = -1;
       break;
-    case 6:
+    case 6: //turns robot towards goal while ramping up shooter
       intake.intakeUp();
       intake.stopIntake();
       intake.indexToTop();
@@ -575,7 +585,7 @@ public class Robot extends TimedRobot
       else if (ret == -1)
         state = -1;
       break;
-    case 7:
+    case 7: //uses limelight to fully center robot while ramping up shooter and attempts a shot if the centering fails
     intake.indexToTop();
     shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow);
     ret = drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL, -1);
@@ -588,11 +598,11 @@ public class Robot extends TimedRobot
         state++;
       }
       break;
-    case 8: 
+    case 8: //shoots final ball
       autoTimer.start();
       intake.lockIndex();
       drive.centerToTarget(0.01, Constants.midLimelightWindow, Constants.GOAL, -1);
-      if (shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow))
+      if (shooter.shoot(Constants.threeAutoSpeed, Constants.midSpeedWindow)) //shot two
         intake.indexerShoot();
       if (autoTimer.advanceIfElapsed(4.0))
       {
@@ -614,13 +624,13 @@ public class Robot extends TimedRobot
     int ret;
     switch (state)
     {
-    case 0:
+    case 0: //preps intake to pick up
       autoTimer.start();
       intake.intakeDown();
       intake.intakeIn();
       if (autoTimer.hasElapsed(1.0));
         state++;
-    case 1:
+    case 1: //drives and intakes second ball
       ret = drive.driveTo(40.0, 5.0, true);
       intake.intakeIn();
       intake.intakeDown();
@@ -633,7 +643,7 @@ public class Robot extends TimedRobot
       else if (ret == -1)
         state = -1;
       break;
-    case 2:
+    case 2: //turns robot to goal, continues case even if turn fails
       //SmartDashboard.putNumber("autoGyro", drive.getImuYaw(false));
       intake.intakeUp();
       intake.stopIntake();
@@ -660,7 +670,7 @@ public class Robot extends TimedRobot
         //autoTimer.reset();
         //state++;
       break;
-    case 3:
+    case 3: //drives robot to the goal
       ret = drive.driveTo(60.0, 5.0, false);
       shooter.shoot(Constants.closeSpeed, Constants.twoBallAutoWindow);
       intake.intakeUp();
@@ -673,7 +683,7 @@ public class Robot extends TimedRobot
       else if (ret == -1)
         state = -1;
       break;
-    case 4:
+    case 4: //shoots the ball
       autoTimer.start();
       intake.lockIndex();
       Boolean autoRet;
@@ -691,7 +701,7 @@ public class Robot extends TimedRobot
         state++;
       }
       break;
-    case 5:
+    case 5: //drives robot out of tarmac
       ret = drive.driveTo(-70.0, 1.5, false);
       if (ret == 0) {
         drive.stop();
@@ -712,7 +722,7 @@ public class Robot extends TimedRobot
     int ret;
     switch (state)
     {
-    case 0:
+    case 0: //shoots the ball in the goal
       intake.lockIndex();
       autoTimer.start();
       if (shooter.shoot(Constants.closeSpeed, Constants.closeSpeedWindow))
@@ -726,7 +736,7 @@ public class Robot extends TimedRobot
         state++;
       }
       break;
-    case 1:
+    case 1: //drives out of tarmac
       ret = drive.driveTo(-74.0, 3.0, false);
       if (ret == 0)
         state++;
@@ -744,7 +754,7 @@ public class Robot extends TimedRobot
     int ret;
     switch (state)
     {
-    case 0:
+    case 0: //drives out of tarmac
       ret = drive.driveTo(50.0, 5.0, true);
       if (ret == 0)
         state++;
