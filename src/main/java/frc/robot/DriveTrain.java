@@ -439,7 +439,7 @@ public class DriveTrain {
 			difDrive.arcadeDrive(-0.45, 0.0); //-0.325
 
 		if(prevFinished || centerIntervalTimer.hasPeriodPassed(Constants.centerIntervalTime))
-		{
+		{			//PID is complete (successful)
 			centerFailTimer.stop();
 			//centerFailTimer.reset();
 			//centerIntervalTimer.stop();
@@ -449,7 +449,7 @@ public class DriveTrain {
 			return 0;
 		}
 		else if (centerFailTimer.hasPeriodPassed(timeout))
-		{
+		{			//PID has failed
 			centerIntervalTimer.stop();
 			//centerIntervalTimer.reset();
 			//centerFailTimer.stop();
@@ -457,6 +457,6 @@ public class DriveTrain {
 			//centerInitialized = false;
 			return -1;
 		}
-		return 1;
+		return 1; //PID is incomplete (ongoing)
 	}
 }

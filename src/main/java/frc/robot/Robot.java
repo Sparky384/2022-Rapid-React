@@ -626,6 +626,7 @@ public class Robot extends TimedRobot
     {
     case 0: //preps intake to pick up
       autoTimer.start();
+      shooter.shooterDown();
       intake.intakeDown();
       intake.intakeIn();
       if (autoTimer.hasElapsed(1.0));
