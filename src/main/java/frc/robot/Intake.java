@@ -90,6 +90,8 @@ public class Intake {
             {
                 intakeTimer.reset();
                 intakeTimer.start();
+                intakeState = DOWN;
+
             }
             else if (intakeTimer.hasElapsed(waitTime))
             {
@@ -97,7 +99,7 @@ public class Intake {
                 frontSolenoid.set(off);
                 intakeState = COLLECT;
             }
-            intakeState = DOWN;
+            //intakeState = DOWN;
     }
 
     public void intakeIn() {
